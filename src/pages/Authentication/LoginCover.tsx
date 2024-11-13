@@ -12,15 +12,16 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
+import { loginUser } from '../../store/authSlice';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
 
 // const LoginCover = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
     });
-    const navigate = useNavigate();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const setLocale = (flag: string) => {
@@ -33,9 +34,16 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const submitForm = (e: React.FormEvent) => {
+        e.preventDefault();
+        dispatch<any>(loginUser({ email, password }))
+            .then(() => navigate('/')) // Navigate after successful login
+            .catch((error: any) => console.error("Login failed:", error)); // Handle login error if needed
     };
+    
 
     return (
         <div>
@@ -113,7 +121,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" onChange={(e) => setEmail(e.target.value)}/>
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
@@ -122,7 +130,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" onChange={(e) => setPassword(e.target.value)} />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
