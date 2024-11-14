@@ -22,6 +22,9 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+        //fullfilled
+        //pending
+        //rejected
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.isAuthenticated = true;
                 state.user = action.payload;
@@ -31,7 +34,7 @@ const authSlice = createSlice({
                 state.user = action.payload;
             })
             .addCase(loginUser.rejected, (state, action) => {
-
+                state.isAuthenticated = false;
             });
     },
 });
