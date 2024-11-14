@@ -2,7 +2,7 @@ import { PropsWithChildren, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import App from '../../App';
 import { IRootState } from '../../store';
-import { toggleSidebar } from '../../store/themeConfigSlice';
+import { toggleSidebar } from '../../slices/themeConfigSlice';
 import Footer from './Footer';
 import Header from './Header';
 import Setting from './Setting';

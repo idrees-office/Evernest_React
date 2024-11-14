@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 
 const Typography = () => {

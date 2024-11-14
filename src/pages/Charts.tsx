@@ -4,7 +4,7 @@ import CodeHighlight from '../components/Highlight';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../store';
 import ReactApexChart from 'react-apexcharts';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconBell from '../components/Icon/IconBell';
 import IconCode from '../components/Icon/IconCode';
 

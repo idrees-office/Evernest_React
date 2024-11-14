@@ -2,7 +2,7 @@ import { useState, Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconUserPlus from '../../components/Icon/IconUserPlus';
 import IconListCheck from '../../components/Icon/IconListCheck';
 import IconLayoutGrid from '../../components/Icon/IconLayoutGrid';

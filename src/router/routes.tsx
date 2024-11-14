@@ -106,21 +106,12 @@ const routes = [
     // dashboard
     {
         path: '/',
-        element: (
-            <ProtectedRoute>
-                <Index />
-            </ProtectedRoute>
-        ),
-        // element: <Index />,
+        type: 'protected',
+        element: <Index />
     },
     {
         path: '/analytics',
-        // element: <Analytics />,
-        element: (
-            <ProtectedRoute>
-                <Crypto />
-            </ProtectedRoute>
-        ),
+        element: <Analytics />,
     },
     
     // finance page
@@ -549,9 +540,7 @@ const routes = [
     {
         path: '/blogs',
         element: (
-            <ProtectedRoute>
-                <BlogCreate />
-            </ProtectedRoute>
+            <BlogCreate />
         ),
     },
 

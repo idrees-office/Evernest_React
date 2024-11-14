@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
+import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
 import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
 import i18next from 'i18next';
@@ -12,7 +12,7 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
-import { loginUser } from '../../store/authSlice';
+import { loginUser } from '../../slices/authSlice';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
 

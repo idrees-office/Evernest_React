@@ -1,7 +1,7 @@
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconBell from '../../components/Icon/IconBell';
 

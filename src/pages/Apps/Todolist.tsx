@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import Dropdown from '../../components/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconClipboardText from '../../components/Icon/IconClipboardText';
 import IconListCheck from '../../components/Icon/IconListCheck';
 import IconThumbUp from '../../components/Icon/IconThumbUp';

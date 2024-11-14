@@ -4,7 +4,7 @@ import CodeHighlight from '../../components/Highlight';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import Dropdown from '../../components/Dropdown';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconCode from '../../components/Icon/IconCode';
 import IconMessageDots from '../../components/Icon/IconMessageDots';
 import IconPencil from '../../components/Icon/IconPencil';

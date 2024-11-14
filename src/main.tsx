@@ -8,7 +8,7 @@ import router from './router/index';
 
 // Redux
 import { Provider } from 'react-redux';
-import store from './store/index';
+import store from './store';
 
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

@@ -5,7 +5,7 @@ import { IRootState } from '../store';
 import ReactApexChart from 'react-apexcharts';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Dropdown from '../components/Dropdown';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
 import IconDollarSign from '../components/Icon/IconDollarSign';
 import IconInbox from '../components/Icon/IconInbox';

@@ -8,7 +8,7 @@ import { Tab } from '@headlessui/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Navigation, Pagination } from 'swiper';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import IconBell from '../../components/Icon/IconBell';

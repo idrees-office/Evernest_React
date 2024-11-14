@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import CodeHighlight from '../../components/Highlight';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconCode from '../../components/Icon/IconCode';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 

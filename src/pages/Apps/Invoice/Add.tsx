@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../../store/themeConfigSlice';
+import { setPageTitle } from '../../../slices/themeConfigSlice';
 import IconX from '../../../components/Icon/IconX';
 import IconDownload from '../../../components/Icon/IconDownload';
 import IconEye from '../../../components/Icon/IconEye';

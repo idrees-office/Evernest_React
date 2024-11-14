@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';
 

@@ -5,7 +5,7 @@ import 'tippy.js/dist/tippy.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../store';
 import Dropdown from '../components/Dropdown';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconCode from '../components/Icon/IconCode';
 import IconTrashLines from '../components/Icon/IconTrashLines';
 import IconXCircle from '../components/Icon/IconXCircle';

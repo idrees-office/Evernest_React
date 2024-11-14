@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';
 

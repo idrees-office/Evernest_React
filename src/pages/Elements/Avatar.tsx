@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconCode from '../../components/Icon/IconCode';
 const Avatar = () => {

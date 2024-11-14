@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import ReactApexChart from 'react-apexcharts';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconStar from '../../components/Icon/IconStar';
 

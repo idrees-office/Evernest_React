@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';

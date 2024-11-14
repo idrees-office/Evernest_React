@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import CodeHighlight from '../../components/Highlight';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconCode from '../../components/Icon/IconCode';
 const Progressbar = () => {
     const dispatch = useDispatch();

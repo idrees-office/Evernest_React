@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import ClickAwayListener from 'react-click-away-listener';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconCode from '../../components/Icon/IconCode';
 import IconSearch from '../../components/Icon/IconSearch';

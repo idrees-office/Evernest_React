@@ -3,7 +3,7 @@ import Dropdown from '../components/Dropdown';
 import ReactApexChart from 'react-apexcharts';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../store';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import { useEffect } from 'react';
 import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
 import IconEye from '../components/Icon/IconEye';

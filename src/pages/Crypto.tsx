@@ -4,7 +4,7 @@ import { IRootState } from '../store';
 import { Link } from 'react-router-dom';
 import ReactApexChart from 'react-apexcharts';
 import Dropdown from '../components/Dropdown';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconArrowLeft from '../components/Icon/IconArrowLeft';
 import IconMenu from '../components/Icon/IconMenu';
 import IconCaretDown from '../components/Icon/IconCaretDown';

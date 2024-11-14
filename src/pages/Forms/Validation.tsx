@@ -4,7 +4,7 @@ import CodeHighlight from '../../components/Highlight';
 import * as Yup from 'yup';
 import { Field, Form, Formik } from 'formik';
 import Swal from 'sweetalert2';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';
