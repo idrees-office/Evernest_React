@@ -100,7 +100,6 @@ const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const BlogCreate = lazy(() => import('../pages/Blogs/Create'));
-import ProtectedRoute from '../components/ProtectedRoute';
 
 const routes = [
     // dashboard
@@ -111,6 +110,7 @@ const routes = [
     },
     {
         path: '/analytics',
+        type: 'protected',
         element: <Analytics />,
     },
     
