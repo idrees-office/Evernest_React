@@ -5,9 +5,6 @@ const endpoints = {
     loginApi : '/auth/login',
     register : '/auth/register',
     logout   : 'auth/logout',
-    // loginApi : `${baseURL}/auth/login`,
-    // register : `${baseURL}/auth/register`,
-    // logout   : `${baseURL}/auth/logout`,
 };
 
 export const loginUser = createAsyncThunk('auth/cover-login', async (credentials: { client_user_email: string; password: string }, { rejectWithValue }) => {
@@ -21,24 +18,23 @@ export const signupUser = createAsyncThunk('auth/signupUser', async (userData) =
 });
 
 
-// const savedUser = localStorage.getItem('authUser');
-// const initialState = {
-//     isAuthenticated: !!localStorage.getItem('authToken'), 
-//     user: savedUser ? JSON.parse(savedUser) : null, 
-//     error: null,
-//     token: localStorage.getItem('authToken') || null,
-// };
-
+const savedUser = localStorage.getItem('authUser');
+const initialState = {
+    isAuthenticated: !!localStorage.getItem('authToken'), 
+    user: savedUser ? JSON.parse(savedUser) : null, 
+    error: null,
+    token: localStorage.getItem('authToken') || null,
+};
 const authSlice = createSlice({
     name: 'auth',
-    initialState: { isAuthenticated: false, user: null, error: null, token: null },
-    // initialState,
+    // initialState: { isAuthenticated: false, user: null, error: null, token: null },
+    initialState,
     reducers: {
         logout: (state) => {
             state.isAuthenticated = false;
             state.user = null;
-            // localStorage.removeItem('authToken');
-            // localStorage.removeItem('authUser');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
 
         },
     },
@@ -47,7 +43,7 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
                 state.token = action.payload.token;
-                // state.error = null;
+                state.error = null;
                 // localStorage.setItem('authToken', action.payload.token);
                 // localStorage.setItem('authUser', JSON.stringify(action.payload.user));
             })

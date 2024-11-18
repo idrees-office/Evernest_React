@@ -12,8 +12,7 @@ import IconGoogle from '../../components/Icon/IconGoogle';
 import { loginUser } from '../../slices/authSlice';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
-    // const LoginCover = () => {
-        
+
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -22,6 +21,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
+
         if (isAuthenticatedd) {
             navigate('/'); // Navigate when authenticated.
         }
@@ -50,19 +50,12 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         }));
     };
 
-    useEffect(() => {
-        dispatch(setPageTitle('Login Cover'));
-        // console.log(isAuthenticated);
-
-
-    });
+  
 
     const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch<any>(loginUser(filed))
-            .then((response: any) => {
-                console.log(response);
-                console.log("isAuthenticated (from state):", store.getState().auth.token);
+        dispatch<any>(loginUser(filed)).then((response: any) => {
+                // console.log("isAuthenticated (from state):", store.getState().auth.isAuthenticated);
             }) // Navigate after successful login
             .catch((error: any) => console.error("Login failed:", error));
     };
