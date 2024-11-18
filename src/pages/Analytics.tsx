@@ -5,7 +5,7 @@ import { IRootState } from '../store';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Dropdown from '../components/Dropdown';
 import { useEffect } from 'react';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconHorizontalDots from '../components/Icon/IconHorizontalDots';
 import IconTrendingUp from '../components/Icon/IconTrendingUp';
 import IconPlus from '../components/Icon/IconPlus';

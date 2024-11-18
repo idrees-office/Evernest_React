@@ -1,21 +1,28 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setPageTitle } from "../../store/themeConfigSlice";
+import { setPageTitle } from "../../slices/themeConfigSlice";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import './blogs.css';
-import { ActiveInActiveStatus } from "../../Status/Status";
 import Select from 'react-select';
+import { ActiveInActiveStatus } from "../../status/status";
+import { createBlog, listBlog } from "../../slices/blogSlice";
+
 
 const Create = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [baseUrl, setBaseUrl] = useState('');
+
     useEffect(() => {
         dispatch(setPageTitle('Create Blogs'));
+
+        // const Apiurl = getBaseUrl(); 
+        // setBaseUrl(Apiurl);   
     });
 
     const options = ActiveInActiveStatus.options || [];
-
     const [ filed, setFormData] = useState({
         title: '',
         description: '',
@@ -25,7 +32,6 @@ const Create = () => {
         blog_image: null, 
         status: null
     })
-
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
@@ -48,14 +54,18 @@ const Create = () => {
 
     const handleSubmit = (e:any) => {
         e.preventDefault();
-        console.log(filed);
+        dispatch(createBlog(filed) as any).then((response:any) => {
+            if (response.meta.requestStatus === 'fulfilled') {
+                navigate('/pages/blogs/list');
+            }
+        })
     }
     return(
         <div>
           <div className="flex flex-col xl:flex-row">
             <div className="panel flex-1 px-2 py-2">
                 <div className="flex justify-between items-center">
-                    <h5 className="text-lg font-semibold dark:text-white-light">Create Blogs</h5>
+                    <h5 className="text-lg font-semibold dark:text-white-light">Create Blogs   {baseUrl} </h5>
                     <a className="btn btn-secondary btn-sm mt-2 cursor-pointer">Back</a>
                 </div>
                  <form encType="multipart/form-data" onSubmit={handleSubmit}>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';

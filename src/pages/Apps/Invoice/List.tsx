@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../../store';
-import { setPageTitle } from '../../../store/themeConfigSlice';
+import { setPageTitle } from '../../../slices/themeConfigSlice';
 import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import IconPlus from '../../../components/Icon/IconPlus';
 import IconEdit from '../../../components/Icon/IconEdit';

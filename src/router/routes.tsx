@@ -100,19 +100,19 @@ const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const BlogCreate = lazy(() => import('../pages/Blogs/Create'));
-
+import ProtectedRoute from '../components/ProtectedRoute';
 
 const routes = [
-    // dashboard
     {
         path: '/',
+        type: 'protected',
         element: <Index />,
     },
     {
         path: '/analytics',
+        type: 'protected',
         element: <Analytics />,
     },
-    
     // finance page
     {
         path: '/finance',
@@ -537,14 +537,15 @@ const routes = [
     },
     
     {
-        path: '/blogs',
-        element: <BlogCreate />,
+        path: 'pages/blogs/create',
+        type: 'protected',
+        element : <BlogCreate/>,
         layout: 'default',
     },
 
     {
         path: '*',
-        element: <Error />,
+        element:  ( <ProtectedRoute> <Error /> </ProtectedRoute> ),
         layout: 'blank',
     },
 ];
