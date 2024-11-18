@@ -55,7 +55,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         dispatch<any>(loginUser(filed))
             .then((response: any) => {
                 console.log(response);
-                console.log("isAuthenticated (from state):", store.getState().auth.isAuthenticated);
+                console.log("isAuthenticated (from state):", store.getState().auth.token);
             }) // Navigate after successful login
             .catch((error: any) => console.error("Login failed:", error));
     };
