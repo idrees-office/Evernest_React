@@ -2,52 +2,30 @@ import { PropsWithChildren, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
-import Dropdown from '../../components/Dropdown';
 import { IRootState } from '../../store';
-import i18next from 'i18next';
-import IconCaretDown from '../../components/Icon/IconCaretDown';
+import store from '../../store';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
 import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
-import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
-import { getBaseUrl } from '../../components/BaseUrl';
 import { loginUser } from '../../slices/authSlice';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
     // const LoginCover = () => {
+        
+    const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(setPageTitle('Login Cover'));
-
-        console.log('Authentication status changed:', isAuthenticatedd);
-
-        // if(isAuthenticatedd){
-        //     navigate('/analytics');
-        // }
-
-
-        // useEffect(() => {
-        //     console.log('Authentication status changed:', isAuthenticatedd);
-        //     if (isAuthenticatedd) {
-        //         navigate('/analytics');
-        //     }
-        // }, [isAuthenticatedd]);
-
-
-
-    });
     const navigate = useNavigate();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    const themeConfig = useSelector((state: IRootState) => state.themeConfig);    
 
-    // console.log(useSelector((state: IRootState) => state.auth.isAuthenticated));
-    
-    const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
-
-    // console.log(isAuthenticated);
-
+    useEffect(() => {
+        dispatch(setPageTitle('Login Cover'));
+        if (isAuthenticatedd) {
+            navigate('/'); // Navigate when authenticated.
+        }
+    }, [isAuthenticatedd]);
 
     const setLocale = (flag: string) => {
         setFlag(flag);
@@ -74,28 +52,13 @@ const LoginCover = ({ children }: PropsWithChildren) => {
 
     const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch(loginUser(filed) as any).then((response: any) => {
-
-
-            console.log(response);
-
-            // if (response.meta.requestStatus === 'fulfilled') {
-            //     navigate('/analytics');
-            // }else{
-
-            // }
-            console.log(isAuthenticatedd);
-            })
-            
-
-        // const url = getBaseUrl();
-
-        // console.log(url);
+        dispatch<any>(loginUser(filed))
+            .then((response: any) => {
+                console.log(response);
+                console.log("isAuthenticated (from state):", store.getState().auth.isAuthenticated);
+            }) // Navigate after successful login
+            .catch((error: any) => console.error("Login failed:", error));
     };
-    // const submitForm = () => {
-    //         console.log(filed);
-    //     // navigate('/');
-    // };
 
     return (
         <div>
