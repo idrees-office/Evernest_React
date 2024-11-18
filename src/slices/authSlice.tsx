@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getBaseUrl } from '../components/BaseUrl';
 import apiClient from '../utils/apiClient';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const endpoints = {
     loginApi : '/auth/login',
@@ -46,9 +45,6 @@ const authSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(loginUser.fulfilled, (state, action) => {
                 state.isAuthenticated = true;
-
-                console.log(state.isAuthenticated);
-
                 state.user = action.payload.user;
                 state.token = action.payload.token;
                 // state.error = null;
