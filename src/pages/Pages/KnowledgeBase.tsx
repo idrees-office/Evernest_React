@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Fragment, useEffect, useState } from 'react';
 import AnimateHeight from 'react-animate-height';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import { Dialog, Transition } from '@headlessui/react';
 import IconArrowWaveLeftUp from '../../components/Icon/IconArrowWaveLeftUp';

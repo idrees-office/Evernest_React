@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import IconAirplay from '../components/Icon/IconAirplay';
 import IconArchive from '../components/Icon/IconArchive';
 import IconArrowBackward from '../components/Icon/IconArrowBackward';

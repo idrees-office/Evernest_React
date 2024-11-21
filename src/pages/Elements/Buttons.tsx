@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconCode from '../../components/Icon/IconCode';
 import IconSettings from '../../components/Icon/IconSettings';
 import IconPencil from '../../components/Icon/IconPencil';
@@ -311,12 +311,10 @@ const Buttons = () => {
                                 Right
                                 <IconPencil className="w-5 h-5 ltr:ml-1.5 rtl:mr-1.5 shrink-0" />
                             </button>
-                            <button type="button" className="btn btn-danger">
-                                <IconDownload />
-                            </button>
+                            <button type="button" className="btn btn-danger"> <IconDownload /> </button>
                             <button type="button" className="btn btn-dark w-10 h-10 p-0 rounded-full">
                                 <IconSun />
-                            </button>
+                            </button>sssssssssss
                         </div>
                     </div>
                     {codeArr.includes('code6') && (

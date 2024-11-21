@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconBell from '../../components/Icon/IconBell';
 import IconXCircle from '../../components/Icon/IconXCircle';

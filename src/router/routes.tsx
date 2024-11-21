@@ -99,8 +99,11 @@ const QuillEditor = lazy(() => import('../pages/Forms/QuillEditor'));
 const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
-const BlogCreate = lazy(() => import('../pages/Blogs/Create'));
+const BlogCreate = lazy(() => import('../pages/blogs/create'));
+const BlogList = lazy(() => import('../pages/blogs/list'));
+
 import ProtectedRoute from '../components/ProtectedRoute';
+// import { createBlog } from '../slices/blogSlice';
 
 const routes = [
     {
@@ -537,12 +540,18 @@ const routes = [
     },
     
     {
-        path: 'pages/blogs/create',
+        path: 'pages/blogs/create/:id?',
         type: 'protected',
         element : <BlogCreate/>,
         layout: 'default',
     },
-
+    {
+        path: 'pages/blogs/list',
+        type: 'protected',
+        element : <BlogList/>,
+        layout: 'default',
+    },
+    
     {
         path: '*',
         element:  ( <ProtectedRoute> <Error /> </ProtectedRoute> ),

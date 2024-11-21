@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import { downloadExcel } from 'react-export-table-to-excel';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconFile from '../../components/Icon/IconFile';
 import IconPrinter from '../../components/Icon/IconPrinter';

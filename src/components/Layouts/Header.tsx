@@ -57,10 +57,18 @@ const Header = () => {
                 }
             }
         }
+
+
+
     }, [location]);
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
+    // const number  = useSelector((state: IRootState) => state.auth.number);
+    // const [shownumber, setNumber] = useState(number);
+
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -199,7 +207,7 @@ const Header = () => {
                                         placeholder="Search..."
                                     />
                                     <button type="button" className="absolute w-9 h-9 inset-0 ltr:right-auto rtl:left-auto appearance-none peer-focus:text-primary">
-                                        <IconSearch className="mx-auto" />
+                                        <IconSearch className="mx-auto"/>
                                     </button>
                                     <button type="button" className="hover:opacity-80 sm:hidden block absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2" onClick={() => setSearch(false)}>
                                         <IconXCircle />

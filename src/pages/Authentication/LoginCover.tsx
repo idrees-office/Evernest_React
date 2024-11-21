@@ -10,14 +10,15 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconGoogle from '../../components/Icon/IconGoogle';
 import { loginUser } from '../../slices/authSlice';
+import Toast from '../../statusServices/toast';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
-
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const themeConfig = useSelector((state: IRootState) => state.themeConfig);    
+    const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    const toast = Toast();
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
@@ -37,7 +38,6 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    // create formobj
     const [filed, setFormData] = useState({
         client_user_email: '',
         password: '',
@@ -50,14 +50,17 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         }));
     };
 
-  
-
     const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch<any>(loginUser(filed)).then((response: any) => {
-                // console.log("isAuthenticated (from state):", store.getState().auth.isAuthenticated);
-            }) // Navigate after successful login
-            .catch((error: any) => console.error("Login failed:", error));
+        dispatch<any>(loginUser(filed))
+            .then((response: any) => {
+                console.log(store.getState().auth.isAuthenticated);
+                if(store.getState().auth.isAuthenticated === true){
+                    toast.success('Login SuccessFully');
+                }
+
+            })
+            .catch((error: any) => console.error('Login failed:', error));
     };
 
     return (
@@ -136,7 +139,14 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" name="client_user_email" placeholder="Enter Email" onChange={handleChange} className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Email"
+                                            type="email"
+                                            name="client_user_email"
+                                            placeholder="Enter Email"
+                                            onChange={handleChange}
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
