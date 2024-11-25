@@ -6,7 +6,7 @@ const endpoints = {
      listApi    : '/blogs/show',
      destoryApi : '/blogs/delete',
      editApi    : '/blogs/edit',
-     updateApi  : '/blogs/edit',
+     updateApi  : '/blogs/update',
     };
 
     export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
