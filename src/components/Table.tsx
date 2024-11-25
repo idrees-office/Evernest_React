@@ -3,21 +3,20 @@ import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import { useSelector } from 'react-redux';
 
-
 interface Column {
-    accessor: string;
-    title: string;
-    sortable?: boolean;
-    render?: (record: any) => JSX.Element; 
+    accessor  : string;
+    title     : string;
+    sortable? : boolean;
+    render?   : (record: any) => JSX.Element; 
 }
 
 interface TableProps {
-    columns: Column[];
-    fetchData: () => Promise<any[]>;
-    title: string;
+    columns : Column[];
+    rows    : any[];
+    title   : string;
 }
 
-const Table: React.FC<TableProps> = ({ columns, fetchData, title }) => {
+const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -25,17 +24,12 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, title }) => {
     const [recordsData, setRecordsData] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'asc' });
-    
+
     useEffect(() => {
-        fetchData()
-            .then((data) => {
-                const sortedData = sortBy(data, 'id');
-                setInitialRecords(sortedData);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-    }, [fetchData]);
+        const sortedRows = sortBy(rows, 'id');
+        setInitialRecords(sortedRows);
+        setPage(1); 
+    }, [rows]);
 
     useEffect(() => {
         const from = (page - 1) * pageSize;
@@ -52,7 +46,7 @@ const Table: React.FC<TableProps> = ({ columns, fetchData, title }) => {
         const sortedData = sortBy(initialRecords, sortStatus.columnAccessor);
         setInitialRecords(sortStatus.direction === 'desc' ? sortedData.reverse() : sortedData);
     }, [sortStatus, initialRecords]);
-
+    
     return (
         <div>
             <div className="panel mt-6">

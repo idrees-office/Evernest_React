@@ -1,12 +1,12 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './blogs.css';
 import Select from 'react-select';
-import { createBlog, listBlog } from '../../slices/blogSlice';
+import { createBlog, editBlog, listBlog } from '../../slices/blogSlice';
 import { options } from '../../statusServices/status';
 import { AppDispatch, IRootState } from '../../store';
 
@@ -16,173 +16,107 @@ const Create = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const isSuccess = useSelector((state: IRootState) => state.blogs.success);
-    const blogs = useSelector((state: IRootState) => state.blogs.blogs);
-
+    const formRef = useRef<HTMLFormElement>(null);
+    const [seodescription, setSeoDescription] = useState('');
+    const [blogdescription, setBlogDescription] = useState('');
+    const [status, setStatus] = useState<any | null>(null);
     useEffect(() => {
-        if (isEdit === true) {
-            dispatch(listBlog({ type: 'edit', payload: id })).unwrap().then((response) => {
-                const currentStatus = options.find(option => option.value === response.data.status);
-              setFormData({
-                title: response.data.title || "",
-                description: response.data.description || "",
-                slug: response.data.slug || "",
-                seo_title: response.data.seo_title || "",
-                seo_description: response.data.seo_description || "",
-                blogs_image: null, 
-                status: currentStatus || null,
-             });
-           }).catch((error: any) => {
-                    // Swal.fire('Error!', 'Failed to delete the blog.', 'error');
-            });
+        if (isEdit == true) {
+            dispatch(editBlog(Number(id))).unwrap().then((response) => {
+                if (formRef.current) {
+                    const form = formRef.current;
+                    (form.querySelector('input[name="title"]') as HTMLInputElement).value = response.title || '';
+                    form.slug.value = response.slug || '';
+                    form.seo_title.value = response.seo_title || '';
+                    setBlogDescription(response.description || '');
+                    setSeoDescription(response.seo_description || '');
+                    setStatus(response.status || '');
+                }
+            })
+            .catch((error: any) => {});
         }
-
         dispatch(setPageTitle('Create Blogs'));
-        if (isSuccess) {
-            navigate('pages/blogs/list'); // Navigate
-        }
-    }, [dispatch, isEdit, id, isSuccess]);
+    }, [dispatch, isEdit, id]);
 
-    const [filed, setFormData] = useState({
-        title: '',
-        description: '',
-        slug: '',
-        seo_title: '',
-        seo_description: '',
-        blogs_image: null,
-        status: '',
-    });
-    const handleChange = (e: { target: { name: any; value: any } }) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-    const handleFileChange = (e: any) => {
-        const file = e.target.files[0];
-        setFormData((prevData) => ({
-            ...prevData,
-            blogs_image: file,
-        }));
-    };
-    const handleSelectChange = (selectedOption: any) => {
-        const { value } = selectedOption;
-        setFormData((prevData) => ({
-            ...prevData,
-            status: value,
-        }));
+    const handleQuillChange = (value: string) => {
+        setSeoDescription(value);
+        setBlogDescription(value);
     };
 
-    const handleSubmit = (e: any) => {
+    const handleQuillChange2 = (value: string) => {
+        setBlogDescription(value);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', filed.title);
-        formData.append('description', filed.description);
-        formData.append('slug', filed.slug);
-        formData.append('seo_title', filed.seo_title);
-        formData.append('seo_description', filed.seo_description);
-        if (filed.blogs_image) {
-            formData.append('blogs_image', filed.blogs_image);
-        }
-        if (filed.status) {
-            formData.append('status', filed.status);
-        }
-        dispatch(createBlog(formData) as any).then((response: any) => {
-            console.log(response);
-        });
-
         
+        if(isEdit){
+            if (formRef.current) {
+                const formData = new FormData(formRef.current);
+                dispatch(createBlog({ formData }) as any)
+                .then((response: any) => {
+                    console.log('Blog created successfully:', response);
+                })
+            }else{
+                    console.log('update call here');
+            }
+        }
+    
 
+        // if (formRef.current) {
+        //     const formData = new FormData(formRef.current);
+        //     dispatch(createBlog({ formData }) as any)
+        //     .then((response: any) => {
+        //         console.log('Blog created successfully:', response);
+        //     })
+        //     .catch((error: any) => {
+        //         console.error('Error creating blog:', error);
+        //     });
+        // }
     };
     return (
         <div>
             <div className="flex flex-col xl:flex-row">
                 <div className="panel flex-1 px-2 py-2">
                     <div className="flex justify-between items-center">
-                        <h5 className="text-lg font-semibold dark:text-white-light">{isEdit ? 'Update Blog' : 'Create Blog'}</h5>
-                        <a className="btn btn-secondary btn-sm mt-2 cursor-pointer">Back</a>
+                        <h5 className="text-lg font-semibold dark:text-white-light"></h5>
+                        <a onClick={() => navigate('/pages/blogs/list')}   className="btn btn-secondary btn-sm mt-2 cursor-pointer"> Back </a>
                     </div>
-                    <form encType="multipart/form-data" onSubmit={handleSubmit}>
+                    <form encType="multipart/form-data" ref={formRef} onSubmit={handleSubmit}>
                         <hr className="my-6 border-[#e0e6ed] dark:border-[#1b2e4b]" />
                         <div className="mt-8 px-4">
                             <div className="flex flex-col justify-between lg:flex-row">
                                 <div className="mb-6 w-full lg:w-1/2 ltr:lg:mr-6 rtl:lg:ml-6">
                                     <div className="mt-4 items-center">
-                                        <label htmlFor="titlemark" className="text-white-dark">
-                                            Title
-                                        </label>
-                                        <input
-                                            id="titlemark"
-                                            autoComplete="off"
-                                            type="text"
-                                            className="form-input flex-1"
-                                            placeholder="Title"
-                                            onChange={handleChange}
-                                            name="title"
-                                            value={filed.title}
-                                        />
+                                        <label htmlFor="titlemark" className="text-white-dark"> Title </label>
+                                        <input id="titlemark" autoComplete="off" type="text" className="form-input flex-1" placeholder="Title" name="title" />
                                     </div>
                                     <div className="mt-4 items-center">
-                                        <label htmlFor="titlemark" className="text-white-dark">
-                                            Description
-                                        </label>
-                                        <ReactQuill
-                                            theme="snow"
-                                            placeholder="Blog Description"
-                                            value={filed.description}
-                                            onChange={(value) => setFormData((prevData) => ({ ...prevData, description: value }))}
-                                        />
+                                        <label htmlFor="description" className="text-white-dark">  Description </label>
+                                        <ReactQuill theme="snow" value={blogdescription} onChange={(value) => setBlogDescription(value)} placeholder="Description" />
+                                        <input type="text" name="description" value={blogdescription} id="description" />
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="slugmark" className="text-white-dark">
-                                            Slug
-                                        </label>
-                                        <input id="slugmark" autoComplete="off" type="text" className="form-input flex-1" placeholder="Slug" onChange={handleChange} name="slug" value={filed.slug} />
+                                        <label htmlFor="slugmark" className="text-white-dark"> Slug</label>
+                                        <input id="slugmark" autoComplete="off" type="text" className="form-input flex-1" placeholder="Slug" name="slug" />
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="seotitle" className="text-white-dark">
-                                            Seo Title
-                                        </label>
-                                        <input
-                                            id="seotitle"
-                                            autoComplete="off"
-                                            type="text"
-                                            className="form-input flex-1"
-                                            placeholder="Seo Title"
-                                            onChange={handleChange}
-                                            name="seo_title"
-                                            value={filed.seo_title}
-                                        />
+                                        <label htmlFor="seotitle" className="text-white-dark"> Seo Title </label>
+                                        <input id="seotitle" autoComplete="off" type="text" className="form-input flex-1" placeholder="Seo Title" name="seo_title" />
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="seotitle" className="text-white-dark">
-                                            Seo Description
-                                        </label>
-                                        <ReactQuill
-                                            theme="snow"
-                                            placeholder="Seo Description"
-                                            value={filed.seo_description}
-                                            onChange={(value) => setFormData((prevData) => ({ ...prevData, seo_description: value }))}
-                                        />
+                                        <label htmlFor="seotitle" className="text-white-dark"> Seo Description </label>
+                                        <ReactQuill theme="snow" value={seodescription} onChange={(value) => setSeoDescription(value)} placeholder="Seo Description" />
+                                        <input type="text" name="seo_description" value={seodescription} />
                                     </div>
                                     <div className="mt-4 items-center">
-                                        <label htmlFor="ctnFile" className="text-white-dark">
-                                            Image
-                                        </label>
-                                        <input
-                                            id="ctnFile"
-                                            type="file"
-                                            className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
-                                            required
-                                            name="blog_image"
-                                            onChange={handleFileChange}
-                                        />
+                                        <label htmlFor="ctnFile" className="text-white-dark"> Image </label>
+                                        <input id="ctnFile" type="file" className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" required name="blogs_image" />
                                     </div>
                                     <div className="mt-4">
-                                        <label htmlFor="ctnstatus" className="text-white-dark">
-                                            Status
-                                        </label>
-                                        <Select placeholder="Select an option" options={options} value={filed.status} onChange={handleSelectChange} />
+                                        <label htmlFor="ctnstatus" className="text-white-dark"> Status </label>
+                                        <Select placeholder="Select an option" options={options} value={options.find((option) => option.value == status)} onChange={(selectedOption: any) => { setStatus(selectedOption.value); }}
+                                        />
                                     </div>
                                     <div className="mt-4">
                                         <button className="btn btn-secondary w-full">Save</button>

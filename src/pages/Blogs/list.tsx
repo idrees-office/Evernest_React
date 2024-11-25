@@ -6,7 +6,7 @@ import { AppDispatch, IRootState } from '../../store';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import { useNavigate } from 'react-router-dom';
-import { listBlog } from '../../slices/blogSlice';
+import { listBlog, deleteBlog } from '../../slices/blogSlice';
 import Table from '../../components/Table';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
@@ -17,23 +17,16 @@ const BlogList = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast = Toast();
-    const blogs = useSelector((state: IRootState) => state.blogs.blogs);
-    
     useEffect(() => {
         dispatch(setPageTitle('Blogs List'));
-        dispatch(listBlog({ type: 'list' }));   
-
+        dispatch(listBlog());   
     }, [dispatch]);
-    
-
-    const fetchBlogs = useCallback(async () => {
-        return (blogs || []).map((blog:any, index: number) => ({
-            counter :  index + 1,
-            title   : blog.title || 'Unknown',
-            id      : blog.id,         
-        }));
-    }, [blogs]);
-    
+    const blogs = useSelector((state: IRootState) => state.blogs.blogs);  
+    const tableData = (blogs || []).map((blog: any, index: number) => ({
+        counter: index + 1,
+        title: blog.title || 'Unknown',
+        id: blog.id,
+    }));
     const handelDistory = (event:number) : void => {
         const id = event;
         Swal.fire({
@@ -42,8 +35,7 @@ const BlogList = () => {
             confirmButtonText: 'Delete',
         }).then((result) => {
             if (result.isConfirmed) {
-                 dispatch(listBlog({ type: 'delete', payload: id })).unwrap().then(() => {;
-                // dispatch(deleteBlog(id)).unwrap().then(() => {
+                 dispatch(deleteBlog(id)).unwrap().then(() => {
                     toast.success('Delete Successfully');
                 })
                 .catch((error:any) => {
@@ -56,7 +48,7 @@ const BlogList = () => {
         <div>
             <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary">
                 <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
-                <span className="ltr:mr-3 rtl:ml-3">Blogs: </span> <a href="pages/blogs/create" className="btn btn-primary btn-sm">Create</a>
+                <span className="ltr:mr-3 rtl:ml-3">Blogs: </span> <a href="/pages/blogs/create" className="btn btn-primary btn-sm">Create</a>
             </div>
             <div className="datatables">
                 <Table title="Blog List"
@@ -74,7 +66,7 @@ const BlogList = () => {
                             ),
                         },
                     ]}
-                    fetchData={fetchBlogs}
+                    rows={tableData}
                 />
             </div>
         </div>

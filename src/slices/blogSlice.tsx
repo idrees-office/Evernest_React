@@ -1,37 +1,56 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getBaseUrl } from '../components/BaseUrl';
 import apiClient from '../utils/apiClient';
 
 const endpoints = {
-    createApi  : '/blogs/store',
-    listApi    : '/blogs/show',
-    destoryApi : '/blogs/delete',
-    editApi    : '/blogs/edit',
-};
+     createApi  : '/blogs/store',
+     listApi    : '/blogs/show',
+     destoryApi : '/blogs/delete',
+     editApi    : '/blogs/edit',
+     updateApi  : '/blogs/edit',
+    };
+    export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
+        
+        try {
+            let response;
+            if (id) {
+                response = await apiClient.put(`${endpoints.updateApi}/${id}`, formData, {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                });
+              } else {
+                response = await apiClient.post(endpoints.createApi, formData, {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                });
+              }
+              return response.data;
 
-export const createBlog = createAsyncThunk('pages/blogs/create', async (credentials: Record<string, any>, { rejectWithValue }) => {
-    const response = apiClient.post(endpoints.createApi, credentials);
-});
-
-export const listBlog = createAsyncThunk('pages/blogs/list', async ({ type, payload }: { type: 'list' | 'delete' | 'edit'; payload?: any }, { rejectWithValue }) => {
-    try {
-        switch (type) {
-            case 'list':
-                const listresponse = await apiClient.get(endpoints.listApi);
-                return { type, data: listresponse.data };
-            case 'delete':
-                await apiClient.delete(`${endpoints.destoryApi}/${payload}`);
-                return { type, id: payload };
-            case 'edit':
-                const editResponse = await apiClient.get(`${endpoints.editApi}/${payload}`);
-                return { type, data: editResponse.data };   
-            default:
-                throw new Error('Invalid action type');
+        }  catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
         }
-    } catch (error) {
-        return rejectWithValue(error);
-    }
-});
+    });
+    export const listBlog = createAsyncThunk('createlist', async (_, { rejectWithValue }) => {
+        try {
+            const listresponse = await apiClient.get(endpoints.listApi);
+            return listresponse.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }); 
+    export const deleteBlog = createAsyncThunk('deletelist', async (id: number, { rejectWithValue }) => { 
+            try {
+                await apiClient.delete(`${endpoints.destoryApi}/${id}`);
+                return { id };
+            } catch (error: any) {
+                return rejectWithValue(error.response?.data || error.message);
+            }
+     });
+    export const editBlog = createAsyncThunk('editlits', async (id: number, { rejectWithValue }) => { 
+        try {
+            const editResponse = await apiClient.get(`${endpoints.editApi}/${id}`);
+            return editResponse.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
 
 
 const initialState = {
@@ -44,42 +63,33 @@ const blogSlice = createSlice({
     name: 'Blogs',
     initialState,
     reducers: {
-        setBlogs(state, action: PayloadAction<Array<{ id: number; title: string; content: string }>>) {
-            state.blogs = action.payload; // Replace all blogs with new data
-        },
+        setBlogs() {},
         deleteBlogsById() {},
     },
+
     extraReducers: (builder) => {
         builder
             .addCase(createBlog.fulfilled, (state, action) => {
                 state.success = true;
-                state.message = 'Blog created successfully';
+                // state.message = action.message;
             })
             .addCase(listBlog.fulfilled, (state, action) => {
-                const { type, data, id } = action.payload;
-                switch (type) {
-                    case 'list':
-                        state.blogs = data;
-                        break;
-                    case 'delete':
-                        state.blogs = state.blogs.filter((blog) => blog.id !== id); 
-                        state.success = true;
-                        state.message = 'Blog deleted successfully';
-                        break;
-                    case 'edit':
-                        state.blogs = data;
-                        break;
-                    // case 'update':
-                    //     state.blogs = state.blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog); // Update the specific blog in the state
-                    //     state.success = true;
-                    //     state.message = 'Blog updated successfully';
-                    //     break;
-                    default:
-                        break;
-                }
-
+                state.success = true;
+                state.blogs = action.payload; 
+                state.message = 'Blogs fetched successfully';
+            })
+            .addCase(deleteBlog.fulfilled, (state, action) => {
+                state.success = true;
+                const { id } = action.payload;
+                state.blogs = state.blogs.filter((blog) => blog.id !== id);  
+                state.message = 'Blog deleted successfully';
+            })
+            .addCase(editBlog.fulfilled, (state, action) => {
+                // state.success = true;
+                state.blogs = action.payload; 
+                state.message = 'Blog fetched for edit successfully';
             });
-    },
+    }
 });
 
 export const { setBlogs, deleteBlogsById } = blogSlice.actions;
