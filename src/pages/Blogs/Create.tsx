@@ -38,41 +38,36 @@ const Create = () => {
         dispatch(setPageTitle('Create Blogs'));
     }, [dispatch, isEdit, id]);
 
-    const handleQuillChange = (value: string) => {
-        setSeoDescription(value);
-        setBlogDescription(value);
-    };
-
-    const handleQuillChange2 = (value: string) => {
-        setBlogDescription(value);
-    };
+    // const handleQuillChange = (value: string) => {
+    //     setSeoDescription(value);
+    //     setBlogDescription(value);
+    // };
+    // const handleQuillChange2 = (value: string) => {
+    //     setBlogDescription(value);
+    // };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        if(isEdit){
-            if (formRef.current) {
-                const formData = new FormData(formRef.current);
-                dispatch(createBlog({ formData }) as any)
+        if (formRef.current) {
+            const formData = new FormData(formRef.current);
+        if (id) { 
+            dispatch(createBlog({ formData, id: Number(id) }) as any)
+                .then((response: any) => {
+                    console.log('Blog updated successfully:', response);
+                })
+                .catch((error: any) => {
+                    console.error('Error updating blog:', error);
+                });
+         } else { 
+            dispatch(createBlog({ formData }) as any)
                 .then((response: any) => {
                     console.log('Blog created successfully:', response);
                 })
-            }else{
-                    console.log('update call here');
-            }
+                .catch((error: any) => {
+                    console.error('Error creating blog:', error);
+                });
+         }
         }
-    
-
-        // if (formRef.current) {
-        //     const formData = new FormData(formRef.current);
-        //     dispatch(createBlog({ formData }) as any)
-        //     .then((response: any) => {
-        //         console.log('Blog created successfully:', response);
-        //     })
-        //     .catch((error: any) => {
-        //         console.error('Error creating blog:', error);
-        //     });
-        // }
     };
     return (
         <div>
@@ -111,7 +106,7 @@ const Create = () => {
                                     </div>
                                     <div className="mt-4 items-center">
                                         <label htmlFor="ctnFile" className="text-white-dark"> Image </label>
-                                        <input id="ctnFile" type="file" className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" required name="blogs_image" />
+                                        <input id="ctnFile" type="file" className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" name="blogs_image" />
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="ctnstatus" className="text-white-dark"> Status </label>

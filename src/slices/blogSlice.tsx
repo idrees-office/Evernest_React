@@ -8,8 +8,8 @@ const endpoints = {
      editApi    : '/blogs/edit',
      updateApi  : '/blogs/edit',
     };
+
     export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
-        
         try {
             let response;
             if (id) {
@@ -22,11 +22,11 @@ const endpoints = {
                 });
               }
               return response.data;
-
         }  catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
     });
+
     export const listBlog = createAsyncThunk('createlist', async (_, { rejectWithValue }) => {
         try {
             const listresponse = await apiClient.get(endpoints.listApi);
@@ -45,7 +45,7 @@ const endpoints = {
      });
     export const editBlog = createAsyncThunk('editlits', async (id: number, { rejectWithValue }) => { 
         try {
-            const editResponse = await apiClient.get(`${endpoints.editApi}/${id}`);
+            const editResponse = await apiClient.get(`${endpoints.editApi}/${id}`); 
             return editResponse.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
@@ -53,11 +53,11 @@ const endpoints = {
     });
 
 
-const initialState = {
-    blogs: [] as { id: number; title: string; content: string }[],
-    success: false,
-    message: '',
-};
+    const initialState = {
+        blogs: [] as { id: number; title: string; content: string }[],
+        success: false,
+        message: '',
+    };
 
 const blogSlice = createSlice({
     name: 'Blogs',
@@ -66,12 +66,12 @@ const blogSlice = createSlice({
         setBlogs() {},
         deleteBlogsById() {},
     },
-
     extraReducers: (builder) => {
         builder
             .addCase(createBlog.fulfilled, (state, action) => {
                 state.success = true;
                 // state.message = action.message;
+                // state.blogs.push(action.payload);
             })
             .addCase(listBlog.fulfilled, (state, action) => {
                 state.success = true;
