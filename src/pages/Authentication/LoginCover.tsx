@@ -10,7 +10,7 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconGoogle from '../../components/Icon/IconGoogle';
 import { loginUser } from '../../slices/authSlice';
-import Toast from '../../statusServices/toast';
+import Toast from '../../services/toast';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);

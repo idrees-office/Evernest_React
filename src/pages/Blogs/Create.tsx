@@ -1,5 +1,5 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import ReactQuill from 'react-quill';
@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import './blogs.css';
 import Select from 'react-select';
 import { createBlog, editBlog, listBlog } from '../../slices/blogSlice';
-import { options } from '../../statusServices/status';
+import { options } from '../../services/status';
 import { AppDispatch, IRootState } from '../../store';
 
 const Create = () => {
@@ -34,39 +34,25 @@ const Create = () => {
                 }
             })
             .catch((error: any) => {});
+        }else{
+            formRef.current?.reset();
+            setBlogDescription('');
+            setSeoDescription('');
+            setStatus(null);
         }
         dispatch(setPageTitle('Create Blogs'));
     }, [dispatch, isEdit, id]);
-
-    // const handleQuillChange = (value: string) => {
-    //     setSeoDescription(value);
-    //     setBlogDescription(value);
-    // };
-    // const handleQuillChange2 = (value: string) => {
-    //     setBlogDescription(value);
-    // };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (formRef.current) {
             const formData = new FormData(formRef.current);
-        if (id) { 
-            dispatch(createBlog({ formData, id: Number(id) }) as any)
-                .then((response: any) => {
+            dispatch(createBlog({ formData, id: Number(id) }) as any).then((response: any) => {
                     console.log('Blog updated successfully:', response);
                 })
                 .catch((error: any) => {
                     console.error('Error updating blog:', error);
-                });
-         } else { 
-            dispatch(createBlog({ formData }) as any)
-                .then((response: any) => {
-                    console.log('Blog created successfully:', response);
-                })
-                .catch((error: any) => {
-                    console.error('Error creating blog:', error);
-                });
-         }
+            });
         }
     };
     return (
@@ -89,7 +75,7 @@ const Create = () => {
                                     <div className="mt-4 items-center">
                                         <label htmlFor="description" className="text-white-dark">  Description </label>
                                         <ReactQuill theme="snow" value={blogdescription} onChange={(value) => setBlogDescription(value)} placeholder="Description" />
-                                        <input type="text" name="description" value={blogdescription} id="description" />
+                                        <input type="hidden" name="description" value={blogdescription} id="description" />
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="slugmark" className="text-white-dark"> Slug</label>
@@ -101,8 +87,8 @@ const Create = () => {
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="seotitle" className="text-white-dark"> Seo Description </label>
-                                        <ReactQuill theme="snow" value={seodescription} onChange={(value) => setSeoDescription(value)} placeholder="Seo Description" />
-                                        <input type="text" name="seo_description" value={seodescription} />
+                                         <ReactQuill theme="snow" value={seodescription} onChange={(value) => setSeoDescription(value)} placeholder="Seo Description" />
+                                        <input type="hidden" name="seo_description" value={seodescription} />
                                     </div>
                                     <div className="mt-4 items-center">
                                         <label htmlFor="ctnFile" className="text-white-dark"> Image </label>
@@ -110,7 +96,7 @@ const Create = () => {
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="ctnstatus" className="text-white-dark"> Status </label>
-                                        <Select placeholder="Select an option" options={options} value={options.find((option) => option.value == status)} onChange={(selectedOption: any) => { setStatus(selectedOption.value); }}
+                                        <Select placeholder="Select an option" name="status" options={options} value={options.find((option) => option.value == status)} onChange={(selectedOption: any) => { setStatus(selectedOption.value); }}
                                         />
                                     </div>
                                     <div className="mt-4">

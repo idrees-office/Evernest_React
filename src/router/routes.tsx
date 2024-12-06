@@ -101,9 +101,19 @@ const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const BlogCreate = lazy(() => import('../pages/blogs/create'));
 const BlogList = lazy(() => import('../pages/blogs/list'));
+const NewsCreate = lazy(() => import('../pages/news/create'));
+const NewsList = lazy(() => import('../pages/news/list'));
+const CreateDevelopers = lazy(() => import('../pages/developers/create'));
+const ListDevelopers = lazy(() => import('../pages/developers/list'));
+
+const ListAmenities = lazy(() => import('../pages/amenities/list'));
+
+
+
+
+// import Create from '../pages/news/create';
 
 import ProtectedRoute from '../components/ProtectedRoute';
-// import { createBlog } from '../slices/blogSlice';
 
 const routes = [
     {
@@ -549,6 +559,37 @@ const routes = [
         path: 'pages/blogs/list',
         type: 'protected',
         element : <BlogList/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/news/create/:id?',
+        type: 'protected',
+        element : <NewsCreate/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/news/list',
+        type: 'protected',
+        element : <NewsList/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/developers/create/:id?',
+        type: 'protected',
+        element : <CreateDevelopers/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/developers/list',
+        type: 'protected',
+        element : <ListDevelopers/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/amenities/list',
+        type: 'protected',
+        element : <ListAmenities/>,
         layout: 'default',
     },
     

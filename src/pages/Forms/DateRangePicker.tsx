@@ -7,7 +7,7 @@ import Nouislider from '@x1mrdonut1x/nouislider-react';
 import 'nouislider/distribute/nouislider.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';
 
@@ -32,7 +32,6 @@ const DateRangePicker = () => {
     const [inputEnd, setInputEnd] = useState<any>(40);
     const [slider2, setSlider2] = useState<any>([500, 4000]);
     const [percent2, setPercent2] = useState<any>([5, 40]);
-
     const [disabled, setDisabled] = useState<any>(false);
     const [skippingValue, setSkippingValue] = useState<any>(40);
     const [skippingValue1, setSkippingValue1] = useState<any>(40);

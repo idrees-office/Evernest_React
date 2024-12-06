@@ -5,6 +5,7 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconCode from '../../components/Icon/IconCode';
 import IconLoader from '../../components/Icon/IconLoader';
+
 const Loader = () => {
     const dispatch = useDispatch();
     useEffect(() => {

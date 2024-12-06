@@ -5,3 +5,8 @@ label{
     margin-left: 5px;
     font-size: 12px;
 }
+
+.error{
+    font-size: 14px;
+    padding-left: 4px;
+}

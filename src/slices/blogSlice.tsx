@@ -8,19 +8,15 @@ const endpoints = {
      editApi    : '/blogs/edit',
      updateApi  : '/blogs/update',
     };
-
+    
     export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             let response;
-            if (id) {
-                response = await apiClient.put(`${endpoints.updateApi}/${id}`, formData, {
-                  headers: { 'Content-Type': 'multipart/form-data' },
-                });
-              } else {
-                response = await apiClient.post(endpoints.createApi, formData, {
-                  headers: { 'Content-Type': 'multipart/form-data' },
-                });
-              }
+            // if (id) {
+                response = await apiClient.post(`${endpoints.createApi}/${id}`, formData);
+            //   } else {
+                // response = await apiClient.post(endpoints.createApi, formData);
+            //   }
               return response.data;
         }  catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
@@ -34,7 +30,8 @@ const endpoints = {
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
-    }); 
+    });
+
     export const deleteBlog = createAsyncThunk('deletelist', async (id: number, { rejectWithValue }) => { 
             try {
                 await apiClient.delete(`${endpoints.destoryApi}/${id}`);
@@ -51,12 +48,12 @@ const endpoints = {
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-
-
+    
     const initialState = {
         blogs: [] as { id: number; title: string; content: string }[],
         success: false,
         message: '',
+        loading: false,
     };
 
 const blogSlice = createSlice({
@@ -70,13 +67,19 @@ const blogSlice = createSlice({
         builder
             .addCase(createBlog.fulfilled, (state, action) => {
                 state.success = true;
-                // state.message = action.message;
-                // state.blogs.push(action.payload);
+                 state.blogs.push(action.payload);
+            })
+            .addCase(createBlog.rejected, (state, action) => {
+                state.success = true;
+            })
+            .addCase(listBlog.pending, (state) => {
+                state.loading = true;  
             })
             .addCase(listBlog.fulfilled, (state, action) => {
                 state.success = true;
                 state.blogs = action.payload; 
                 state.message = 'Blogs fetched successfully';
+                state.loading = false;  
             })
             .addCase(deleteBlog.fulfilled, (state, action) => {
                 state.success = true;
@@ -85,7 +88,6 @@ const blogSlice = createSlice({
                 state.message = 'Blog deleted successfully';
             })
             .addCase(editBlog.fulfilled, (state, action) => {
-                // state.success = true;
                 state.blogs = action.payload; 
                 state.message = 'Blog fetched for edit successfully';
             });

@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconMail from '../../components/Icon/IconMail';
 import IconStar from '../../components/Icon/IconStar';
 import IconSend from '../../components/Icon/IconSend';
