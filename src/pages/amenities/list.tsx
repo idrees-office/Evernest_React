@@ -23,7 +23,8 @@ const AmenitiesList = () => {
     const toast     = Toast();
     const loader    = Loader();
     const [isModal, setModal] = useState(false);
-    const formRef = useRef<HTMLFormElement>(null);
+    // const formRef = useRef<HTMLFormElement>(null);
+    const formRef = useRef<HTMLFormElement | null>(null); 
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [paramsId, paramsSetId] = useState<any>();
     // const [editData, setEditData] = useState<{} | null>(null);
@@ -32,10 +33,33 @@ const AmenitiesList = () => {
     useEffect(() => {
          dispatch(setPageTitle('Amenities List'));
          dispatch(showAmenities());
-    }, [dispatch])
+    }, [dispatch]);
+
+
+    useEffect(() => {
+        if (paramsId !== undefined) {
+          dispatch(editAmenities(paramsId)).unwrap().then((response: any) => {
+              if (formRef.current) {
+                formRef.current.reset(); 
+                const nameInput = formRef.current?.elements.namedItem('name') as HTMLInputElement;
+
+                console.log(nameInput);
+
+                // const nameInput = formRef.current.querySelector<HTMLInputElement>('input[name="name"]');
+                if (nameInput) {
+                  nameInput.value = response.name || '';
+                }
+              }
+            })
+            .catch((error: any) => {
+              console.error('Failed to fetch amenity details:', error);
+            });
+        }
+      }, [paramsId, dispatch]); // Re-run when paramsId changes
+
     
     const { loading, amenities } = useSelector((state:IRootState) => state.amenitiesdata);
-
+    
     const tableData = (Array.isArray(amenities) ? amenities : []).map((amenitie: any, index: number) => ({
         counter : index + 1,
         title   : amenitie?.name || 'Unknown',
@@ -45,36 +69,38 @@ const AmenitiesList = () => {
     const addAmenitie = (id?: number)  => {
         if (id) {
             paramsSetId(id); 
-
-            dispatch(editAmenities(id)).unwrap().then((response: any) => {
-                    setModal(true); 
-                })
-                .catch((error: any) => {
-                    console.error('Failed to fetch amenity details:', error);
-                });
-
-                dispatch(showAmenities());
-
+            setModal(true);
+            // dispatch(editAmenities(id)).unwrap().then((response: any) => {
+            //     console.log(response);
+            //         setModal(true);    
+            //             console.log(formRef.current);
+            //         if (formRef.current) {
+            //             const form = formRef.current;
+            //             // form.name.value = response.name || '';
+            //             // (form.querySelector('input[name="name"]') as HTMLInputElement).value = response.name || '';
+            //         }
+            //     })
+            //     .catch((error: any) => {
+            //         console.error('Failed to fetch amenity details:', error);
+            //     });
         } else {
             setModal(true);
+            if (formRef.current) {
+            formRef.current.reset();
+        }
         }
     };
 
 
+
+    
+
+
     useEffect(() => {
-        if (isModal && paramsId) {
-            dispatch(editAmenities(paramsId)).unwrap().then((response: any) => {
-                    if (formRef.current) {
-                        const form2 = formRef.current;
-                        // form2.name.value = response.name || '';
-                        (form2.querySelector('input[name="name"]') as HTMLInputElement).value = response.name || '';
-                    }
-                })
-                .catch((error: any) => {
-                    console.error('Failed to fetch amenity details:', error);
-                });
-        }
-    }, [isModal, paramsId, dispatch]);
+        // alert(paramsId);
+
+    })
+
 
 
     const handelDistory = (event:number) : void => {
@@ -95,7 +121,6 @@ const AmenitiesList = () => {
         });
     } 
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formRef.current){
@@ -105,8 +130,9 @@ const AmenitiesList = () => {
                 if (response.payload.status == 201 || response.payload.status == 200){
                     toast.success('Amentites Create Successfully');
                     formRef.current?.reset();
+                    setModal(false);
                 }else{
-                    setErrors(response.payload.message);
+                    setErrors(response.payload);
                 }
             } catch (error: any) {
                 console.error('Error creating/updating news:', error);

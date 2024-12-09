@@ -25,9 +25,9 @@ const BlogList = () => {
     }, [dispatch]);
     const { blogs, loading } = useSelector((state: IRootState) => state.blogs);
     const tableData = (Array.isArray(blogs) ? blogs : []).map((blog: any, index: number) => ({
-        counter: index + 1,
-        title: blog.title || 'Unknown',
-        id: blog.id,
+        counter : index + 1,
+        title   : blog.title || 'Unknown',
+        id      : blog.id,
     }));
     
     const handelDistory = (event:number) : void => {

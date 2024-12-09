@@ -6,18 +6,13 @@ const endpoints = {
      listApi    : '/blogs/show',
      destoryApi : '/blogs/delete',
      editApi    : '/blogs/edit',
-     updateApi  : '/blogs/update',
     };
     
     export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             let response;
-            // if (id) {
                 response = await apiClient.post(`${endpoints.createApi}/${id}`, formData);
-            //   } else {
-                // response = await apiClient.post(endpoints.createApi, formData);
-            //   }
-              return response.data;
+                return response.data;
         }  catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }

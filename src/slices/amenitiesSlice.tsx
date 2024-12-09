@@ -6,20 +6,14 @@ const endpoints = {
     listApi: '/amenities/show',
     destoryApi: '/amenities/delete',
     editApi: '/amenities/edit',
-    updateApi: '/amenities/update',
 };
 
 export const storeAmenities = createAsyncThunk('storeamenities', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
     try {
-        let response;
-        if (id) {
-            response = await apiClient.put(`${endpoints.updateApi}/${id}`, formData);
-        } else {
-            response = await apiClient.post(endpoints.createApi, formData);
-        }
-        return response;
-
-        // return response.data;
+        const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
+        // const response = await apiClient.post(`${endpoints.createApi}/?${id}`, formData);
+        const response = await apiClient.post(url, formData);
+        return response.data;
     } catch (error: any) {
         return rejectWithValue(error.response?.data || error.message);
     }
@@ -56,6 +50,8 @@ const initialState = {
     success   : false,
     message   : '',
     loading   : false,
+    status    : 0, 
+    editAmenity: null as { id?: number; name?: string } | null,
 };
 
 const AmenitiesSlice = createSlice({
@@ -67,11 +63,12 @@ const AmenitiesSlice = createSlice({
     extraReducers(builder) {
         builder.addCase(storeAmenities.fulfilled, (state, action) => {
             state.success = true;
+            state.status = action.payload.state;
             state.amenities.push(action.payload.data);
         })
         .addCase(storeAmenities.rejected, (state, action) => {
              state.success = true;
-             action.payload;
+             action.payload; 
         })
         .addCase(showAmenities.fulfilled, (state, action) => {
             state.success = true;          
@@ -88,9 +85,9 @@ const AmenitiesSlice = createSlice({
             state.amenities = state.amenities.filter((amenitie) => amenitie.id !== id)
             state.message = 'Amenities deleted successfully';
         })
-
         .addCase(editAmenities.fulfilled, (state, action) => {
-            state.amenities = action.payload;
+            state.success =  true;
+            state.editAmenity = action.payload;
             state.message = 'Amenities fetched for edit successfully';
             
         })
