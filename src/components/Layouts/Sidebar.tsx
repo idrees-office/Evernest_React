@@ -49,6 +49,9 @@ const Sidebar = () => {
     };
 
     useEffect(() => {
+
+      
+
         const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');
         if (selector) {
             selector.classList.add('active');

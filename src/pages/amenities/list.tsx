@@ -23,11 +23,9 @@ const AmenitiesList = () => {
     const toast     = Toast();
     const loader    = Loader();
     const [isModal, setModal] = useState(false);
-    // const formRef = useRef<HTMLFormElement>(null);
     const formRef = useRef<HTMLFormElement | null>(null); 
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [paramsId, paramsSetId] = useState<any>();
-    // const [editData, setEditData] = useState<{} | null>(null);
     const [editData, setEditData] = useState<{ id?: number; name?: string }>({});
 
     useEffect(() => {

@@ -18,6 +18,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import BlankLayout from '../components/Layouts/BlankLayout';
 import DefaultLayout from '../components/Layouts/DefaultLayout';
+import Header from '../components/Layouts/Header';
 import { routes } from './routes';
 import ProtectedRoute from '../components/ProtectedRoute';
 

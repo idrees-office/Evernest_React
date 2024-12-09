@@ -9,17 +9,23 @@ import Select from 'react-select';
 import { createBlog, editBlog, listBlog } from '../../slices/blogSlice';
 import { options } from '../../services/status';
 import { AppDispatch, IRootState } from '../../store';
+import Toast from '../../services/toast';
+import Swal from 'sweetalert2';
 
 const Create = () => {
     const { id } = useParams();
     const isEdit = !!id;
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const toast = Toast();
     const isSuccess = useSelector((state: IRootState) => state.blogs.success);
     const formRef = useRef<HTMLFormElement>(null);
     const [seodescription, setSeoDescription] = useState('');
     const [blogdescription, setBlogDescription] = useState('');
     const [status, setStatus] = useState<any | null>(null);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
+
+
     useEffect(() => {
         if (isEdit == true) {
             dispatch(editBlog(Number(id))).unwrap().then((response) => {
@@ -43,16 +49,21 @@ const Create = () => {
         dispatch(setPageTitle('Create Blogs'));
     }, [dispatch, isEdit, id]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formRef.current) {
             const formData = new FormData(formRef.current);
-            dispatch(createBlog({ formData, id: Number(id) }) as any).then((response: any) => {
-                    console.log('Blog updated successfully:', response);
-                })
-                .catch((error: any) => {
-                    console.error('Error updating blog:', error);
-            });
+            try {
+                const response = await dispatch(createBlog({ formData, id: Number(id) }) as any);
+                if (response.payload.status == 201 || response.payload.status == 200){
+                    toast.success(`${response.payload.message}`);
+                    formRef.current?.reset();
+                }else{
+                    setErrors(response.payload);
+                }
+            } catch (error: any) {
+                Swal.fire('Error creating/updating news:', error);
+            }
         }
     };
     return (

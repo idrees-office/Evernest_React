@@ -11,7 +11,6 @@ const endpoints = {
 export const storeAmenities = createAsyncThunk('storeamenities', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
     try {
         const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
-        // const response = await apiClient.post(`${endpoints.createApi}/?${id}`, formData);
         const response = await apiClient.post(url, formData);
         return response.data;
     } catch (error: any) {
