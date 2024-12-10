@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import  ReactQuill  from 'react-quill';
-// import { useQuill } from "react-quilljs";
 import 'react-quill/dist/quill.snow.css';
 import './blogs.css';
 import Select from 'react-select';
@@ -12,7 +11,6 @@ import { options } from '../../services/status';
 import { AppDispatch, IRootState } from '../../store';
 import Toast from '../../services/toast';
 import Swal from 'sweetalert2';
- 
 
 const Create = () => {
     const { id } = useParams();
@@ -24,7 +22,8 @@ const Create = () => {
     const formRef = useRef<HTMLFormElement>(null);
     const [status, setStatus] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const [value, setValue] = useState('');
+    const [description, setDescription] = useState('');
+    const [seodescription, setSeoDescription] = useState('');
 
     useEffect(() => {
         if (isEdit == true) {
@@ -34,16 +33,12 @@ const Create = () => {
                     (form.querySelector('input[name="title"]') as HTMLInputElement).value = response.title || '';
                     form.slug.value = response.slug || '';
                     form.seo_title.value = response.seo_title || '';
-                    // setBlogDescription(response.description || '');
-                    // setSeoDescription(response.seo_description || '');
                     setStatus(response.status || '');
                 }
             })
             .catch((error: any) => {});
         }else{
             formRef.current?.reset();
-            // setBlogDescription('');
-            // setSeoDescription('');
             setStatus(null);
         }
         dispatch(setPageTitle('Create Blogs'));
@@ -53,7 +48,10 @@ const Create = () => {
         e.preventDefault();
         if (!formRef.current) return; 
         const formData = new FormData(formRef.current);
-        formData.append('description', value);
+        const sanitizedDescription = description === '<p><br></p>' || description.trim() === '' ? '' : description;    // only for long text no need to add other crud
+        const sanitizedseoDescription = seodescription === '<p><br></p>' || seodescription.trim() === '' ? '' : seodescription;
+        formData.append('description', sanitizedDescription);
+        formData.append('seo_description', sanitizedseoDescription);
         try {
             const response = await dispatch(createBlog({ formData, id: Number(id) }) as any);
             if ([200, 201].includes(response.payload.status)) {
@@ -85,9 +83,8 @@ const Create = () => {
                                         {errors?.title && <p className="text-danger error">{errors.title[0]}</p>}
                                     </div>
                                     <div className="mt-4 items-center">
-                                        {/* value={blogdescription} onChange={(value) => setBlogDescription(value)} */}
                                         <label htmlFor="description" className="text-white-dark">  Description </label>
-                                        <ReactQuill theme="snow" placeholder="Description" value={value} onChange={setValue} />
+                                        <ReactQuill theme="snow" placeholder="Description" value={description} onChange={setDescription} />
                                         {errors?.description && <p className="text-danger error">{errors.description[0]}</p>}
                                     </div>
                                     <div className="mt-4">
@@ -100,12 +97,11 @@ const Create = () => {
                                         <input id="seotitle" autoComplete="off" type="text" className="form-input flex-1" placeholder="Seo Title" name="seo_title" />
                                         {errors?.seo_title && <p className="text-danger error">{errors.seo_title[0]}</p>}
                                     </div>
-                                    {/* <div className="mt-4">
-                                        <label htmlFor="seotitle" className="text-white-dark"> Seo Description </label>
-                                         <ReactQuill theme="snow" value={seodescription} onChange={(value) => setSeoDescription(value)} placeholder="Seo Description" />
-                                        <input type="hidden" name="seo_description" value={seodescription} />
-                                        {errors?.seo_description && <p className="text-danger error">{errors.seo_description[0]}</p>}
-                                    </div> */}
+                                     <div className="mt-4">
+                                         <label htmlFor="seotitle" className="text-white-dark"> Seo Description </label>
+                                         <ReactQuill theme="snow" placeholder="SEO Description" value={seodescription} onChange={setSeoDescription} />
+                                         {errors?.seo_description && <p className="text-danger error">{errors.seo_description[0]}</p>}
+                                    </div> 
                                     <div className="mt-4 items-center">
                                         <label htmlFor="ctnFile" className="text-white-dark"> Image </label>
                                         <input id="ctnFile" type="file" className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" name="blogs_image" />
@@ -114,6 +110,7 @@ const Create = () => {
                                         <label htmlFor="ctnstatus" className="text-white-dark"> Status </label>
                                         <Select placeholder="Select an option" name="status" options={options} value={options.find((option) => option.value == status)} onChange={(selectedOption: any) => { setStatus(selectedOption.value); }}
                                         />
+                                        {errors?.status && <p className="text-danger error">{errors.status[0]}</p>}
                                     </div>
                                     <div className="mt-4">
                                         <button className="btn btn-secondary w-full">Save</button>
