@@ -22,7 +22,6 @@ export const showAmenities = createAsyncThunk('showamenities', async (_, { rejec
     try {
         const response = await apiClient.get(endpoints.listApi);
         return response.data;
-
     } catch (error: any) {
         return rejectWithValue(error.response?.data || error.message);
     }

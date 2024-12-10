@@ -68,7 +68,9 @@ const blogSlice = createSlice({
             })
             .addCase(createBlog.rejected, (state, action) => {
                 state.success = true;
-                // state.message = action.payload; 
+                // state.message = action.payload;
+                action.payload; 
+
                 
             })
             .addCase(listBlog.pending, (state) => {

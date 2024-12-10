@@ -109,6 +109,9 @@ const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 
 
+const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
+
+
 
 
 // import Create from '../pages/news/create';
@@ -119,7 +122,7 @@ const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <Index />,
+        element: <DashboardBox />,
     },
     {
         path: '/analytics',

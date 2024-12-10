@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import ReactQuill from 'react-quill';
+import  ReactQuill  from 'react-quill';
+// import { useQuill } from "react-quilljs";
 import 'react-quill/dist/quill.snow.css';
 import './blogs.css';
 import Select from 'react-select';
@@ -11,6 +12,7 @@ import { options } from '../../services/status';
 import { AppDispatch, IRootState } from '../../store';
 import Toast from '../../services/toast';
 import Swal from 'sweetalert2';
+ 
 
 const Create = () => {
     const { id } = useParams();
@@ -20,11 +22,9 @@ const Create = () => {
     const toast = Toast();
     const isSuccess = useSelector((state: IRootState) => state.blogs.success);
     const formRef = useRef<HTMLFormElement>(null);
-    const [seodescription, setSeoDescription] = useState('');
-    const [blogdescription, setBlogDescription] = useState('');
     const [status, setStatus] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-
+    const [value, setValue] = useState('');
 
     useEffect(() => {
         if (isEdit == true) {
@@ -34,16 +34,16 @@ const Create = () => {
                     (form.querySelector('input[name="title"]') as HTMLInputElement).value = response.title || '';
                     form.slug.value = response.slug || '';
                     form.seo_title.value = response.seo_title || '';
-                    setBlogDescription(response.description || '');
-                    setSeoDescription(response.seo_description || '');
+                    // setBlogDescription(response.description || '');
+                    // setSeoDescription(response.seo_description || '');
                     setStatus(response.status || '');
                 }
             })
             .catch((error: any) => {});
         }else{
             formRef.current?.reset();
-            setBlogDescription('');
-            setSeoDescription('');
+            // setBlogDescription('');
+            // setSeoDescription('');
             setStatus(null);
         }
         dispatch(setPageTitle('Create Blogs'));
@@ -51,19 +51,19 @@ const Create = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (formRef.current) {
-            const formData = new FormData(formRef.current);
-            try {
-                const response = await dispatch(createBlog({ formData, id: Number(id) }) as any);
-                if (response.payload.status == 201 || response.payload.status == 200){
-                    toast.success(`${response.payload.message}`);
-                    formRef.current?.reset();
-                }else{
-                    setErrors(response.payload);
-                }
-            } catch (error: any) {
-                Swal.fire('Error creating/updating news:', error);
+        if (!formRef.current) return; 
+        const formData = new FormData(formRef.current);
+        formData.append('description', value);
+        try {
+            const response = await dispatch(createBlog({ formData, id: Number(id) }) as any);
+            if ([200, 201].includes(response.payload.status)) {
+                toast.success(response.payload.message);
+                formRef.current.reset(); 
+            } else {
+                setErrors(response.payload);
             }
+        } catch (error: any) {
+            Swal.fire('Error:', error.message || error);
         }
     };
     return (
@@ -82,25 +82,30 @@ const Create = () => {
                                     <div className="mt-4 items-center">
                                         <label htmlFor="titlemark" className="text-white-dark"> Title </label>
                                         <input id="titlemark" autoComplete="off" type="text" className="form-input flex-1" placeholder="Title" name="title" />
+                                        {errors?.title && <p className="text-danger error">{errors.title[0]}</p>}
                                     </div>
                                     <div className="mt-4 items-center">
+                                        {/* value={blogdescription} onChange={(value) => setBlogDescription(value)} */}
                                         <label htmlFor="description" className="text-white-dark">  Description </label>
-                                        <ReactQuill theme="snow" value={blogdescription} onChange={(value) => setBlogDescription(value)} placeholder="Description" />
-                                        <input type="hidden" name="description" value={blogdescription} id="description" />
+                                        <ReactQuill theme="snow" placeholder="Description" value={value} onChange={setValue} />
+                                        {errors?.description && <p className="text-danger error">{errors.description[0]}</p>}
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="slugmark" className="text-white-dark"> Slug</label>
                                         <input id="slugmark" autoComplete="off" type="text" className="form-input flex-1" placeholder="Slug" name="slug" />
+                                        {errors?.slug && <p className="text-danger error">{errors.slug[0]}</p>}
                                     </div>
                                     <div className="mt-4">
                                         <label htmlFor="seotitle" className="text-white-dark"> Seo Title </label>
                                         <input id="seotitle" autoComplete="off" type="text" className="form-input flex-1" placeholder="Seo Title" name="seo_title" />
+                                        {errors?.seo_title && <p className="text-danger error">{errors.seo_title[0]}</p>}
                                     </div>
-                                    <div className="mt-4">
+                                    {/* <div className="mt-4">
                                         <label htmlFor="seotitle" className="text-white-dark"> Seo Description </label>
                                          <ReactQuill theme="snow" value={seodescription} onChange={(value) => setSeoDescription(value)} placeholder="Seo Description" />
                                         <input type="hidden" name="seo_description" value={seodescription} />
-                                    </div>
+                                        {errors?.seo_description && <p className="text-danger error">{errors.seo_description[0]}</p>}
+                                    </div> */}
                                     <div className="mt-4 items-center">
                                         <label htmlFor="ctnFile" className="text-white-dark"> Image </label>
                                         <input id="ctnFile" type="file" className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-secondary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" name="blogs_image" />
@@ -124,3 +129,7 @@ const Create = () => {
 };
 
 export default Create;
+
+
+
+

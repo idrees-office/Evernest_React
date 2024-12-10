@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
+import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
 import { IRootState } from '../../store';
 import Dropdown from '../../components/Dropdown';
 import i18next from 'i18next';
