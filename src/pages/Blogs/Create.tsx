@@ -24,7 +24,7 @@ const Create = () => {
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [description, setDescription] = useState('');
     const [seodescription, setSeoDescription] = useState('');
-
+    
     useEffect(() => {
         if (isEdit == true) {
             dispatch(editBlog(Number(id))).unwrap().then((response) => {
@@ -55,8 +55,9 @@ const Create = () => {
         try {
             const response = await dispatch(createBlog({ formData, id: Number(id) }) as any);
             if ([200, 201].includes(response.payload.status)) {
-                toast.success(response.payload.message);
+                toast.success(response.payload.data.message);
                 formRef.current.reset(); 
+                navigate('/pages/blogs/list');
             } else {
                 setErrors(response.payload);
             }

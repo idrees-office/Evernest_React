@@ -7,12 +7,12 @@ const endpoints = {
      destoryApi : '/blogs/delete',
      editApi    : '/blogs/edit',
     };
-    
+
     export const createBlog = createAsyncThunk('createblog', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
             const response = await apiClient.post(url, formData);
-            return response.data;
+            return {data: response.data, status: response.status};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -63,19 +63,14 @@ const blogSlice = createSlice({
         builder
             .addCase(createBlog.fulfilled, (state, action) => {
                 state.success = true;
-                state.blogs.push(action.payload);
                 state.status =  action.payload.status
             })
             .addCase(createBlog.rejected, (state, action) => {
-                state.success = true;
-                // state.message = action.payload;
+                state.success = true;                
                 action.payload; 
-
-                
             })
             .addCase(listBlog.pending, (state) => {
                 state.loading = true;  
-                
             })
             .addCase(listBlog.fulfilled, (state, action) => {
                 state.success = true;

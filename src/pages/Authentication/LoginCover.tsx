@@ -1,8 +1,8 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
-import { IRootState } from '../../store';
+import { AppDispatch, IRootState } from '../../store';
 import store from '../../store';
 import IconMail from '../../components/Icon/IconMail';
 import IconLockDots from '../../components/Icon/IconLockDots';
@@ -11,20 +11,23 @@ import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconGoogle from '../../components/Icon/IconGoogle';
 import { loginUser } from '../../slices/authSlice';
 import Toast from '../../services/toast';
+import Swal from 'sweetalert2';
+
 
 const LoginCover = ({ children }: PropsWithChildren) => {
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const formRef = useRef<HTMLFormElement>(null);
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const toast = Toast();
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
-
         if (isAuthenticatedd) {
-            navigate('/'); // Navigate when authenticated.
+            navigate('/'); 
         }
     }, [isAuthenticatedd]);
 
@@ -38,29 +41,26 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const [filed, setFormData] = useState({
-        client_user_email: '',
-        password: '',
-    });
-    const handleChange = (e: { target: { name: any; value: any } }) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
-    const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        dispatch<any>(loginUser(filed))
-            .then((response: any) => {
-                console.log(store.getState().auth.isAuthenticated);
-                if(store.getState().auth.isAuthenticated === true){
-                    toast.success('Login SuccessFully');
-                }
+        if (!formRef.current) return; 
+        const formData = new FormData(formRef.current);
+        try {
+            const response = await dispatch(loginUser({ formData }) as any);
 
-            })
-            .catch((error: any) => console.error('Login failed:', error));
+            console.log(response.payload.status);
+
+
+            if ([200, 201].includes(response.payload.status)) {
+                
+                toast.success(response.payload.data.message);
+                formRef.current.reset(); 
+            } else {
+                setErrors(response.payload.data);
+            }
+        } catch (error: any) {
+            Swal.fire('Error:', error.message || error);
+        }
     };
 
     return (
@@ -135,38 +135,29 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 <h1 className="text-3xl font-extrabold uppercase !leading-snug text-primary md:text-4xl">Sign in</h1>
                                 <p className="text-base font-bold leading-normal text-white-dark">Enter your email and password to login</p>
                             </div>
-                            <form className="space-y-5 dark:text-white" onSubmit={submitForm}>
+                            <form encType="multipart/form-data" className="space-y-5 dark:text-white" onSubmit={submitForm} ref={formRef}>
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input
-                                            id="Email"
-                                            type="email"
-                                            name="client_user_email"
-                                            placeholder="Enter Email"
-                                            onChange={handleChange}
-                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        <input id="Email" type="email" name="client_user_email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark"
                                         />
+
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
                                     </div>
+                                    {errors?.client_user_email && <p className="text-danger error">{errors.client_user_email[0]}</p>}
                                 </div>
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input
-                                            id="Password"
-                                            type="password"
-                                            name="password"
-                                            placeholder="Enter Password"
-                                            onChange={handleChange}
-                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        <input id="Password" type="password" name="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark"
                                         />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
                                     </div>
+                                    {errors?.password && <p className="text-danger error">{errors.password[0]}</p>}
                                 </div>
                                 {/* <div>
                                     <label className="flex cursor-pointer items-center">

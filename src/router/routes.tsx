@@ -105,16 +105,9 @@ const NewsCreate = lazy(() => import('../pages/news/create'));
 const NewsList = lazy(() => import('../pages/news/list'));
 const CreateDevelopers = lazy(() => import('../pages/developers/create'));
 const ListDevelopers = lazy(() => import('../pages/developers/list'));
-
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
-
-
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
 
-
-
-
-// import Create from '../pages/news/create';
 
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -122,7 +115,10 @@ const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <DashboardBox />,
+        element: <Index />,
+
+        // element: <DashboardBox />,
+
     },
     {
         path: '/analytics',
