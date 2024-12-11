@@ -26,9 +26,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
-        // if (isAuthenticatedd) {
-        //     navigate('/'); 
-        // }
+        if (isAuthenticatedd) {
+            navigate('/'); 
+        }
     }, [isAuthenticatedd]);
 
     const setLocale = (flag: string) => {
@@ -51,8 +51,8 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                 formRef.current.reset(); 
                 navigate('/'); 
                 return
-            }else if([501, 500].includes(response.payload.status)){
-                toast.success(response.payload.message);
+            }else if([401, 400].includes(response.payload.status)){
+                toast.error(response.payload.message);
                 formRef.current.reset(); 
                 return
             } else {
