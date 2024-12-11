@@ -11,9 +11,9 @@ const endpoints = {
 export const loginUser = createAsyncThunk('auth/cover-login', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
     try {
         const response = await apiClient.post(endpoints.loginApi, formData);
-        return {data: response.data.data, status: response.status};
+        return {data: response.data.data, status: response.status, message:response.data.message};
     } catch (error: any) {
-        return rejectWithValue({data: error.response.data, status: error.status});
+        return rejectWithValue({data: error.response.data, status: error.status, message:error.response.data.message});
     }
   });
 
@@ -61,11 +61,12 @@ const authSlice = createSlice({
                 state.token = action.payload.data.token;
                 state.error = null;
                 state.status =  action.payload.status
+                state.message = action.payload?.message;
                 localStorage.setItem('authToken', action.payload.data.token);
                 localStorage.setItem('authUser', JSON.stringify(action.payload.data.user));
             })
             .addCase(loginUser.rejected, (state, action) => {
-                state.success = false;                
+                state.success = false;
                 action.payload;
             })
             .addCase(signupUser.fulfilled, (state, action) => {

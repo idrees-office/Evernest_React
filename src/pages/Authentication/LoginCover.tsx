@@ -26,9 +26,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
-        if (isAuthenticatedd) {
-            navigate('/'); 
-        }
+        // if (isAuthenticatedd) {
+        //     navigate('/'); 
+        // }
     }, [isAuthenticatedd]);
 
     const setLocale = (flag: string) => {
@@ -40,23 +40,24 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
-
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!formRef.current) return; 
         const formData = new FormData(formRef.current);
         try {
             const response = await dispatch(loginUser({ formData }) as any);
-
-            console.log(response.payload.status);
-
-
             if ([200, 201].includes(response.payload.status)) {
-                
-                toast.success(response.payload.data.message);
+                toast.success(response.payload.message);
                 formRef.current.reset(); 
+                navigate('/'); 
+                return
+            }else if([501, 500].includes(response.payload.status)){
+                toast.success(response.payload.message);
+                formRef.current.reset(); 
+                return
             } else {
                 setErrors(response.payload.data);
+                formRef.current.reset(); 
             }
         } catch (error: any) {
             Swal.fire('Error:', error.message || error);
