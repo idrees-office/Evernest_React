@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Disclosure } from '@headlessui/react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -8,7 +8,7 @@ import Dropdown from '../../components/Dropdown';
 import Swal from 'sweetalert2';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
-import { IRootState } from '../../store';
+import { IRootState, AppDispatch } from '../../store';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconMail from '../../components/Icon/IconMail';
 import IconStar from '../../components/Icon/IconStar';
@@ -49,916 +49,109 @@ import IconZipFile from '../../components/Icon/IconZipFile';
 import IconDownload from '../../components/Icon/IconDownload';
 import IconTxtFile from '../../components/Icon/IconTxtFile';
 
+import { topBarStatus, SidebarStatus, MatchColorList } from '../../services/status';
+import { Leadslist } from '../../slices/dashboardSlice';
+import IconPhone from '../../components/Icon/IconPhone';
+import { Link } from 'react-router-dom';
+import IconDribbble from '../../components/Icon/IconDribbble';
+import IconTwitter from '../../components/Icon/IconTwitter';
+import IconGithub from '../../components/Icon/IconGithub';
+import IconCalendar from '../../components/Icon/IconCalendar';
+import IconMapPin from '../../components/Icon/IconMapPin';
+import IconPencilPaper from '../../components/Icon/IconPencilPaper';
+
 const DashboardBox = () => {
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(setPageTitle('DashboardBox'));
-    });
-    const [mailList, setMailList] = useState([
-        {
-            id: 1,
-            path: 'profile-15.jpeg',
-            firstName: 'Laurie',
-            lastName: 'Fox',
-            email: 'laurieFox@mail.com',
-            date: new Date(),
-            time: '2:00 PM',
-            title: 'Promotion Page',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: true,
-            group: 'social',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'Confirm File.txt',
-                    size: '450KB',
-                    type: 'file',
-                },
-                {
-                    name: 'Important Docs.xml',
-                    size: '2.1MB',
-                    type: 'file',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <div class="gallery text-center">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel3.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;" />
-                                  <img alt="image-gallery" src="${'/assets/images/carousel2.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;" />
-                                  <img alt="image-gallery" src="${'/assets/images/carousel1.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;" />
-                              </div>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 2,
-            path: 'profile-14.jpeg',
-            firstName: 'Andy',
-            lastName: 'King',
-            email: 'kingAndy@mail.com',
-            date: new Date(),
-            time: '6:28 PM',
-            title: 'Hosting Payment Reminder',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 3,
-            path: '',
-            firstName: 'Kristen',
-            lastName: 'Beck',
-            email: 'kirsten.beck@mail.com',
-            date: new Date(),
-            time: '11:09 AM',
-            title: 'Verification Link',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'social',
-            isUnread: true,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 4,
-            path: 'profile-16.jpeg',
-            firstName: 'Christian',
-            lastName: '',
-            email: 'christian@mail.com',
-            date: '11/30/2021',
-            time: '2:00 PM',
-            title: 'New Updates',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'private',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'update.zip',
-                    size: '1.38MB',
-                    type: 'zip',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 5,
-            path: 'profile-17.jpeg',
-            firstName: 'Roxanne',
-            lastName: '',
-            email: 'roxanne@mail.com',
-            date: '11/15/2021',
-            time: '2:00 PM',
-            title: 'Schedular Alert',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: true,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 6,
-            path: 'profile-18.jpeg',
-            firstName: 'Nia',
-            lastName: 'Hillyer',
-            email: 'niahillyer@mail.com',
-            date: '08/16/2020',
-            time: '2:22 AM',
-            title: 'Motion UI Kit',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: true,
+    const TopbarStatuses  = topBarStatus();
+    const SidebarStatuses = SidebarStatus();
+    const colorsarray  = MatchColorList();
+    const dispatch = useDispatch<AppDispatch>();
+    const hasFetchedRef = useRef(false);
+    const loginuser = useSelector((state: IRootState) => state.auth.user || {});
+    const leads     = useSelector((state: IRootState) => state.leadsslice.leads);
+    const [allleadlist, setallleadlist] = useState<any[]>([]);
+    const [filterleadslist, setfilterleadslist] = useState<any[]>([]);
 
-            isStar: true,
-            group: '',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.</p>
-                              <div class="gallery text-center">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel3.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel2.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel1.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                              </div>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 7,
-            path: 'profile-19.jpeg',
-            firstName: 'Iris',
-            lastName: 'Hubbard',
-            email: 'irishubbard@mail.com',
-            date: '08/16/2020',
-            time: '1:40 PM',
-            title: 'Green Illustration',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: true,
-
-            isStar: true,
-            group: '',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 8,
-            path: '',
-            firstName: 'Ernest',
-            lastName: 'Reeves',
-            email: 'reevesErnest@mail.com',
-            date: '06/02/2020',
-            time: '8:25 PM',
-            title: 'Youtube',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'archive',
-            isImportant: true,
-
-            isStar: true,
-            group: 'work',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 9,
-            path: 'profile-20.jpeg',
-            firstName: 'Info',
-            lastName: 'Company',
-            email: 'infocompany@mail.com',
-            date: '02/10/2020',
-            time: '7:00 PM',
-            title: '50% Discount',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'work',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-
-        {
-            id: 10,
-            path: '',
-            firstName: 'NPM',
-            lastName: 'Inc',
-            email: 'npminc@mail.com',
-            date: '12/15/2018',
-            time: '8:37 AM',
-            title: 'npm Inc',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'archive',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: true,
-            attachments: [
-                {
-                    name: 'package.zip',
-                    size: '450KB',
-                    type: 'zip',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 11,
-            path: 'profile-21.jpeg',
-            firstName: 'Marlene',
-            lastName: 'Wood',
-            email: 'marlenewood@mail.com',
-            date: '11/25/2018',
-            time: '1:51 PM',
-            title: 'eBill',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-
-        {
-            id: 12,
-            path: '',
-            firstName: 'Keith',
-            lastName: 'Foster',
-            email: 'kf@mail.com',
-            date: '12/15/2018',
-            time: '9:30 PM',
-            title: 'Web Design News',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'draft',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: false,
-            description: `
-                    <p class="mail-content"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                    `,
-        },
-        {
-            id: 13,
-            path: '',
-            firstName: 'Amy',
-            lastName: 'Diaz',
-            email: 'amyDiaz@mail.com',
-            date: '12/15/2018',
-            time: '2:00 PM',
-            title: 'Ecommerce Analytics',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'draft',
-            isImportant: false,
-            isStar: false,
-            group: 'private',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue. Vivamus sem ante, ultrices at ex a, rhoncus ullamcorper tellus. Nunc iaculis eu ligula ac consequat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum mattis urna neque, eget posuere lorem tempus non. Suspendisse ac turpis dictum, convallis est ut, posuere sem. Etiam imperdiet aliquam risus, eu commodo urna vestibulum at. Suspendisse malesuada lorem eu sodales aliquam.</p>
-                              `,
-        },
-
-        {
-            id: 14,
-            path: '',
-            firstName: 'Alan',
-            lastName: '',
-            email: 'alan@mail.com',
-            date: '12/16/2019',
-            time: '8:45 AM',
-            title: 'Mozilla Update',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'sent_mail',
-            isImportant: false,
-            isStar: false,
-            group: 'work',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'Confirm File',
-                    size: '450KB',
-                    type: 'file',
-                },
-                {
-                    name: 'Important Docs',
-                    size: '2.1MB',
-                    type: 'folder',
-                },
-                {
-                    name: 'Photo.png',
-                    size: '50kb',
-                    type: 'image',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 15,
-            path: '',
-            firstName: 'Justin',
-            lastName: 'Cross',
-            email: 'justincross@mail.com',
-            date: '09/14/219',
-            time: '3:10 PM',
-            title: 'App Project Checklist',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'sent_mail',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'Important Docs',
-                    size: '2.1MB',
-                    type: 'folder',
-                },
-                {
-                    name: 'Photo.png',
-                    size: '50kb',
-                    type: 'image',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-
-        {
-            id: 16,
-            path: 'profile-21.jpeg',
-            firstName: 'Alex',
-            lastName: 'Gray',
-            email: 'alexGray@mail.com',
-            date: '08/16/2019',
-            time: '10:18 AM',
-            title: 'Weekly Newsletter',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'spam',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'Confirm File',
-                    size: '450KB',
-                    type: 'file',
-                },
-                {
-                    name: 'Important Docs',
-                    size: '2.1MB',
-                    type: 'folder',
-                },
-                {
-                    name: 'Photo.png',
-                    size: '50kb',
-                    type: 'image',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 17,
-            path: 'profile-22.jpeg',
-            firstName: 'Info',
-            lastName: 'Company',
-            email: 'infocompany@mail.com',
-            date: '02/10/2018',
-            time: '7:00 PM',
-            title: '50% Discount',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'spam',
-            isImportant: false,
-            isStar: false,
-            group: 'work',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 18,
-            path: 'profile-21.jpeg',
-            firstName: 'Marlene',
-            lastName: 'Wood',
-            email: 'marlenewood@mail.com',
-            date: '11/25/2017',
-            time: '1:51 PM',
-            title: 'eBill',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'spam',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-
-        {
-            id: 19,
-            path: 'profile-23.jpeg',
-            firstName: 'Ryan MC',
-            lastName: 'Killop',
-            email: 'ryanMCkillop@mail.com',
-            date: '08/17/2018',
-            time: '11:45 PM',
-            title: 'Make it Simple',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'trash',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `
-                              <p class="mail-content"> Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <div class="gallery text-center">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel2.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel3.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                                  <img alt="image-gallery" src="${'/assets/images/carousel1.jpeg'}" class="mb-4 mt-4" style="width: 250px; height: 180px;">
-                              </div>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 20,
-            path: 'profile-23.jpeg',
-            firstName: 'Liam',
-            lastName: 'Sheldon',
-            email: 'liamsheldon@mail.com',
-            date: '08/17/2018 ',
-            time: '11:45 PM',
-            title: 'New Offers',
-            displayDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar feugiat consequat. Duis lacus nibh, sagittis id varius vel, aliquet non augue.',
-            type: 'trash',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            attachments: [
-                {
-                    name: 'Confirm File',
-                    size: '450KB',
-                    type: 'file',
-                },
-            ],
-            description: `
-                              <p class="mail-content"> Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
-                              <p>Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                              `,
-        },
-        {
-            id: 21,
-            path: 'profile-21.jpeg',
-            firstName: 'Porter',
-            lastName: 'Taylor',
-            email: 'porter.harber@wiza.info',
-            date: '06/01/2020',
-            time: '02:40 PM',
-            title: 'Id labore ex et quam laborum',
-            displayDescription: 'Laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content">Laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 22,
-            path: 'profile-22.jpeg',
-            firstName: 'Brock',
-            lastName: 'Mills',
-            email: 'brock.gibson@farrell.biz',
-            date: '09/08/2020',
-            time: '04:20 AM',
-            title: 'Quo vero reiciendis velit similique earum',
-            displayDescription:
-                'Est natus enim nihil est dolore omnis voluptatem numquam\net omnis occaecati quod ullam at\nvoluptatem error expedita pariatur\nnihil sint nostrum voluptatem reiciendis et',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content">Est natus enim nihil est dolore omnis voluptatem numquam\net omnis occaecati quod ullam at\nvoluptatem error expedita pariatur\nnihil sint nostrum voluptatem reiciendis et</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 23,
-            path: 'profile-3.jpeg',
-            firstName: 'Nyost',
-            lastName: 'Terry',
-            email: 'nyost@yahoo.com',
-            date: '04/01/2019',
-            time: '02:10 AM',
-            title: 'Odio adipisci rerum aut animi',
-            displayDescription:
-                'Quia molestiae reprehenderit quasi aspernatur\naut expedita occaecati aliquam eveniet laudantium\nomnis quibusdam delectus saepe quia accusamus maiores nam est\ncum et ducimus et vero voluptates excepturi deleniti ratione',
-            type: 'inbox',
-            isImportant: true,
-            isStar: false,
-            group: 'personal',
-            isUnread: false,
-            description: `<p class="mail-content">Quia molestiae reprehenderit quasi aspernatur\naut expedita occaecati aliquam eveniet laudantium\nomnis quibusdam delectus saepe quia accusamus maiores nam est\ncum et ducimus et vero voluptates excepturi deleniti ratione</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 24,
-            path: 'profile-2.jpeg',
-            firstName: 'Leonardo',
-            lastName: 'Knox',
-            email: 'leonardo61@yahoo.com',
-            date: '08/08/2018',
-            time: '07:50 PM',
-            title: 'Alias odio sit',
-            displayDescription: 'Non et atque\noccaecati deserunt quas accusantium unde odit nobis qui voluptatem\nquia voluptas consequuntur itaque dolor\net qui rerum deleniti ut occaecati',
-            type: 'inbox',
-            isImportant: false,
-            isStar: true,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content">Non et atque\noccaecati deserunt quas accusantium unde odit nobis qui voluptatem\nquia voluptas consequuntur itaque dolor\net qui rerum deleniti ut occaecati</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 25,
-            path: 'profile-24.jpeg',
-            firstName: 'Melisa',
-            lastName: 'Mitchell',
-            email: 'melisa.legros@mayer.com',
-            date: '10/03/2018',
-            time: '06:40 AM',
-            title: 'Vero eaque aliquid doloribus et culpa',
-            displayDescription: 'Harum non quasi et ratione\ntempore iure ex voluptates in ratione\nharum architecto fugit inventore cupiditate\nvoluptates magni quo et',
-            type: 'inbox',
-            isImportant: true,
-            isStar: true,
-            group: 'work',
-            isUnread: false,
-            description: `<p class="mail-content">Harum non quasi et ratione\ntempore iure ex voluptates in ratione\nharum architecto fugit inventore cupiditate\nvoluptates magni quo et</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 26,
-            path: 'profile-26.jpeg',
-            firstName: 'Florida',
-            lastName: 'Morgan',
-            email: 'florida54@gmail.com',
-            date: '05/12/2019',
-            time: '09:20 PM',
-            title: 'Et fugit eligendi deleniti quidem qui sint nihil autem',
-            displayDescription:
-                'Doloribus at sed quis culpa deserunt consectetur qui praesentium\naccusamus fugiat dicta\nvoluptatem rerum ut voluptate autem\nvoluptatem repellendus aspernatur dolorem in',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content">Doloribus at sed quis culpa deserunt consectetur qui praesentium\naccusamus fugiat dicta\nvoluptatem rerum ut voluptate autem\nvoluptatem repellendus aspernatur dolorem in</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 27,
-            path: 'profile-27.jpeg',
-            firstName: 'Madison',
-            lastName: 'King',
-            email: 'madison86@yahoo.com',
-            date: '12/04/2018',
-            time: '10:40 PM',
-            title: 'Repellat consequatur praesentium vel minus molestias voluptatum',
-            displayDescription:
-                'Maiores sed dolores similique labore et inventore et\nquasi temporibus esse sunt id et\neos voluptatem aliquam\naliquid ratione corporis molestiae mollitia quia et magnam dolor',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'private',
-            isUnread: false,
-            description: `<p class="mail-content">Maiores sed dolores similique labore et inventore et\nquasi temporibus esse sunt id et\neos voluptatem aliquam\naliquid ratione corporis molestiae mollitia quia et magnam dolor</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 28,
-            path: 'profile-30.jpeg',
-            firstName: 'Paul',
-            lastName: 'Lambert',
-            email: 'paul.cruickshank@yahoo.com',
-            date: '06/05/2018',
-            time: '01:40 AM',
-            title: 'Et omnis dolorem',
-            displayDescription: 'Ut voluptatem corrupti velit\nad voluptatem maiores\net nisi velit vero accusamus maiores\nvoluptates quia aliquid ullam eaque',
-            type: 'inbox',
-            isImportant: true,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content">Ut voluptatem corrupti velit\nad voluptatem maiores\net nisi velit vero accusamus maiores\nvoluptates quia aliquid ullam eaque</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 29,
-            path: 'profile-31.jpeg',
-            firstName: 'Brakus',
-            lastName: 'Morrison',
-            email: 'brakus.heidi@gmail.com',
-            date: '03/09/2018',
-            time: '06:10 PM',
-            title: 'Provident id voluptas',
-            displayDescription: 'Sapiente assumenda molestiae atque\nadipisci laborum distinctio aperiam et ab ut omnis\net occaecati aspernatur odit sit rem expedita\nquas enim ipsam minus',
-            type: 'inbox',
-            isImportant: false,
-            isStar: true,
-            group: 'social',
-            isUnread: false,
-            description: `<p class="mail-content">Sapiente assumenda molestiae atque\nadipisci laborum distinctio aperiam et ab ut omnis\net occaecati aspernatur odit sit rem expedita\nquas enim ipsam minus</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 30,
-            path: 'profile-32.jpeg',
-            firstName: 'Predovic',
-            lastName: 'Peake',
-            email: 'predovic.arianna@kirlin.com',
-            date: '05/06/2018',
-            time: '09:00 AM',
-            title: 'Eaque et deleniti atque tenetur ut quo ut',
-            displayDescription: 'Voluptate iusto quis nobis reprehenderit ipsum amet nulla\nquia quas dolores velit et non\naut quia necessitatibus\nnostrum quaerat nulla et accusamus nisi facili',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: 'personal',
-            isUnread: false,
-            description: `<p class="mail-content">Voluptate iusto quis nobis reprehenderit ipsum amet nulla\nquia quas dolores velit et non\naut quia necessitatibus\nnostrum quaerat nulla et accusamus nisi facili</p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 31,
-            path: 'profile-32.jpeg',
-            firstName: 'shaylee',
-            lastName: 'Buford',
-            email: 'Buford@shaylee.biz',
-            date: '07/03/2018',
-            time: '08:15 AM',
-            title: 'Ex velit ut cum eius odio ad placeat',
-            displayDescription: 'Quia incidunt ut\naliquid est ut rerum deleniti iure est\nipsum quia ea sint et\nvoluptatem quaerat eaque repudiandae eveniet aut',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content"></p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 32,
-            path: 'profile-32.jpeg',
-            firstName: 'Maria',
-            lastName: 'laurel',
-            email: 'Maria@laurel.name',
-            date: '08/03/2018',
-            time: '09:30 AM',
-            title: 'Dolorem architecto ut pariatur quae qui suscipit',
-            displayDescription: 'Nihil ea itaque libero illo\nofficiis quo quo dicta inventore consequatur voluptas voluptatem\ncorporis sed necessitatibus velit tempore\nrerum velit et temporibus',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content"></p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 33,
-            path: 'profile-32.jpeg',
-            firstName: 'Jaeden',
-            lastName: 'Towne',
-            email: 'Jaeden.Towne@arlene.tv',
-            date: '11/07/2018',
-            time: '10:15 AM',
-            title: 'Voluptatum totam vel voluptate omnis',
-            displayDescription: 'Fugit harum quae vero\nlibero unde tempore\nsoluta eaque culpa sequi quibusdam nulla id\net et necessitatibus',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content"></p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 34,
-            path: 'profile-32.jpeg',
-            firstName: 'Schneider',
-            lastName: 'Ethelyn',
-            email: 'Ethelyn.Schneider@emelia.co.uk',
-            date: '07/11/2018',
-            time: '10:30 AM',
-            title: 'Omnis nemo sunt ab autem',
-            displayDescription: 'Omnis temporibus quasi ab omnis\nfacilis et omnis illum quae quasi aut\nminus iure ex rem ut reprehenderit\nin non fugit',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content"></p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-        {
-            id: 35,
-            path: 'profile-32.jpeg',
-            firstName: 'Anna',
-            lastName: 'Georgi',
-            email: 'Georgianna@florence.io',
-            date: '10/10/2017',
-            time: '10:45 AM',
-            title: 'Repellendus sapiente omnis praesentium aliquam ipsum id molestiae omnis',
-            displayDescription: 'Dolor mollitia quidem facere et\nvel est ut\nut repudiandae est quidem dolorem sed atque\nrem quia aut adipisci sunt',
-            type: 'inbox',
-            isImportant: false,
-            isStar: false,
-            group: '',
-            isUnread: false,
-            description: `<p class="mail-content"></p>
-                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>`,
-        },
-    ]);
-
-    const defaultParams = {
-        id: null,
-        from: 'vristo@mail.com',
-        to: '',
-        cc: '',
-        title: '',
-        file: null,
-        description: '',
-        displayDescription: '',
-    };
-
-    const [isShowMailMenu, setIsShowMailMenu] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
-    const [selectedTab, setSelectedTab] = useState('inbox');
-    const [filteredMailList, setFilteredMailList] = useState<any>(mailList.filter((d) => d.type === 'inbox'));
-    const [ids, setIds] = useState<any>([]);
-    const [searchText, setSearchText] = useState<any>('');
-    const [selectedMail, setSelectedMail] = useState<any>(null);
-    const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
-    const [pagedMails, setPagedMails] = useState<any>([]);
-
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-
-    const [pager] = useState<any>({
-        currentPage: 1,
-        totalPages: 0,
-        pageSize: 10,
-        startIndex: 0,
-        endIndex: 0,
-    });
+    const [selectedLead, setSelectedLead] = useState<any>(null);
 
     useEffect(() => {
-        searchMails();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedTab, searchText, mailList]);
+        if (loginuser?.client_user_id && !hasFetchedRef.current) {
+            const formData = new FormData();
+            formData.append('client_user_id', loginuser.client_user_id);
+            dispatch(Leadslist({ formData }));
+            hasFetchedRef.current = true;
+        }
+        }, [loginuser?.client_user_id, dispatch]);
+        useEffect(() => {
+            if(leads){
+                setallleadlist(leads);  
+             }
+        }, [leads]);
+
+        useEffect(() => {
+            const data = allleadlist.filter((lead: any) => lead.lead_status == 2);
+            setfilterleadslist(data);
+        }, [allleadlist]);
+
+        const defaultParams = {
+            id: null,
+            from: 'vristo@mail.com',
+            to: '',
+            cc: '',
+            title: '',
+            file: null,
+            description: '',
+            displayDescription: '',
+        };
+
+        const [isShowMailMenu, setIsShowMailMenu] = useState(false);
+        const [isEdit, setIsEdit] = useState(false);
+        
+        // const [filteredMailList, setFilteredMailList] = useState<any>(mailList.filter((d) => d.type === 'inbox'));
+        const [ids, setIds] = useState<any>([]);
+        const [searchText, setSearchText] = useState<any>('');
+        const [selectedMail, setSelectedMail] = useState<any>(null);
+        const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
+        const [pagedMails, setPagedMails] = useState<any>([]);
+
+        const [selectedTab, setSelectedTab] = useState('inbox');
+
+        const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+        const [pager] = useState<any>({
+            currentPage: 1,
+            totalPages: 0,
+            pageSize: 10,
+            startIndex: 0,
+            endIndex: 0,
+        });
+
+        // useEffect(() => {
+        //     searchMails();
+        // }, [selectedTab, searchText, mailList]);
 
     const refreshMails = () => {
         setSearchText('');
-        searchMails(false);
+        // searchMails(false);
     };
 
-    const setArchive = () => {
-        if (ids.length) {
-            let items = filteredMailList.filter((d: any) => ids.includes(d.id));
-            for (let item of items) {
-                item.type = item.type === 'archive' ? 'inbox' : 'archive';
-            }
-            if (selectedTab === 'archive') {
-                showMessage(ids.length + ' Mail has been removed from Archive.');
-            } else {
-                showMessage(ids.length + ' Mail has been added to Archive.');
-            }
-            searchMails(false);
-        }
-    };
+    
 
-    const setSpam = () => {
-        if (ids.length) {
-            let items = filteredMailList.filter((d: any) => ids.includes(d.id));
-            for (let item of items) {
-                item.type = item.type === 'spam' ? 'inbox' : 'spam';
-            }
-            if (selectedTab === 'spam') {
-                showMessage(ids.length + ' Mail has been removed from Spam.');
-            } else {
-                showMessage(ids.length + ' Mail has been added to Spam.');
-            }
-            searchMails(false);
-        }
-    };
+    
 
-    const setGroup = (group: any) => {
-        if (ids.length) {
-            let items = mailList.filter((d: any) => ids.includes(d.id));
-            for (let item of items) {
-                item.group = group;
-            }
+    // const setGroup = (group: any) => {
+    //     if (ids.length) {
+    //         let items = mailList.filter((d: any) => ids.includes(d.id));
+    //         for (let item of items) {
+    //             item.group = group;
+    //         }
 
-            showMessage(ids.length + ' Mail has been grouped as ' + group.toUpperCase());
-            clearSelection();
-            setTimeout(() => {
-                searchMails(false);
-            });
-        }
-    };
+    //         showMessage(ids.length + ' Mail has been grouped as ' + group.toUpperCase());
+    //         clearSelection();
+    //         setTimeout(() => {
+    //             searchMails(false);
+    //         });
+    //     }
+    // };
 
-    const setAction = (type: any) => {
-        if (ids.length) {
-            const totalSelected = ids.length;
-            let items = filteredMailList.filter((d: any) => ids.includes(d.id));
-            for (let item of items) {
-                if (type === 'trash') {
-                    item.type = 'trash';
-                    item.group = '';
-                    item.isStar = false;
-                    item.isImportant = false;
-                    showMessage(totalSelected + ' Mail has been deleted.');
-                    searchMails(false);
-                } else if (type === 'read') {
-                    item.isUnread = false;
-                    showMessage(totalSelected + ' Mail has been marked as Read.');
-                } else if (type === 'unread') {
-                    item.isUnread = true;
-                    showMessage(totalSelected + ' Mail has been marked as UnRead.');
-                } else if (type === 'important') {
-                    item.isImportant = true;
-                    showMessage(totalSelected + ' Mail has been marked as Important.');
-                } else if (type === 'unimportant') {
-                    item.isImportant = false;
-                    showMessage(totalSelected + ' Mail has been marked as UnImportant.');
-                } else if (type === 'star') {
-                    item.isStar = true;
-                    showMessage(totalSelected + ' Mail has been marked as Star.');
-                }
-                //restore & permanent delete
-                else if (type === 'restore') {
-                    item.type = 'inbox';
-                    showMessage(totalSelected + ' Mail Restored.');
-                    searchMails(false);
-                } else if (type === 'delete') {
-                    setMailList(mailList.filter((d: any) => d.id !== item.id));
-                    showMessage(totalSelected + ' Mail Permanently Deleted.');
-                    searchMails(false);
-                }
-            }
-            clearSelection();
-        }
-    };
 
     const selectMail = (item: any) => {
         if (item) {
@@ -975,40 +168,16 @@ const DashboardBox = () => {
         }
     };
 
-    const setStar = (mailId: number) => {
-        if (mailId) {
-            let item = filteredMailList.find((d: any) => d.id === mailId);
-            item.isStar = !item.isStar;
-            setTimeout(() => {
-                searchMails(false);
-            });
+    const selectLead = (lead: any) => {
+        if(lead){
+            setSelectedLead(lead);
+            // openMail('', lead);
+        }else{
+            console.log('no-any leads is selected..')
         }
-    };
+    }
+    
 
-    const setImportant = (mailId: number) => {
-        if (mailId) {
-            let item = filteredMailList.find((d: any) => d.id === mailId);
-            item.isImportant = !item.isImportant;
-            setTimeout(() => {
-                searchMails(false);
-            });
-        }
-    };
-
-    const showTime = (item: any) => {
-        const displayDt: any = new Date(item.date);
-        const cDt: any = new Date();
-        if (displayDt.toDateString() === cDt.toDateString()) {
-            return item.time;
-        } else {
-            if (displayDt.getFullYear() === cDt.getFullYear()) {
-                var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                return monthNames[displayDt.getMonth()] + ' ' + String(displayDt.getDate()).padStart(2, '0');
-            } else {
-                return String(displayDt.getMonth() + 1).padStart(2, '0') + '/' + String(displayDt.getDate()).padStart(2, '0') + '/' + displayDt.getFullYear();
-            }
-        }
-    };
 
     const openMail = (type: string, item: any) => {
         if (type === 'add') {
@@ -1039,189 +208,54 @@ const DashboardBox = () => {
         setIsEdit(true);
     };
 
-    const searchMails = (isResetPage = true) => {
-        if (isResetPage) {
-            pager.currentPage = 1;
-        }
+   
 
-        let res;
-        if (selectedTab === 'important') {
-            res = mailList.filter((d) => d.isImportant);
-        } else if (selectedTab === 'star') {
-            res = mailList.filter((d) => d.isStar);
-        } else if (selectedTab === 'personal' || selectedTab === 'work' || selectedTab === 'social' || selectedTab === 'private') {
-            res = mailList.filter((d) => d.group === selectedTab);
-        } else {
-            res = mailList.filter((d) => d.type === selectedTab);
-        }
+  
+   
+    
+    
 
-        let filteredRes = res.filter(
-            (d) =>
-                (d.title && d.title.toLowerCase().includes(searchText)) ||
-                (d.firstName && d.firstName.toLowerCase().includes(searchText)) ||
-                (d.lastName && d.lastName.toLowerCase().includes(searchText)) ||
-                (d.displayDescription && d.displayDescription.toLowerCase().includes(searchText))
-        );
+   
 
-        setFilteredMailList([
-            ...res.filter(
-                (d) =>
-                    (d.title && d.title.toLowerCase().includes(searchText)) ||
-                    (d.firstName && d.firstName.toLowerCase().includes(searchText)) ||
-                    (d.lastName && d.lastName.toLowerCase().includes(searchText)) ||
-                    (d.displayDescription && d.displayDescription.toLowerCase().includes(searchText))
-            ),
-        ]);
+  
 
-        if (filteredRes.length) {
-            pager.totalPages = pager.pageSize < 1 ? 1 : Math.ceil(filteredRes.length / pager.pageSize);
-            if (pager.currentPage > pager.totalPages) {
-                pager.currentPage = 1;
-            }
-            pager.startIndex = (pager.currentPage - 1) * pager.pageSize;
-            pager.endIndex = Math.min(pager.startIndex + pager.pageSize - 1, filteredRes.length - 1);
-            setPagedMails([...filteredRes.slice(pager.startIndex, pager.endIndex + 1)]);
-        } else {
-            setPagedMails([]);
-            pager.startIndex = -1;
-            pager.endIndex = -1;
-        }
-        clearSelection();
-    };
+ 
 
-    const saveMail = (type: any, id: any) => {
-        if (!params.to) {
-            showMessage('To email address is required.', 'error');
-            return false;
-        }
-        if (!params.title) {
-            showMessage('Title of email is required.', 'error');
-            return false;
-        }
-
-        let maxId = 0;
-        if (!params.id) {
-            maxId = mailList.length ? mailList.reduce((max, character) => (character.id > max ? character.id : max), mailList[0].id) : 0;
-        }
-        let cDt = new Date();
-
-        let obj: any = {
-            id: maxId + 1,
-            path: '',
-            firstName: '',
-            lastName: '',
-            email: params.to,
-            date: cDt.getMonth() + 1 + '/' + cDt.getDate() + '/' + cDt.getFullYear(),
-            time: cDt.toLocaleTimeString(),
-            title: params.title,
-            displayDescription: params.displayDescription,
-            type: 'draft',
-            isImportant: false,
-            group: '',
-            isUnread: false,
-            description: params.description,
-            attachments: null,
-        };
-        if (params.file && params.file.length) {
-            obj.attachments = [];
-            for (let file of params.file) {
-                let flObj = {
-                    name: file.name,
-                    size: getFileSize(file.size),
-                    type: getFileType(file.type),
-                };
-                obj.attachments.push(flObj);
-            }
-        }
-        if (type === 'save' || type === 'save_reply' || type === 'save_forward') {
-            //saved to draft
-            obj.type = 'draft';
-            mailList.splice(0, 0, obj);
-            searchMails();
-            showMessage('Mail has been saved successfully to draft.');
-        } else if (type === 'send' || type === 'reply' || type === 'forward') {
-            //saved to sent mail
-            obj.type = 'sent_mail';
-            mailList.splice(0, 0, obj);
-            searchMails();
-            showMessage('Mail has been sent successfully.');
-        }
-
-        setSelectedMail(null);
-        setIsEdit(false);
-    };
-
-    const getFileSize = (file_type: any) => {
-        let type = 'file';
-        if (file_type.includes('image/')) {
-            type = 'image';
-        } else if (file_type.includes('application/x-zip')) {
-            type = 'zip';
-        }
-        return type;
-    };
-
-    const getFileType = (total_bytes: number) => {
-        let size = '';
-        if (total_bytes < 1000000) {
-            size = Math.floor(total_bytes / 1000) + 'KB';
-        } else {
-            size = Math.floor(total_bytes / 1000000) + 'MB';
-        }
-        return size;
-    };
-
-    const clearSelection = () => {
-        setIds([]);
-    };
-
-    const tabChanged = (tabType: any) => {
-        setIsEdit(false);
-        setIsShowMailMenu(false);
-        setSelectedMail(null);
-    };
-
-    const changeValue = (e: any) => {
-        const { value, id } = e.target;
-        setParams({ ...params, [id]: value });
-    };
-
-    const handleCheckboxChange = (id: any) => {
-        if (ids.includes(id)) {
-            setIds((value: any) => value.filter((d: any) => d !== id));
-        } else {
-            setIds([...ids, id]);
-        }
-    };
-
-    const checkAllCheckbox = () => {
-        if (filteredMailList.length && ids.length === filteredMailList.length) {
-            return true;
-        } else {
-            return false;
-        }
-    };
+    // const checkAllCheckbox = () => {
+    //     if (filteredMailList.length && ids.length === filteredMailList.length) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // };
 
     const closeMsgPopUp = () => {
         setIsEdit(false);
         setSelectedTab('inbox');
-        searchMails();
+        // searchMails();
     };
 
-    const showMessage = (msg = '', type = 'success') => {
-        const toast: any = Swal.mixin({
-            toast: true,
-            position: 'top',
-            showConfirmButton: false,
-            timer: 3000,
-            customClass: { container: 'toast' },
-        });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
-        });
+    
+
+    const handleFilterLeads = (var_this:number) => {
+        const filteredLeads = allleadlist.filter((lead: any) => lead.lead_status == var_this);
+        setfilterleadslist(filteredLeads);
+    }
+
+    const getNotesByLeadStatus = (leadStatus:number) => {
+        
+        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
+
+    const getNotes2ByLeadStatus = (leadStatus:number) => {
+
+        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
+      }
+
+
+
 
     return (
         <div>
@@ -1236,176 +270,41 @@ const DashboardBox = () => {
                     <div className="flex flex-col h-full pb-16">
                         <div className="pb-5">
                             <button className="btn btn-primary w-full" type="button" onClick={() => openMail('add', null)}>
-                                New Message
+                                Add Lead
                             </button>
                         </div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
+                                <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
                                         !isEdit && selectedTab === 'inbox' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedTab('inbox');
-                                        tabChanged('inbox');
-                                    }}
-                                >
+                                    }`} onClick={() => { setSelectedTab('inbox');  }} >
+                                        {/* tabChanged('inbox'); */}
                                     <div className="flex items-center">
                                         <IconMail className="w-5 h-5 shrink-0" />
                                         <div className="ltr:ml-3 rtl:mr-3">Inbox</div>
                                     </div>
                                     <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
-                                        {mailList && mailList.filter((d) => d.type === 'inbox').length}
+                                        {allleadlist && allleadlist.filter((d) => d.value == 2).length}
                                     </div>
                                 </button>
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        !isEdit && selectedTab === 'star' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`} onClick={() => { setSelectedTab('star'); tabChanged('star'); }} >
-                                    <div className="flex items-center">
-                                        <IconStar className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">Marked</div>
-                                    </div>
-                                </button>
-
-
-                                
-
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        !isEdit && selectedTab === 'sent_mail' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedTab('sent_mail');
-                                        tabChanged('sent_mail');
-                                    }}
-                                >
-                                    <div className="flex items-center">
-                                        <IconSend className="shrink-0" />
-
-                                        <div className="ltr:ml-3 rtl:mr-3">Sent</div>
-                                    </div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        !isEdit && selectedTab === 'spam' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedTab('spam');
-                                        tabChanged('spam');
-                                    }}
-                                >
-                                    <div className="flex items-center">
-                                        <IconInfoHexagon className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">Spam</div>
-                                    </div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        !isEdit && selectedTab === 'draft' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedTab('draft');
-                                        tabChanged('draft');
-                                    }}
-                                >
-                                    <div className="flex items-center">
-                                        <IconFile className="w-4.5 h-4.5" />
-                                        <div className="ltr:ml-3 rtl:mr-3">Drafts</div>
-                                    </div>
-                                    <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
-                                        {mailList && mailList.filter((d) => d.type === 'draft').length}
-                                    </div>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        !isEdit && selectedTab === 'trash' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedTab('trash');
-                                        tabChanged('trash');
-                                    }}
-                                >
-                                    <div className="flex items-center">
-                                        <IconTrashLines className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">Trash</div>
-                                    </div>
-                                </button>
-
-                                <Disclosure as="div">
-                                    {({ open }) => (
-                                        <>
-                                            <Disclosure.Button className="w-full flex items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10">
-                                                <IconCaretDown className={`w-5 h-5 shrink-0 ${open && 'rotate-180'}`} />
-
-                                                <div className="ltr:ml-3 rtl:mr-3">{open ? 'Less' : 'More'}</div>
-                                            </Disclosure.Button>
-
-                                            <Disclosure.Panel as="ul" unmount={false} className="mt-1 space-y-1">
-                                                <li>
-                                                    <button
-                                                        type="button"
-                                                        className={`w-full flex items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                                            !isEdit && selectedTab === 'archive' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                                        }`}
-                                                        onClick={() => {
-                                                            setSelectedTab('archive');
-                                                            tabChanged('archive');
-                                                        }}
-                                                    >
-                                                        <IconArchive className="shrink-0" />
-                                                        <div className="ltr:ml-3 rtl:mr-3">Archive</div>
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button
-                                                        type="button"
-                                                        className={`w-full flex items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                                            !isEdit && selectedTab === 'important' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                                        }`}
-                                                        onClick={() => {
-                                                            setSelectedTab('important');
-                                                            tabChanged('important');
-                                                        }}
-                                                    >
-                                                        <IconBookmark className="shrink-0" />
-                                                        <div className="ltr:ml-3 rtl:mr-3">Important</div>
-                                                    </button>
-                                                </li>
-                                            </Disclosure.Panel>
-                                        </>
-                                    )}
-                                </Disclosure>
-
+                                {
+                                    SidebarStatuses.map((sidebarstatus) => (
+                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => handleFilterLeads(sidebarstatus?.value)} >
+                                        <div className="flex items-center">
+                                            {sidebarstatus.icon}
+                                            <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                        </div>
+                                        <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
+                                            24
+                                        </div>
+                                    </button>
+                                    ))
+                                }
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}
-                                >
+                                <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
                                     <div className="flex items-center">
                                         <IconVideo className="shrink-0" />
                                         <div className="ltr:ml-3 rtl:mr-3">New meeting</div>
-                                    </div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}
-                                >
-                                    <div className="flex items-center">
-                                        <IconChartSquare className="shrink-0 rotate-180" />
-                                        <div className="ltr:ml-3 rtl:mr-3">Join a meeting</div>
                                     </div>
                                 </button>
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
@@ -1413,11 +312,7 @@ const DashboardBox = () => {
                         </PerfectScrollbar>
 
                         <div className="ltr:left-0 rtl:right-0 absolute bottom-0 p-4 w-full">
-                            <button
-                                type="button"
-                                className="w-full flex p-2 justify-between items-center hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium group"
-                                onClick={() => setIsShowMailMenu(false)}
-                            >
+                            <button type="button" className="w-full flex p-2 justify-between items-center hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium group" onClick={() => setIsShowMailMenu(false)} >
                                 <div className="flex items-center">
                                     <IconUserPlus className="shrink-0" />
                                     <div className="ltr:ml-3 rtl:mr-3">Add Account</div>
@@ -1429,19 +324,13 @@ const DashboardBox = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
-                    {!selectedMail && !isEdit && (
+                    {!selectedLead && !isEdit && (
                         <div className="flex flex-col h-full">
                             <div className="flex justify-between items-center flex-wrap-reverse gap-4 p-4">
                                 <div className="flex items-center w-full sm:w-auto">
-                                    <div className="ltr:mr-4 rtl:ml-4">
-                                        <input
-                                            type="checkbox"
-                                            className="form-checkbox"
-                                            checked={checkAllCheckbox()}
-                                            value={ids}
-                                            onChange={() => {
+                                    {/* <div className="ltr:mr-4 rtl:ml-4">
+                                        <input type="checkbox" className="form-checkbox" checked={checkAllCheckbox()} value={ids} onChange={() => {
                                                 if (ids.length === filteredMailList.length) {
                                                     setIds([]);
                                                 } else {
@@ -1453,8 +342,7 @@ const DashboardBox = () => {
                                             }}
                                             onClick={(event) => event.stopPropagation()}
                                         />
-                                    </div>
-
+                                    </div> */}
                                     <div className="ltr:mr-4 rtl:ml-4">
                                         <Tippy content="Refresh">
                                             <button type="button" className="hover:text-primary flex items-center" onClick={() => refreshMails()}>
@@ -1462,105 +350,7 @@ const DashboardBox = () => {
                                             </button>
                                         </Tippy>
                                     </div>
-
-                                    {selectedTab !== 'trash' && (
-                                        <ul className="flex grow items-center sm:flex-none gap-4 ltr:sm:mr-4 rtl:sm:ml-4">
-                                            <li>
-                                                <div>
-                                                    <Tippy content="Archive">
-                                                        <button type="button" className="hover:text-primary flex items-center" onClick={setArchive}>
-                                                            <IconArchive />
-                                                        </button>
-                                                    </Tippy>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div>
-                                                    <Tippy content="Spam">
-                                                        <button type="button" className="hover:text-primary flex items-center" onClick={setSpam}>
-                                                            <IconInfoHexagon />
-                                                        </button>
-                                                    </Tippy>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div className="dropdown">
-                                                    <Dropdown
-                                                        offset={[0, 1]}
-                                                        placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                                        btnClassName="hover:text-primary flex items-center"
-                                                        button={
-                                                            <Tippy content="Group">
-                                                                <span>
-                                                                    <IconWheel />
-                                                                </span>
-                                                            </Tippy>
-                                                        }
-                                                    >
-                                                        <ul className="text-sm font-medium">
-                                                            <li>
-                                                                <button type="button" onClick={() => setGroup('personal')}>
-                                                                    <div className="w-2 h-2 rounded-full bg-primary ltr:mr-3 rtl:ml-3 shrink-0"></div>
-                                                                    Personal 5
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" onClick={() => setGroup('work')}>
-                                                                    <div className="w-2 h-2 rounded-full bg-warning ltr:mr-3 rtl:ml-3 shrink-0"></div>
-                                                                    Work
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" onClick={() => setGroup('social')}>
-                                                                    <div className="w-2 h-2 rounded-full bg-success ltr:mr-3 rtl:ml-3 shrink-0"></div>
-                                                                    Social
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" onClick={() => setGroup('private')}>
-                                                                    <div className="w-2 h-2 rounded-full bg-danger ltr:mr-3 rtl:ml-3 shrink-0"></div>
-                                                                    Private
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </Dropdown>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div className="dropdown">
-                                                    <Dropdown
-                                                        offset={[0, 1]}
-                                                        placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                                        btnClassName="hover:text-primary flex items-center"
-                                                        button={<IconHorizontalDots className="rotate-90 opacity-70" />}
-                                                    >
-                                                        <ul className="whitespace-nowrap">
-                                                            <li>
-                                                                <button type="button" onClick={() => setAction('read')}>
-                                                                    <IconOpenBook className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                                                                    Mark as Read
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" onClick={() => setAction('unread')}>
-                                                                    <IconBook className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                                                                    Mark as Unread
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <button type="button" onClick={() => setAction('trash')}>
-                                                                    <IconTrashLines className="ltr:mr-2 rtl:ml-2 shrink-0" />
-                                                                    Trash
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </Dropdown>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    )}
-
-                                    {selectedTab === 'trash' && (
+                                    {/* {selectedTab === 'trash' && (
                                         <ul className="flex flex-1 items-center sm:flex-none gap-4 ltr:sm:mr-3 rtl:sm:ml-4">
                                             <li>
                                                 <div>
@@ -1581,132 +371,136 @@ const DashboardBox = () => {
                                                 </div>
                                             </li>
                                         </ul>
-                                    )}
+                                    )} */}
                                 </div>
-
                                 <div className="flex justify-between items-center sm:w-auto w-full">
                                     <div className="flex items-center ltr:mr-4 rtl:ml-4">
                                         <button type="button" className="xl:hidden hover:text-primary block ltr:mr-3 rtl:ml-3" onClick={() => setIsShowMailMenu(!isShowMailMenu)}>
                                             <IconMenu />
                                         </button>
                                         <div className="relative group">
-                                            <input
-                                                type="text"
-                                                className="form-input ltr:pr-8 rtl:pl-8 peer"
-                                                placeholder="Search Mail"
-                                                value={searchText}
-                                                onChange={(e) => setSearchText(e.target.value)}
-                                                onKeyUp={() => searchMails()}
+                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Mail" value={searchText} onChange={(e) => setSearchText(e.target.value)}
+                                                
                                             />
+                                            {/* onKeyUp={() => searchMails()} */}
                                             <div className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                                                 <IconSearch />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <div className="ltr:mr-4 rtl:ml-4">
-                                            <Tippy content="Settings">
-                                                <button type="button" className="hover:text-primary">
-                                                    <IconSettings />
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                        <div>
-                                            <Tippy content="Help">
-                                                <button type="button" className="hover:text-primary">
-                                                    <IconHelpCircle className="w-6 h-6" />
-                                                </button>
-                                            </Tippy>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
-
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
-                                <div className="w-full sm:w-auto grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                                    <button
-                                        type="button"
-                                        className={`btn btn-outline-primary flex ${selectedTab === 'personal' ? 'text-white bg-primary' : ''}`}
-                                        onClick={() => {
-                                            setSelectedTab('personal');
-                                            tabChanged('personal');
-                                        }}
-                                    >
-                                        <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
-                                        Personal
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className={`btn btn-outline-warning flex ${selectedTab === 'work' ? 'text-white bg-warning' : ''}`}
-                                        onClick={() => {
-                                            setSelectedTab('work');
-                                            tabChanged('work');
-                                        }}
-                                    >
-                                        <IconMessage2 className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
-                                        Work
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className={`btn btn-outline-success flex ${selectedTab === 'social' ? 'text-white bg-success' : ''}`}
-                                        onClick={() => {
-                                            setSelectedTab('social');
-                                            tabChanged('social');
-                                        }}
-                                    >
-                                        <IconUsers className="ltr:mr-2 rtl:ml-2" />
-                                        Social
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        className={`btn btn-outline-danger flex ${selectedTab === 'private' ? 'text-white bg-danger' : ''}`}
-                                        onClick={() => {
-                                            setSelectedTab('private');
-                                            tabChanged('private');
-                                        }}
-                                    >
-                                        <IconTag className="ltr:mr-2 rtl:ml-2" />
-                                        Private
-                                    </button>
+                                <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
+                                    {TopbarStatuses.map((status) => (
+                                        <button key={status.value} onClick={() => handleFilterLeads(status.value)} type="button" className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}>{status.icon} {status.label} 
+                                        </button>
+                                    ))}
                                 </div>
-
                                 <div className="mt-4 md:flex-auto flex-1">
                                     <div className="flex items-center md:justify-end justify-center">
-                                        <div className="ltr:mr-3 rtl:ml-3">{pager.startIndex + 1 + '-' + (pager.endIndex + 1) + ' of ' + filteredMailList.length}</div>
+                                        <div className="ltr:mr-3 rtl:ml-3">10</div>
+                                        {/* {pager.startIndex + 1 + '-' + (pager.endIndex + 1) + ' of ' + filteredMailList.length} */}
                                         <button
                                             type="button"
                                             disabled={pager.currentPage === 1}
-                                            className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed"
-                                            onClick={() => {
-                                                pager.currentPage--;
-                                                searchMails(false);
-                                            }}
-                                        >
+                                            className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed">
                                             <IconCaretDown className="w-5 h-5 rtl:-rotate-90 rotate-90" />
+                                            {/* onClick={() => { pager.currentPage--; searchMails(false); }} */}
                                         </button>
                                         <button
                                             type="button"
                                             disabled={pager.currentPage === pager.totalPages}
-                                            className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"
-                                            onClick={() => {
-                                                pager.currentPage++;
-                                                searchMails(false);
-                                            }}
-                                        >
+
+                                            className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed">
                                             <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" />
+                                            {/* onClick={() => { pager.currentPage++; searchMails(false); }}  */}
                                         </button>
                                     </div>
                                 </div>
                             </div>
-
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                {filterleadslist.length ? (
+                                    <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
+                                        <table className="table-hover">
+                                            <tbody>
+                                                {filterleadslist.map((lead: any) => {
+                                                    return (
+                                                        <tr key={lead.id} className="cursor-pointer" onClick={() => selectLead(lead)}>
+                                                            <td>
+                                                                <div className="flex items-center whitespace-nowrap">
+                                                                    <div className="ltr:mr-3 rtl:ml-3">
+                                                                        <Tippy content="Important">
+                                                                            <button type="button" className={`enabled:hover:text-primary disabled:opacity-60 rotate-90 flex items-center ${ lead.isImportant ? 'text-primary' : ''
+                                                                                }`} disabled={selectedTab === 'trash'}>
+                                                                                <IconBookmark bookmark={false} className={`w-4.5 h-4.5 ${lead.isImportant && 'fill-primary'}`} />
+                                                                            </button>
+                                                                        </Tippy>
+                                                                        {/* onClick={(e) => { e.stopPropagation(); setImportant(lead.id); }} */}
+                                                                    </div>
+                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
+                                                                    > {lead?.lead_title || 'Not Found'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="flex items-center whitespace-nowrap">
+                                                                    <div className="ltr:mr-1 rtl:ml-1">
+                                                                        <Tippy content="Important">
+                                                                            <button
+                                                                                type="button" className={`enabled:hover:text-primary disabled:opacity-60 flex items-center ${ 
+                                                                                    lead.isImportant ? 'text-primary' : ''
+                                                                                }`}>
+                                                                                <IconUser/>
+                                                                            </button>
+                                                                        </Tippy>
+                                                                    </div>
+                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
+                                                                    > {lead?.customer_name || 'Not Found'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="flex items-center whitespace-nowrap">
+                                                                    <div className="ltr:mr-1 rtl:ml-1">
+                                                                        <Tippy content="Important">
+                                                                            <button
+                                                                                type="button" className={`enabled:hover:text-primary disabled:opacity-60 flex items-center ${ 
+                                                                                    lead.isImportant ? 'text-primary' : ''
+                                                                                }`}>
+                                                                                <IconPhone/>
+                                                                            </button>
+                                                                        </Tippy>
+                                                                    </div>
+                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
+                                                                    > {lead?.customer_phone || 'Not Found'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>                      
+                                                            <td>
+                                                                <div className="flex items-center">
+                                                                    {colorsarray.find((data) => data.value == lead?.lead_status) && (
+                                                                        <div className={`w-2 h-2 rounded-full ${
+                                                                                colorsarray.find((data) => data.value == lead?.lead_status)?.bgColor
+                                                                            }`}
+                                                                        ></div>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                             {/* <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">{showTime(lead)}</td>  */}
+                                                            <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">10:15 PM</td> 
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
+                                )}
 
-                            {pagedMails.length ? (
+                            {/* {pagedMails.length ? (
                                 <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                     <table className="table-hover">
                                         <tbody>
@@ -1802,181 +596,113 @@ const DashboardBox = () => {
                                 </div>
                             ) : (
                                 <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
-                            )}
+                            )} */}
                         </div>
                     )}
-
-                    {selectedMail && !isEdit && (
+                    {selectedLead && !isEdit && (
                         <div>
                             <div className="flex items-center justify-between flex-wrap p-4">
                                 <div className="flex items-center">
-                                    <button type="button" className="ltr:mr-2 rtl:ml-2 hover:text-primary" onClick={() => setSelectedMail(null)}>
+                                    <button type="button" className="ltr:mr-2 rtl:ml-2 hover:text-primary" onClick={() => setSelectedLead(null)}>
                                         <IconArrowLeft className="w-5 h-5 rotate-180" />
                                     </button>
-                                    <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2">{selectedMail.title}</h4>
-                                    <div className="badge bg-info hover:top-0">{selectedMail.type}</div>
+                                    <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2">
+                                        {selectedLead?.lead_title}
+                                        </h4>
+                                    <div className="badge bg-info hover:top-0">{selectedLead.lead_status}</div>
                                 </div>
                                 <div>
                                     <Tippy content="Print">
-                                        <button type="button">
-                                            <IconPrinter />
-                                        </button>
+                                            <button type="button"> <IconPrinter /> </button>
                                     </Tippy>
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="p-4 relative">
-                                <div className="flex flex-wrap">
-                                    <div className="flex-shrink-0 ltr:mr-2 rtl:ml-2">
-                                        {selectedMail.path ? (
-                                            <img src={`/assets/images/${selectedMail.path}`} className="h-12 w-12 rounded-full object-cover" alt="avatar" />
-                                        ) : (
-                                            <div className="border border-gray-300 dark:border-gray-800 rounded-full p-3">
-                                                <IconUser className="w-5 h-5" />
-                                            </div>
-                                        )}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
+                                <div className="panel">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
                                     </div>
-                                    <div className="ltr:mr-2 rtl:ml-2 flex-1">
-                                        <div className="flex items-center">
-                                            <div className="text-lg ltr:mr-4 rtl:ml-4 whitespace-nowrap">
-                                                {selectedMail.firstName ? selectedMail.firstName + ' ' + selectedMail.lastName : selectedMail.email}
-                                            </div>
-                                            {selectedMail.group && (
-                                                <div className="ltr:mr-4 rtl:ml-4">
-                                                    <Tippy content={selectedMail.group} className="capitalize">
-                                                        <div
-                                                            className={`w-2 h-2 rounded-full ${
-                                                                (selectedMail.group === 'personal' && 'bg-primary') ||
-                                                                (selectedMail.group === 'work' && 'bg-warning') ||
-                                                                (selectedMail.group === 'social' && 'bg-success') ||
-                                                                (selectedMail.group === 'private' && 'bg-danger')
-                                                            }`}
-                                                        ></div>
-                                                    </Tippy>
-                                                </div>
-                                            )}
-                                            <div className="text-white-dark whitespace-nowrap">1 days ago</div>
-                                        </div>
-                                        <div className="text-white-dark flex items-center">
-                                            <div className="ltr:mr-1 rtl:ml-1">{selectedMail.type === 'sent_mail' ? selectedMail.email : 'to me'}</div>
-                                            <div className="dropdown">
-                                                <Dropdown
-                                                    offset={[0, 5]}
-                                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                                    btnClassName="hover:text-primary flex items-center"
-                                                    button={<IconCaretDown className="w-5 h-5" />}
-                                                >
-                                                    <ul className="sm:w-56">
-                                                        <li>
-                                                            <div className="flex items-center px-4 py-2">
-                                                                <div className="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4">From:</div>
-                                                                <div className="flex-1">{selectedMail.type === 'sent_mail' ? 'vristo@gmail.com' : selectedMail.email}</div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div className="flex items-center px-4 py-2">
-                                                                <div className="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4">To:</div>
-                                                                <div className="flex-1">{selectedMail.type !== 'sent_mail' ? 'vristo@gmail.com' : selectedMail.email}</div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div className="flex items-center px-4 py-2">
-                                                                <div className="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4">Date:</div>
-                                                                <div className="flex-1">{selectedMail.date + ', ' + selectedMail.time}</div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div className="flex items-center px-4 py-2">
-                                                                <div className="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4">Subject:</div>
-                                                                <div className="flex-1">{selectedMail.title}</div>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </Dropdown>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
-                                            <Tippy content="Star">
-                                                <button
-                                                    type="button"
-                                                    className={`enabled:hover:text-warning disabled:opacity-60 ${selectedMail.isStar ? 'text-warning' : ''}`}
-                                                    onClick={() => setStar(selectedMail.id)}
-                                                    disabled={selectedTab === 'trash'}
-                                                >
-                                                    <IconStar className={selectedMail.isStar ? 'fill-warning' : ''} />
+                                    <div className="">
+                                        {/* max-w-[160px] */}
+                                        <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
+                                            <li className="flex items-center gap-2 text-dark">
+                                                <IconUser className="shrink-0" />
+                                                {selectedLead?.customer_name || 'Not-Found'}
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <IconPhone />
+                                                <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                {selectedLead?.customer_phone || 'Not-Found'}
+                                                </span>
+                                            </li>
+                                            <li className="flex items-center gap-2">
+                                                <IconPhone />
+                                                <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                {selectedLead?.customer_phone2 || 'Not-Found'}
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <button className="flex items-center gap-2">
+                                                    <IconMail className="w-5 h-5 shrink-0" />
+                                                    <span className="text-info truncate">{selectedLead?.customer_email || 'Not-Found'}</span>
                                                 </button>
-                                            </Tippy>
-                                            <Tippy content="Important">
-                                                <button
-                                                    type="button"
-                                                    className={`enabled:hover:text-primary disabled:opacity-60 ${selectedMail.isImportant ? 'text-primary' : ''}`}
-                                                    onClick={() => setImportant(selectedMail.id)}
-                                                    disabled={selectedTab === 'trash'}
-                                                >
-                                                    <IconBookmark bookmark={false} className={`w-4.5 h-4.5 rotate-90 ${selectedMail.isImportant && 'fill-primary'}`} />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy content="Reply">
-                                                <button type="button" className="hover:text-info" onClick={() => openMail('reply', selectedMail)}>
-                                                    <IconArrowBackward className="rtl:hidden" />
-                                                    <IconArrowForward className="ltr:hidden" />
-                                                </button>
-                                            </Tippy>
-                                            <Tippy content="Forward">
-                                                <button type="button" className="hover:text-info" onClick={() => openMail('forward', selectedMail)}>
-                                                    <IconArrowBackward className="ltr:hidden" />
-                                                    <IconArrowForward className="rtl:hidden" />
-                                                </button>
-                                            </Tippy>
-                                        </div>
+                                            </li>
+                                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                            <li className="flex items-center gap-2">
+                                                <IconCalendar className="shrink-0" />
+                                                {selectedLead?.agents.client_user_name}
+                                            </li>
+                                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                        </ul>
                                     </div>
                                 </div>
+                                <div className="panel lg:col-span-2 xl:col-span-4">
+                                <div className="mb-5">
+                                    <h5 className="font-semibold text-lg dark:text-white-light">History of the Leads </h5>
+                                </div>
+                                <div className="mb-5">
+                                    <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
+                                        <table className="whitespace-nowrap">
+                                            <thead>
+                                                <tr>
+                                                    <th>History</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="dark:text-white-dark">
+                                                <tr>
+                                                    <td>dd</td>
+                                                </tr>
+                                                {selectedLead?.comments?.map((comment:any, i:any) => (
 
-                                <div
-                                    className="mt-8 prose dark:prose-p:text-white prose-p:text-sm md:prose-p:text-sm max-w-full prose-img:inline-block prose-img:m-0"
-                                    dangerouslySetInnerHTML={{ __html: selectedMail.description }}
-                                ></div>
-                                <p className="mt-4">Best Regards,</p>
-                                <p>{selectedMail.firstName + ' ' + selectedMail.lastName}</p>
-
-                                {selectedMail.attachments && (
-                                    <div className="mt-8">
-                                        <div className="text-base mb-4">Attachments</div>
-                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                        <div className="flex items-center flex-wrap mt-6">
-                                            {selectedMail.attachments.map((attachment: any, i: number) => {
-                                                return (
-                                                    <button
-                                                        key={i}
-                                                        type="button"
-                                                        className="flex items-center ltr:mr-4 rtl:ml-4 mb-4 border border-white-light dark:border-[#1b2e4b] rounded-md hover:text-primary hover:border-primary transition-all duration-300 px-4 py-2.5 relative group"
-                                                    >
-                                                        {attachment.type === 'image' && <IconGallery />}
-                                                        {attachment.type === 'folder' && <IconFolder />}
-                                                        {attachment.type === 'zip' && <IconZipFile />}
-                                                        {attachment.type !== 'zip' && attachment.type !== 'image' && attachment.type !== 'folder' && <IconTxtFile className="w-5 h-5" />}
-
-                                                        <div className="ltr:ml-3 rtl:mr-3">
-                                                            <p className="text-xs text-primary font-semibold">{attachment.name}</p>
-                                                            <p className="text-[11px] text-gray-400 dark:text-gray-600">{attachment.size}</p>
+                                                    <div className="maindiv" key={i}>
+                                                    <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
+                                                    <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}
+                                                    </small> 
+                                                    <small dangerouslySetInnerHTML={{ __html: getNotesByLeadStatus(comment.lead_status || '') }}></small>
+                                                    {comment.lead_status === '2' && ( <small>&nbsp;{comment?.agent_name}</small> )}
+                                                    {i > 0 && ( 
+                                                        <small dangerouslySetInnerHTML={{__html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
+                                                    )}
+                                                    {comment.lead_comment && (
+                                                        <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
+                                                        <small>{comment?.updated_at || 'Invalid Time'}</small>&nbsp;
+                                                        <small>{comment?.user_name} :</small>&nbsp;
+                                                        <small>{comment?.lead_comment}</small>
                                                         </div>
-                                                        <div className="bg-dark-light/40 z-[5] w-full h-full absolute ltr:left-0 rtl:right-0 top-0 rounded-md hidden group-hover:block"></div>
-                                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 btn btn-primary hidden group-hover:block z-10">
-                                                            <IconDownload className="w-4.5 h-4.5" />
-                                                        </div>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                                    )}
+                                                    </div>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                )}
+                                  </div>
+                                </div>
+                              </div> 
                             </div>
                         </div>
                     )}
-
                     {isEdit && (
                         <div className="relative">
                             <div className="py-4 px-6 flex items-center">
@@ -1988,24 +714,16 @@ const DashboardBox = () => {
                             <div className="h-px bg-gradient-to-l from-indigo-900/20 via-black dark:via-white to-indigo-900/20 opacity-[0.1]"></div>
                             <form className="p-6 grid gap-6">
                                 <div>
-                                    <input
-                                        id="to"
-                                        type="text"
-                                        className="form-input"
-                                        placeholder="Enter To"
-                                        defaultValue={params.to}
-                                        onChange={(e) => {
-                                            changeValue(e);
-                                        }}
-                                    />
+                                    <input id="to" type="text" className="form-input" placeholder="Enter To" defaultValue={params.to} />
+                                    {/* onChange={(e) => { changeValue(e); }} */}
                                 </div>
-
                                 <div>
-                                    <input id="cc" type="text" className="form-input" placeholder="Enter Cc" defaultValue={params.cc} onChange={(e) => changeValue(e)} />
+                                    {/* onChange={(e) => changeValue(e)} */}
+                                    <input id="cc" type="text" className="form-input" placeholder="Enter Cc" defaultValue={params.cc} />
                                 </div>
-
                                 <div>
-                                    <input id="title" type="text" className="form-input" placeholder="Enter Subject" defaultValue={params.title} onChange={(e) => changeValue(e)} />
+                                    {/* onChange={(e) => changeValue(e)} */}
+                                    <input id="title" type="text" className="form-input" placeholder="Enter Subject" defaultValue={params.title} />
                                 </div>
 
                                 <div className="h-fit">
@@ -2023,7 +741,6 @@ const DashboardBox = () => {
                                         style={{ minHeight: '200px' }}
                                     />
                                 </div>
-
                                 <div>
                                     <input
                                         type="file"
@@ -2037,10 +754,12 @@ const DashboardBox = () => {
                                     <button type="button" className="btn btn-outline-danger ltr:mr-3 rtl:ml-3" onClick={closeMsgPopUp}>
                                         Close
                                     </button>
-                                    <button type="button" className="btn btn-success ltr:mr-3 rtl:ml-3" onClick={() => saveMail('save', null)}>
+                                    {/* onClick={() => saveMail('save', null)} */}
+                                    <button type="button" className="btn btn-success ltr:mr-3 rtl:ml-3">
                                         Save
                                     </button>
-                                    <button type="button" className="btn btn-primary" onClick={() => saveMail('send', params.id)}>
+                                    {/* onClick={() => saveMail('send', params.id)} */}
+                                    <button type="button" className="btn btn-primary">
                                         Send
                                     </button>
                                 </div>
@@ -2051,6 +770,6 @@ const DashboardBox = () => {
             </div>
         </div>
     );
-};
+}
 
 export default DashboardBox;

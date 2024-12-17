@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import AnimateHeight from 'react-animate-height';
 import CodeHighlight from '../../components/Highlight';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import IconCode from '../../components/Icon/IconCode';
 import IconCaretDown from '../../components/Icon/IconCaretDown';

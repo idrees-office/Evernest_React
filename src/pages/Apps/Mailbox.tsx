@@ -845,6 +845,7 @@ const Mailbox = () => {
     const [isShowMailMenu, setIsShowMailMenu] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [selectedTab, setSelectedTab] = useState('inbox');
+
     const [filteredMailList, setFilteredMailList] = useState<any>(mailList.filter((d) => d.type === 'inbox'));
     const [ids, setIds] = useState<any>([]);
     const [searchText, setSearchText] = useState<any>('');
@@ -864,7 +865,6 @@ const Mailbox = () => {
 
     useEffect(() => {
         searchMails();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedTab, searchText, mailList]);
 
     const refreshMails = () => {
@@ -961,8 +961,11 @@ const Mailbox = () => {
     };
 
     const selectMail = (item: any) => {
+        console.log(item);
         if (item) {
             if (item.type !== 'draft') {
+        console.log(item.type);
+
                 if (item && item.isUnread) {
                     item.isUnread = false;
                 }

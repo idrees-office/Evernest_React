@@ -13,7 +13,6 @@ import { loginUser } from '../../slices/authSlice';
 import Toast from '../../services/toast';
 import Swal from 'sweetalert2';
 
-
 const LoginCover = ({ children }: PropsWithChildren) => {
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
@@ -48,16 +47,16 @@ const LoginCover = ({ children }: PropsWithChildren) => {
             const response = await dispatch(loginUser({ formData }) as any);
             if ([200, 201].includes(response.payload.status)) {
                 toast.success(response.payload.message);
-                formRef.current.reset(); 
+                formRef?.current.reset(); 
                 navigate('/'); 
                 return
             }else if([401, 400].includes(response.payload.status)){
                 toast.error(response.payload.message);
-                formRef.current.reset(); 
+                formRef?.current.reset(); 
                 return
             } else {
                 setErrors(response.payload.data);
-                formRef.current.reset(); 
+                formRef?.current.reset(); 
             }
         } catch (error: any) {
             Swal.fire('Error:', error.message || error);

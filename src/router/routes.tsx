@@ -107,17 +107,14 @@ const CreateDevelopers = lazy(() => import('../pages/developers/create'));
 const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
-
-
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <Index />,
-
-        // element: <DashboardBox />,
+        // element: <Index />,
+        element: <DashboardBox />,
 
     },
     {
