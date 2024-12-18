@@ -573,35 +573,6 @@ const DashboardBox = () => {
                                     </div>
 
                                     <div className="panel lg:col-span-2 xl:col-span-4">
-{/* 
-                                    <div className="space-y-2 font-semibold">
-                                                <div className="border border-[#d3d3d3] rounded dark:border-[#1b2e4b]">
-                                                    <button
-                                                        type="button"
-                                                        className={`p-4 w-full flex items-center text-white-dark dark:bg-[#1b2e4b]`}
-                                                        onClick={() => togglePara('1')}
-                                                    >
-                                                        Collapsible Group Item #1
-                                                        <div className={`ltr:ml-auto rtl:mr-auto rotate-180`}>
-                                                            <svg>...</svg>
-                                                        </div>
-                                                    </button>
-                                                    <div>
-                                                        <AnimateHeight duration={300} height={active === '1' ? 'auto' : 0}>
-                                                            <div className="space-y-2 p-4 text-white-dark text-[13px] border-t border-[#d3d3d3] dark:border-[#1b2e4b]">
-                                                                <p>
-                                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                                                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                                                </p>
-                                                                <p>
-                                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                                                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                                                </p>
-                                                            </div>
-                                                        </AnimateHeight>
-                                                    </div>
-                                                </div>
-                                            </div> */}
                                         <div className="mb-5">
                                             <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
                                                 <table className="whitespace-nowrap">
