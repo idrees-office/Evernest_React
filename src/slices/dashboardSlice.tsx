@@ -6,17 +6,14 @@ import apiClient from '../utils/apiClient';
      listApi    : '/leads/get_all_leads',
      destoryApi : '/leads/delete',
      editApi    : '/leads/edit',
+     updateLead : '/leads/update_single_lead',
     };
 
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
             const response = await apiClient.post(url, formData);
-
             return response;
-
-
-            // return {data: response.data, status: response.status};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -25,13 +22,23 @@ import apiClient from '../utils/apiClient';
           try {
             const url = status ? `${endpoints.listApi}/${status}` : endpoints.listApi;
             const response = await apiClient.post(url, formData);
-            // return response.
             return {leadsdata: response.data, status: response.status};
           } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
           }
         }
       );
+
+
+      export const updateSingleLead = createAsyncThunk('updatesinglelead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
+        try {
+            const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
+            const response = await apiClient.post(url, formData);
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
 
     export const deleteLeads = createAsyncThunk('deleteleads', async (id: number, { rejectWithValue }) => { 
             try {

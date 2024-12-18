@@ -153,7 +153,7 @@ export const STATUSES = [
     {
         value: 15,
         label: 'System Automatically Moved',
-        displayIn: ['', '', ''],
+        displayIn: ['', 'dropdown', ''],
         icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-primary',
@@ -166,5 +166,7 @@ export const STATUSES = [
 export const topBarStatus = () => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
 export const SidebarStatus = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
 export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
+export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
+
 
 

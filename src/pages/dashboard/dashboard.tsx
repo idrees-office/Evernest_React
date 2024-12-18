@@ -48,8 +48,7 @@ import IconFolder from '../../components/Icon/IconFolder';
 import IconZipFile from '../../components/Icon/IconZipFile';
 import IconDownload from '../../components/Icon/IconDownload';
 import IconTxtFile from '../../components/Icon/IconTxtFile';
-
-import { topBarStatus, SidebarStatus, MatchColorList } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption } from '../../services/status';
 import { Leadslist } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import { Link } from 'react-router-dom';
@@ -59,26 +58,32 @@ import IconGithub from '../../components/Icon/IconGithub';
 import IconCalendar from '../../components/Icon/IconCalendar';
 import IconMapPin from '../../components/Icon/IconMapPin';
 import IconPencilPaper from '../../components/Icon/IconPencilPaper';
+import Select from 'react-select';
+import { updateSingleLead } from '../../slices/dashboardSlice';
+import Toast from '../../services/toast';
 
 const DashboardBox = () => {
     const TopbarStatuses  = topBarStatus();
     const SidebarStatuses = SidebarStatus();
     const colorsarray  = MatchColorList();
+    const dropdownOption = DropdownOption();
     const dispatch = useDispatch<AppDispatch>();
-    const hasFetchedRef = useRef(false);
+    const combinedRef = useRef<any>({ fetched: false, form: null });
+    const toast = Toast();
+    // const hasFetchedRef = useRef(false);
+    // const formRef = useRef<HTMLFormElement>(null);
     const loginuser = useSelector((state: IRootState) => state.auth.user || {});
     const leads     = useSelector((state: IRootState) => state.leadsslice.leads);
     const [allleadlist, setallleadlist] = useState<any[]>([]);
     const [filterleadslist, setfilterleadslist] = useState<any[]>([]);
-
     const [selectedLead, setSelectedLead] = useState<any>(null);
 
     useEffect(() => {
-        if (loginuser?.client_user_id && !hasFetchedRef.current) {
+        if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
             formData.append('client_user_id', loginuser.client_user_id);
             dispatch(Leadslist({ formData }));
-            hasFetchedRef.current = true;
+            combinedRef.current.fetched = true;
         }
         }, [loginuser?.client_user_id, dispatch]);
         useEffect(() => {
@@ -102,19 +107,15 @@ const DashboardBox = () => {
             description: '',
             displayDescription: '',
         };
-
         const [isShowMailMenu, setIsShowMailMenu] = useState(false);
         const [isEdit, setIsEdit] = useState(false);
-        
         // const [filteredMailList, setFilteredMailList] = useState<any>(mailList.filter((d) => d.type === 'inbox'));
         const [ids, setIds] = useState<any>([]);
         const [searchText, setSearchText] = useState<any>('');
         const [selectedMail, setSelectedMail] = useState<any>(null);
         const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
         const [pagedMails, setPagedMails] = useState<any>([]);
-
         const [selectedTab, setSelectedTab] = useState('inbox');
-
         const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
         const [pager] = useState<any>({
             currentPage: 1,
@@ -249,11 +250,33 @@ const DashboardBox = () => {
     };
 
     const getNotes2ByLeadStatus = (leadStatus:number) => {
-
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
-      }
+    }
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (combinedRef.current.form) {
+            const formData = new FormData(combinedRef.current.form);
+            try {
+                    const response = await dispatch(updateSingleLead({ formData }) as any);
+
+                    console.log(response);
+
+                    if (response.payload.status === 'success'){
+                        toast.success('Update lead');
+                        combinedRef.current?.reset();
+                    }else{
+                        console.log('data')
+                        // setErrors(response.payload);
+                    }
+                } catch (error: any) {
+                    console.error('Error creating/updating news:', error);
+                }
+           
+
+        }
+    }
 
 
 
@@ -624,8 +647,7 @@ const DashboardBox = () => {
                                     <div className="flex items-center justify-between mb-5">
                                         <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
                                     </div>
-                                    <div className="">
-                                        {/* max-w-[160px] */}
+                                    <div className="data">
                                         <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
                                             <li className="flex items-center gap-2 text-dark">
                                                 <IconUser className="shrink-0" />
@@ -657,6 +679,25 @@ const DashboardBox = () => {
                                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                         </ul>
                                     </div>
+                                     <form encType="multipart/form-data" ref={(el) => (combinedRef.current.form = el)} onSubmit={handleSubmit}>
+                                        <div className="mt-1">
+                                            <div className="flex flex-col justify-between lg:flex-row">
+                                                <div className="w-full cursor-pointer">
+                                                    <div className="mt-3 items-center">
+                                                       <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
+                                                      <input type="text" name="lead_id" />
+
+                                                    </div>
+                                                    <div className="mt-3 items-center cursor-pointer">
+                                                       <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
+                                                    </div>   
+                                                    <div className="mt-4">
+                                                        <button className="btn btn-secondary w-full">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                                 <div className="panel lg:col-span-2 xl:col-span-4">
                                 <div className="mb-5">
@@ -671,11 +712,7 @@ const DashboardBox = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="dark:text-white-dark">
-                                                <tr>
-                                                    <td>dd</td>
-                                                </tr>
                                                 {selectedLead?.comments?.map((comment:any, i:any) => (
-
                                                     <div className="maindiv" key={i}>
                                                     <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
                                                     <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}

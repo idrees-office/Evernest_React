@@ -59,7 +59,6 @@ const Create = () => {
             const formData = new FormData(formRef.current);
             try {
                 const response = await dispatch(CreateNews({ formData, id: Number(id) }) as any);
-                
                 if (response.meta.requestStatus === 'rejected' && response.payload) {
                     setErrors(response.payload);
                 } else {
