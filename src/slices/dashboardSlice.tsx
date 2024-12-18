@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../utils/apiClient';
 
     const endpoints = {
-     createApi  : '/leads/store',
-     listApi    : '/leads/get_all_leads',
-     destoryApi : '/leads/delete',
-     editApi    : '/leads/edit',
-     updateLead : '/leads/update_single_lead',
+        createApi  : '/leads/store',
+        listApi    : '/leads/get_all_leads',
+        destoryApi : '/leads/delete',
+        editApi    : '/leads/edit',
+        updateLead : '/leads/update_single_lead',
     };
 
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
