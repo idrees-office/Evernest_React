@@ -1,7 +1,7 @@
 import { PropsWithChildren, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import App from '../../App';
-import { IRootState } from '../../store';
+import { AppDispatch, IRootState } from '../../store';
 import { toggleSidebar } from '../../slices/themeConfigSlice';
 import Footer from './Footer';
 import Header from './Header';
@@ -12,7 +12,7 @@ import Portals from '../../components/Portals';
 const DefaultLayout = ({ children }: PropsWithChildren) => {
     
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const [showLoader, setShowLoader] = useState(true);
     const [showTopButton, setShowTopButton] = useState(false);

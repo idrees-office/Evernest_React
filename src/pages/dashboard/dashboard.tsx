@@ -260,12 +260,11 @@ const DashboardBox = () => {
             const formData = new FormData(combinedRef.current.form);
             try {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
-
-                    console.log(response);
-
-                    if (response.payload.status === 'success'){
+                    if (response.payload.status === 200 || response.payload.status === 201){
                         toast.success('Update lead');
-                        combinedRef.current?.reset();
+                        toast.success(`${response.payload.data.message}`);
+                        combinedRef.current.form?.reset();
+                        setSelectedLead(null);
                     }else{
                         console.log('data')
                         // setErrors(response.payload);
@@ -632,7 +631,7 @@ const DashboardBox = () => {
                                     <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2">
                                         {selectedLead?.lead_title}
                                         </h4>
-                                    <div className="badge bg-info hover:top-0">{selectedLead.lead_status}</div>
+                                    <div className="badge bg-info hover:top-0">{selectedLead?.lead_status}</div>
                                 </div>
                                 <div>
                                     <Tippy content="Print">
@@ -645,7 +644,7 @@ const DashboardBox = () => {
                             <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
                                 <div className="panel">
                                     <div className="flex items-center justify-between mb-5">
-                                        <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
+                                        <h5 className="font-semibold text-lg dark:text-white-light">Client Detail </h5>
                                     </div>
                                     <div className="data">
                                         <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
@@ -685,8 +684,9 @@ const DashboardBox = () => {
                                                 <div className="w-full cursor-pointer">
                                                     <div className="mt-3 items-center">
                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
-                                                      <input type="text" name="lead_id" />
-
+                                                      <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
+                                                      <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
+                                                      <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id} />
                                                     </div>
                                                     <div className="mt-3 items-center cursor-pointer">
                                                        <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>

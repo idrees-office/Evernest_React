@@ -133,7 +133,7 @@ export const STATUSES = [
     {
         value: 13,
         label: 'Agent',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
         icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-primary',
@@ -167,6 +167,7 @@ export const topBarStatus = () => STATUSES.filter((status) => status.displayIn?.
 export const SidebarStatus = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
 export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
 export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
+
 
 
 

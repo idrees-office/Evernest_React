@@ -28,13 +28,12 @@ import apiClient from '../utils/apiClient';
           }
         }
       );
-
-
-      export const updateSingleLead = createAsyncThunk('updatesinglelead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
+      
+      export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
             const response = await apiClient.post(url, formData);
-            return response;
+            return {data: response.data, status: response.status};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -85,12 +84,19 @@ const LeadsSlice = createSlice({
             .addCase(Leadslist.pending, (state) => {
                 state.loading = true;  
             })
-
             .addCase(Leadslist.fulfilled, (state, action) => {
                 state.success = true;
                 state.leads = action.payload.leadsdata?.data || [];
                 state.loading = false;
                 
+            })
+            .addCase(updateSingleLead.fulfilled, (state, action) => {
+                state.success = true;
+                state.status =  action.payload.status
+                action.payload?.data
+                // console.log(action.payload.data);
+
+                // state.leads = action.payload.data?.data || [];
             })
             .addCase(deleteLeads.fulfilled, (state, action) => {
                 state.success = true;
