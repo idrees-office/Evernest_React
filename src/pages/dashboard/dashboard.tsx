@@ -532,6 +532,7 @@ const DashboardBox = () => {
                             </div>
                     </div>
                 )}
+                
                     {isEdit && (
                         <div className="relative">
                             <div className="py-4 px-6 flex items-center">
