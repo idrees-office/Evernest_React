@@ -11,7 +11,7 @@ export const STATUSES = [
     {
         value: 1,
         label: 'New Lead',
-        displayIn: ['', '', 'commentsarray'],
+        displayIn: ['', '', 'dashboard', 'commentsarray'],
         icon: <IconAirplay className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'btn-outline-dark',
         bgColor : 'bg-success',
@@ -58,7 +58,7 @@ export const STATUSES = [
         outlineColor: 'btn-outline-warning',
         bgColor : 'bg-warning',
         notes : 'From Warm',
-        notes2 : 'Moved to: <span class="text-warning">Warm </span>'
+        notes2 : 'Moved to: <span class="text-warning">Warm Lead</span>'
     },
     {
         value: 6,

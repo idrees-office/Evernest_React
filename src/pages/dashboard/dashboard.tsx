@@ -6,58 +6,28 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Dropdown from '../../components/Dropdown';
 import Swal from 'sweetalert2';
+import AnimateHeight from 'react-animate-height';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from '../../store';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconMail from '../../components/Icon/IconMail';
-import IconStar from '../../components/Icon/IconStar';
-import IconSend from '../../components/Icon/IconSend';
-import IconInfoHexagon from '../../components/Icon/IconInfoHexagon';
-import IconFile from '../../components/Icon/IconFile';
-import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
-import IconArchive from '../../components/Icon/IconArchive';
 import IconBookmark from '../../components/Icon/IconBookmark';
 import IconVideo from '../../components/Icon/IconVideo';
-import IconChartSquare from '../../components/Icon/IconChartSquare';
 import IconUserPlus from '../../components/Icon/IconUserPlus';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconRefresh from '../../components/Icon/IconRefresh';
-import IconWheel from '../../components/Icon/IconWheel';
-import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
-import IconOpenBook from '../../components/Icon/IconOpenBook';
-import IconBook from '../../components/Icon/IconBook';
-import IconTrash from '../../components/Icon/IconTrash';
-import IconRestore from '../../components/Icon/IconRestore';
 import IconMenu from '../../components/Icon/IconMenu';
 import IconSearch from '../../components/Icon/IconSearch';
-import IconSettings from '../../components/Icon/IconSettings';
-import IconHelpCircle from '../../components/Icon/IconHelpCircle';
 import IconUser from '../../components/Icon/IconUser';
-import IconMessage2 from '../../components/Icon/IconMessage2';
-import IconUsers from '../../components/Icon/IconUsers';
-import IconTag from '../../components/Icon/IconTag';
-import IconPaperclip from '../../components/Icon/IconPaperclip';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import IconArrowBackward from '../../components/Icon/IconArrowBackward';
-import IconArrowForward from '../../components/Icon/IconArrowForward';
-import IconGallery from '../../components/Icon/IconGallery';
-import IconFolder from '../../components/Icon/IconFolder';
-import IconZipFile from '../../components/Icon/IconZipFile';
-import IconDownload from '../../components/Icon/IconDownload';
-import IconTxtFile from '../../components/Icon/IconTxtFile';
 import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption } from '../../services/status';
 import { Leadslist } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import { Link } from 'react-router-dom';
-import IconDribbble from '../../components/Icon/IconDribbble';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconGithub from '../../components/Icon/IconGithub';
 import IconCalendar from '../../components/Icon/IconCalendar';
-import IconMapPin from '../../components/Icon/IconMapPin';
-import IconPencilPaper from '../../components/Icon/IconPencilPaper';
 import Select from 'react-select';
 import { updateSingleLead } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
@@ -70,8 +40,6 @@ const DashboardBox = () => {
     const dispatch = useDispatch<AppDispatch>();
     const combinedRef = useRef<any>({ fetched: false, form: null });
     const toast = Toast();
-    // const hasFetchedRef = useRef(false);
-    // const formRef = useRef<HTMLFormElement>(null);
     const loginuser = useSelector((state: IRootState) => state.auth.user || {});
     const leads     = useSelector((state: IRootState) => state.leadsslice.leads);
     const [allleadlist, setallleadlist] = useState<any[]>([]);
@@ -85,100 +53,59 @@ const DashboardBox = () => {
             dispatch(Leadslist({ formData }));
             combinedRef.current.fetched = true;
         }
-        }, [loginuser?.client_user_id, dispatch]);
-        useEffect(() => {
-            if(leads){
-                setallleadlist(leads);  
-             }
-        }, [leads]);
+    }, [loginuser?.client_user_id, dispatch]);
+    useEffect(() => {
+        if(leads){
+            setallleadlist(leads);  
+        }
+    }, [leads]);
 
-        useEffect(() => {
-            const data = allleadlist.filter((lead: any) => lead.lead_status == 2);
-            setfilterleadslist(data);
-        }, [allleadlist]);
+    useEffect(() => {
+        const data = allleadlist.filter((lead: any) => lead.lead_status == 1);
+        setfilterleadslist(data);
+    }, [allleadlist]);
 
-        const defaultParams = {
-            id: null,
-            from: 'vristo@mail.com',
-            to: '',
-            cc: '',
-            title: '',
-            file: null,
-            description: '',
-            displayDescription: '',
-        };
-        const [isShowMailMenu, setIsShowMailMenu] = useState(false);
-        const [isEdit, setIsEdit] = useState(false);
-        // const [filteredMailList, setFilteredMailList] = useState<any>(mailList.filter((d) => d.type === 'inbox'));
-        const [ids, setIds] = useState<any>([]);
-        const [searchText, setSearchText] = useState<any>('');
-        const [selectedMail, setSelectedMail] = useState<any>(null);
-        const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
-        const [pagedMails, setPagedMails] = useState<any>([]);
-        const [selectedTab, setSelectedTab] = useState('inbox');
-        const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-        const [pager] = useState<any>({
-            currentPage: 1,
-            totalPages: 0,
-            pageSize: 10,
-            startIndex: 0,
-            endIndex: 0,
-        });
-
-        // useEffect(() => {
-        //     searchMails();
-        // }, [selectedTab, searchText, mailList]);
+    const defaultParams = {
+        id: null,
+        from: 'vristo@mail.com',
+        to: '',
+        cc: '',
+        title: '',
+        file: null,
+        description: '',
+        displayDescription: '',
+    };
+    const [isShowMailMenu, setIsShowMailMenu] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [ids, setIds] = useState<any>([]);
+    const [searchText, setSearchText] = useState<any>('');
+    const [selectedMail, setSelectedMail] = useState<any>(null);
+    const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
+    const [pagedMails, setPagedMails] = useState<any>([]);
+    const [selectedTab, setSelectedTab] = useState('inbox');
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    const [pager] = useState<any>({
+        currentPage: 1,
+        totalPages: 0,
+        pageSize: 10,
+        startIndex: 0,
+        endIndex: 0,
+    });
 
     const refreshMails = () => {
         setSearchText('');
-        // searchMails(false);
-    };
-
-    
-
-    
-
-    // const setGroup = (group: any) => {
-    //     if (ids.length) {
-    //         let items = mailList.filter((d: any) => ids.includes(d.id));
-    //         for (let item of items) {
-    //             item.group = group;
-    //         }
-
-    //         showMessage(ids.length + ' Mail has been grouped as ' + group.toUpperCase());
-    //         clearSelection();
-    //         setTimeout(() => {
-    //             searchMails(false);
-    //         });
-    //     }
-    // };
-
-
-    const selectMail = (item: any) => {
-        if (item) {
-            if (item.type !== 'draft') {
-                if (item && item.isUnread) {
-                    item.isUnread = false;
-                }
-                setSelectedMail(item);
-            } else {
-                openMail('draft', item);
-            }
-        } else {
-            setSelectedMail('');
-        }
     };
 
     const selectLead = (lead: any) => {
         if(lead){
+            console.log(lead);
+            
             setSelectedLead(lead);
             // openMail('', lead);
         }else{
             console.log('no-any leads is selected..')
         }
     }
-    
-
 
     const openMail = (type: string, item: any) => {
         if (type === 'add') {
@@ -209,34 +136,10 @@ const DashboardBox = () => {
         setIsEdit(true);
     };
 
-   
-
-  
-   
-    
-    
-
-   
-
-  
-
- 
-
-    // const checkAllCheckbox = () => {
-    //     if (filteredMailList.length && ids.length === filteredMailList.length) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // };
-
     const closeMsgPopUp = () => {
         setIsEdit(false);
         setSelectedTab('inbox');
-        // searchMails();
     };
-
-    
 
     const handleFilterLeads = (var_this:number) => {
         const filteredLeads = allleadlist.filter((lead: any) => lead.lead_status == var_this);
@@ -250,6 +153,8 @@ const DashboardBox = () => {
     };
 
     const getNotes2ByLeadStatus = (leadStatus:number) => {
+        console.log(leadStatus);
+        
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
     }
@@ -351,20 +256,6 @@ const DashboardBox = () => {
                         <div className="flex flex-col h-full">
                             <div className="flex justify-between items-center flex-wrap-reverse gap-4 p-4">
                                 <div className="flex items-center w-full sm:w-auto">
-                                    {/* <div className="ltr:mr-4 rtl:ml-4">
-                                        <input type="checkbox" className="form-checkbox" checked={checkAllCheckbox()} value={ids} onChange={() => {
-                                                if (ids.length === filteredMailList.length) {
-                                                    setIds([]);
-                                                } else {
-                                                    let checkedIds = filteredMailList.map((d: any) => {
-                                                        return d.id;
-                                                    });
-                                                    setIds([...checkedIds]);
-                                                }
-                                            }}
-                                            onClick={(event) => event.stopPropagation()}
-                                        />
-                                    </div> */}
                                     <div className="ltr:mr-4 rtl:ml-4">
                                         <Tippy content="Refresh">
                                             <button type="button" className="hover:text-primary flex items-center" onClick={() => refreshMails()}>
@@ -372,28 +263,6 @@ const DashboardBox = () => {
                                             </button>
                                         </Tippy>
                                     </div>
-                                    {/* {selectedTab === 'trash' && (
-                                        <ul className="flex flex-1 items-center sm:flex-none gap-4 ltr:sm:mr-3 rtl:sm:ml-4">
-                                            <li>
-                                                <div>
-                                                    <Tippy content="Permanently Delete">
-                                                        <button type="button" className="block hover:text-primary" onClick={() => setAction('delete')}>
-                                                            <IconTrash />
-                                                        </button>
-                                                    </Tippy>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div>
-                                                    <Tippy content="Restore">
-                                                        <button type="button" className="block hover:text-primary" onClick={() => setAction('restore')}>
-                                                            <IconRestore />
-                                                        </button>
-                                                    </Tippy>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    )} */}
                                 </div>
                                 <div className="flex justify-between items-center sm:w-auto w-full">
                                     <div className="flex items-center ltr:mr-4 rtl:ml-4">
@@ -416,7 +285,13 @@ const DashboardBox = () => {
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                     {TopbarStatuses.map((status) => (
-                                        <button key={status.value} onClick={() => handleFilterLeads(status.value)} type="button" className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}>{status.icon} {status.label} 
+                                        <button 
+                                            key={status.value} 
+                                            onClick={() => handleFilterLeads(status.value)} 
+                                            type="button" 
+                                            className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}
+                                        >
+                                            {status.icon} {status.label} 
                                         </button>
                                     ))}
                                 </div>
@@ -521,104 +396,6 @@ const DashboardBox = () => {
                                 ) : (
                                     <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
                                 )}
-
-                            {/* {pagedMails.length ? (
-                                <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
-                                    <table className="table-hover">
-                                        <tbody>
-                                            {pagedMails.map((mail: any) => {
-                                                return (
-                                                    <tr key={mail.id} className="cursor-pointer" onClick={() => selectMail(mail)}>
-                                                        <td>
-                                                            <div className="flex items-center whitespace-nowrap">
-                                                                <div className="ltr:mr-3 rtl:ml-3">
-                                                                    {ids.includes(mail.id)}
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        id={`chk-${mail.id}`}
-                                                                        value={mail.id}
-                                                                        checked={ids.length ? ids.includes(mail.id) : false}
-                                                                        onChange={() => handleCheckboxChange(mail.id)}
-                                                                        onClick={(event) => event.stopPropagation()}
-                                                                        className="form-checkbox"
-                                                                    />
-                                                                </div>
-                                                                <div className="ltr:mr-3 rtl:ml-3">
-                                                                    <Tippy content="Star">
-                                                                        <button
-                                                                            type="button"
-                                                                            className={`enabled:hover:text-warning disabled:opacity-60 flex items-center ${mail.isStar ? 'text-warning' : ''}`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setStar(mail.id);
-                                                                            }}
-                                                                            disabled={selectedTab === 'trash'}
-                                                                        >
-                                                                            <IconStar className={mail.isStar ? 'fill-warning' : ''} />
-                                                                        </button>
-                                                                    </Tippy>
-                                                                </div>
-                                                                <div className="ltr:mr-3 rtl:ml-3">
-                                                                    <Tippy content="Important">
-                                                                        <button
-                                                                            type="button"
-                                                                            className={`enabled:hover:text-primary disabled:opacity-60 rotate-90 flex items-center ${
-                                                                                mail.isImportant ? 'text-primary' : ''
-                                                                            }`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setImportant(mail.id);
-                                                                            }}
-                                                                            disabled={selectedTab === 'trash'}
-                                                                        >
-                                                                            <IconBookmark bookmark={false} className={`w-4.5 h-4.5 ${mail.isImportant && 'fill-primary'}`} />
-                                                                        </button>
-                                                                    </Tippy>
-                                                                </div>
-                                                                <div
-                                                                    className={`dark:text-gray-300 whitespace-nowrap font-semibold ${
-                                                                        !mail.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''
-                                                                    }`}
-                                                                >
-                                                                    {mail.firstName ? mail.firstName + ' ' + mail.lastName : mail.email}
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="font-medium text-white-dark overflow-hidden min-w-[300px] line-clamp-1">
-                                                                <span className={`${mail.isUnread ? 'text-gray-800 dark:text-gray-300 font-semibold' : ''}`}>
-                                                                    <span>{mail.title}</span> &minus;
-                                                                    <span> {mail.displayDescription}</span>
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="flex items-center">
-                                                                <div
-                                                                    className={`w-2 h-2 rounded-full ${
-                                                                        (mail.group === 'personal' && 'bg-primary') ||
-                                                                        (mail.group === 'work' && 'bg-warning') ||
-                                                                        (mail.group === 'social' && 'bg-success') ||
-                                                                        (mail.group === 'private' && 'bg-danger')
-                                                                    }`}
-                                                                ></div>
-                                                                {mail.attachments && (
-                                                                    <div className="ltr:ml-4 rtl:mr-4">
-                                                                        <IconPaperclip />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                        <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">{showTime(mail)}</td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            ) : (
-                                <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
-                            )} */}
                         </div>
                     )}
                     {selectedLead && !isEdit && (
@@ -737,9 +514,138 @@ const DashboardBox = () => {
                                   </div>
                                 </div>
                               </div> 
+                                <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
+                                    <div className="panel">
+                                        <div className="flex items-center justify-between mb-5">
+                                            <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
+                                        </div>
+                                        <div className="data">
+                                            <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
+                                                <li className="flex items-center gap-2 text-dark">
+                                                    <IconUser className="shrink-0" />
+                                                    {selectedLead?.customer_name || 'Not-Found'}
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <IconPhone />
+                                                    <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                    {selectedLead?.customer_phone || 'Not-Found'}
+                                                    </span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <IconPhone />
+                                                    <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                    {selectedLead?.customer_phone2 || 'Not-Found'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <button className="flex items-center gap-2">
+                                                        <IconMail className="w-5 h-5 shrink-0" />
+                                                        <span className="text-info truncate">{selectedLead?.customer_email || 'Not-Found'}</span>
+                                                    </button>
+                                                </li>
+                                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                                <li className="flex items-center gap-2">
+                                                    <IconCalendar className="shrink-0" />
+                                                    {selectedLead?.agents.client_user_name}
+                                                </li>
+                                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                            </ul>
+                                        </div>
+                                        <form encType="multipart/form-data" ref={(el) => (combinedRef.current.form = el)} onSubmit={handleSubmit}>
+                                            <div className="mt-1">
+                                                <div className="flex flex-col justify-between lg:flex-row">
+                                                    <div className="w-full cursor-pointer">
+                                                        <div className="mt-3 items-center">
+                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
+                                                        <input type="text" name="lead_id" />
+
+                                                        </div>
+                                                        <div className="mt-3 items-center cursor-pointer">
+                                                        <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
+                                                        </div>   
+                                                        <div className="mt-4">
+                                                            <button className="btn btn-secondary w-full">Save</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div className="panel lg:col-span-2 xl:col-span-4">
+{/* 
+                                    <div className="space-y-2 font-semibold">
+                                                <div className="border border-[#d3d3d3] rounded dark:border-[#1b2e4b]">
+                                                    <button
+                                                        type="button"
+                                                        className={`p-4 w-full flex items-center text-white-dark dark:bg-[#1b2e4b]`}
+                                                        onClick={() => togglePara('1')}
+                                                    >
+                                                        Collapsible Group Item #1
+                                                        <div className={`ltr:ml-auto rtl:mr-auto rotate-180`}>
+                                                            <svg>...</svg>
+                                                        </div>
+                                                    </button>
+                                                    <div>
+                                                        <AnimateHeight duration={300} height={active === '1' ? 'auto' : 0}>
+                                                            <div className="space-y-2 p-4 text-white-dark text-[13px] border-t border-[#d3d3d3] dark:border-[#1b2e4b]">
+                                                                <p>
+                                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                                                </p>
+                                                                <p>
+                                                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+                                                                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                                                </p>
+                                                            </div>
+                                                        </AnimateHeight>
+                                                    </div>
+                                                </div>
+                                            </div> */}
+                                        <div className="mb-5">
+                                            <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
+                                                <table className="whitespace-nowrap">
+                                                    <tbody className="dark:text-white-dark">
+                                                        {selectedLead?.comments?.map((comment:any, i:any) => (
+                                                            <div className="maindiv" key={i}>
+                                                                    <small>
+                                                                        { comment?.created_at }
+                                                                    </small>&nbsp;
+                                                                
+                                                                    <small>
+                                                                        {getUserName(comment, selectedLead?.comments, i)}
+                                                                    </small>&nbsp;
+                                                                
+                                                                    <small dangerouslySetInnerHTML={{ __html: getNotes2ByLeadStatus(comment.lead_status || '') }}></small>&nbsp;
+
+                                                                    {comment.lead_status === '2' && ( <small>{comment?.agent_name}</small> )}&nbsp;
+
+                                                                    {i > 0 && ( 
+                                                                        <small dangerouslySetInnerHTML={{__html: getNotesByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
+                                                                    )}
+
+                                                                
+                                                                    <div className="border-2 p-2">
+                                                                    {comment.lead_comment && (
+                                                                        <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
+                                                                            <small>{comment?.updated_at || 'Invalid Time'}</small>&nbsp;
+                                                                            <small>{comment?.user_name} :</small>&nbsp;
+                                                                            <small>{comment?.lead_comment}</small>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>  
+                                    </div>
+                                </div> 
                             </div>
-                        </div>
-                    )}
+                    </div>
+                )}
                     {isEdit && (
                         <div className="relative">
                             <div className="py-4 px-6 flex items-center">
