@@ -45,7 +45,7 @@ const DashboardBox = () => {
     const [allleadlist, setallleadlist] = useState<any[]>([]);
     const [filterleadslist, setfilterleadslist] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
-
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
     useEffect(() => {
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
@@ -98,8 +98,6 @@ const DashboardBox = () => {
 
     const selectLead = (lead: any) => {
         if(lead){
-            console.log(lead);
-            
             setSelectedLead(lead);
             // openMail('', lead);
         }else{
@@ -142,19 +140,14 @@ const DashboardBox = () => {
     };
 
     const handleFilterLeads = (var_this:number) => {
-        const filteredLeads = allleadlist.filter((lead: any) => lead.lead_status == var_this);
-        setfilterleadslist(filteredLeads);
+        if(var_this){ return GetLeads(var_this); }else{ toast.error('Not Found...') }
     }
 
-    const getNotesByLeadStatus = (leadStatus:number) => {
-        
+    const getNotesByLeadStatus = (leadStatus:number) => {    
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
-
     const getNotes2ByLeadStatus = (leadStatus:number) => {
-        console.log(leadStatus);
-        
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
     }
@@ -163,25 +156,37 @@ const DashboardBox = () => {
         e.preventDefault();
         if (combinedRef.current.form) {
             const formData = new FormData(combinedRef.current.form);
+            const status = formData.get('lead_status');
             try {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
-                        toast.success('Update lead');
                         toast.success(`${response.payload.data.message}`);
                         combinedRef.current.form?.reset();
                         setSelectedLead(null);
+                        if (status) {
+                            return GetLeads(Number(status)); 
+                        }
                     }else{
-                        console.log('data')
-                        // setErrors(response.payload);
+                        setErrors(response.payload.errors);
+                        return
                     }
                 } catch (error: any) {
                     console.error('Error creating/updating news:', error);
-                }
-           
-
+            }
         }
     }
 
+    const handleChange = (selected:any) => {
+        setSelectedLead(selected?.value); 
+    }
+
+    // filter data for every Status
+    const GetLeads = (status: number) => {
+        const newfilterdata = allleadlist.filter((lead: any) => lead.lead_status == status);
+        setfilterleadslist(newfilterdata);
+    };
+
+    
 
 
     return (
@@ -204,8 +209,7 @@ const DashboardBox = () => {
                             <div className="space-y-1">
                                 <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
                                         !isEdit && selectedTab === 'inbox' ? 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]' : ''
-                                    }`} onClick={() => { setSelectedTab('inbox');  }} >
-                                        {/* tabChanged('inbox'); */}
+                                    }`} onClick={() => { setSelectedTab('inbox');  }}>
                                     <div className="flex items-center">
                                         <IconMail className="w-5 h-5 shrink-0" />
                                         <div className="ltr:ml-3 rtl:mr-3">Inbox</div>
@@ -237,7 +241,6 @@ const DashboardBox = () => {
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             </div>
                         </PerfectScrollbar>
-
                         <div className="ltr:left-0 rtl:right-0 absolute bottom-0 p-4 w-full">
                             <button type="button" className="w-full flex p-2 justify-between items-center hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium group" onClick={() => setIsShowMailMenu(false)} >
                                 <div className="flex items-center">
@@ -285,14 +288,7 @@ const DashboardBox = () => {
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                     {TopbarStatuses.map((status) => (
-                                        <button 
-                                            key={status.value} 
-                                            onClick={() => handleFilterLeads(status.value)} 
-                                            type="button" 
-                                            className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}
-                                        >
-                                            {status.icon} {status.label} 
-                                        </button>
+                                        <button  key={status.value}  onClick={() => handleFilterLeads(status.value)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
                                     ))}
                                 </div>
                                 <div className="mt-4 md:flex-auto flex-1">
@@ -450,7 +446,7 @@ const DashboardBox = () => {
                                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                             <li className="flex items-center gap-2">
                                                 <IconCalendar className="shrink-0" />
-                                                {selectedLead?.agents.client_user_name}
+                                                {selectedLead?.agents?.client_user_name}
                                             </li>
                                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                         </ul>
@@ -460,13 +456,16 @@ const DashboardBox = () => {
                                             <div className="flex flex-col justify-between lg:flex-row">
                                                 <div className="w-full cursor-pointer">
                                                     <div className="mt-3 items-center">
+                                                        {/* onChange={handleChange} */}
                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
                                                       <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
                                                       <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
                                                       <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id} />
+                                                      {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
                                                     </div>
                                                     <div className="mt-3 items-center cursor-pointer">
                                                        <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
+                                                       {errors?.lead_comment && <p className="text-danger error">{errors.lead_comment[0]}</p>}
                                                     </div>   
                                                     <div className="mt-4">
                                                         <button className="btn btn-secondary w-full">Save</button>
