@@ -46,6 +46,8 @@ const DashboardBox = () => {
     const [filterleadslist, setfilterleadslist] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
+    const [selectedTab, setSelectedTab] = useState('assignedtab');
+
     useEffect(() => {
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
@@ -53,15 +55,22 @@ const DashboardBox = () => {
             dispatch(Leadslist({ formData }));
             combinedRef.current.fetched = true;
         }
+
+        if(selectedTab == 'assignedtab'){
+
+        }
+
+        console.log(selectedTab);
+
     }, [loginuser?.client_user_id, dispatch]);
     useEffect(() => {
         if(leads){
             setallleadlist(leads);  
         }
     }, [leads]);
-
+    
     useEffect(() => {
-        const data = allleadlist.filter((lead: any) => lead.lead_status == 1);
+        const data = allleadlist.filter((lead: any) => lead.lead_status == 2);
         setfilterleadslist(data);
     }, [allleadlist]);
 
@@ -82,7 +91,6 @@ const DashboardBox = () => {
     const [selectedMail, setSelectedMail] = useState<any>(null);
     const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
     const [pagedMails, setPagedMails] = useState<any>([]);
-    const [selectedTab, setSelectedTab] = useState('inbox');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const [pager] = useState<any>({
         currentPage: 1,
@@ -139,8 +147,17 @@ const DashboardBox = () => {
         setSelectedTab('inbox');
     };
 
-    const handleFilterLeads = (var_this:number) => {
-        if(var_this){ return GetLeads(var_this); }else{ toast.error('Not Found...') }
+    const handleFilterLeads = (var_this:number, tab:any) => {
+        if(var_this){
+            // switch (tab) {
+            //     case 'assignedtab':  
+            //     default:
+            //         console.log(`Fetching leads for tab: ${tab}`);
+            // }
+
+             return GetLeads(var_this); 
+            }
+        else{ toast.error('Not Found...') }
     }
 
     const getNotesByLeadStatus = (leadStatus:number) => {    
@@ -160,8 +177,11 @@ const DashboardBox = () => {
             try {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
-                        toast.success(`${response.payload.data.message}`);
-                        combinedRef.current.form?.reset();
+
+                        // console.log(response.payload);
+
+                        // toast.success(`${response.payload.data.message}`);
+                        // combinedRef.current.form?.reset();
                         setSelectedLead(null);
                         if (status) {
                             return GetLeads(Number(status)); 
@@ -201,9 +221,7 @@ const DashboardBox = () => {
                 >
                     <div className="flex flex-col h-full pb-16">
                         <div className="pb-5">
-                            <button className="btn btn-primary w-full" type="button" onClick={() => openMail('add', null)}>
-                                Add Lead
-                            </button>
+                            <button className="btn btn-primary w-full" type="button" onClick={() => openMail('add', null)}> Add Lead </button>
                         </div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
@@ -220,7 +238,7 @@ const DashboardBox = () => {
                                 </button>
                                 {
                                     SidebarStatuses.map((sidebarstatus) => (
-                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => handleFilterLeads(sidebarstatus?.value)} >
+                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => handleFilterLeads(sidebarstatus?.value, sidebarstatus?.tab)} >
                                         <div className="flex items-center">
                                             {sidebarstatus.icon}
                                             <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
@@ -273,9 +291,7 @@ const DashboardBox = () => {
                                             <IconMenu />
                                         </button>
                                         <div className="relative group">
-                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Mail" value={searchText} onChange={(e) => setSearchText(e.target.value)}
-                                                
-                                            />
+                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Mail" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                                             {/* onKeyUp={() => searchMails()} */}
                                             <div className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                                                 <IconSearch />
@@ -288,8 +304,9 @@ const DashboardBox = () => {
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                     {TopbarStatuses.map((status) => (
-                                        <button  key={status.value}  onClick={() => handleFilterLeads(status.value)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
+                                        <button  key={status.value} onClick={() => handleFilterLeads(status.value, status.tab)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
                                     ))}
+                   
                                 </div>
                                 <div className="mt-4 md:flex-auto flex-1">
                                     <div className="flex items-center md:justify-end justify-center">
@@ -444,8 +461,7 @@ const DashboardBox = () => {
                                                 </button>
                                             </li>
                                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                            <li className="flex items-center gap-2">
-                                                <IconCalendar className="shrink-0" />
+                                            <li className="flex items-center gap-2"> <IconUser className="shrink-0" />
                                                 {selectedLead?.agents?.client_user_name}
                                             </li>
                                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
@@ -456,11 +472,10 @@ const DashboardBox = () => {
                                             <div className="flex flex-col justify-between lg:flex-row">
                                                 <div className="w-full cursor-pointer">
                                                     <div className="mt-3 items-center">
-                                                        {/* onChange={handleChange} */}
                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
                                                       <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
                                                       <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
-                                                      <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id} />
+                                                      <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
                                                       {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
                                                     </div>
                                                     <div className="mt-3 items-center cursor-pointer">
