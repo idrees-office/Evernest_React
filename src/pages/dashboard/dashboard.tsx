@@ -32,21 +32,23 @@ import Select from 'react-select';
 import { updateSingleLead } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
 
+
 const DashboardBox = () => {
+    const dispatch        = useDispatch<AppDispatch>();
     const TopbarStatuses  = topBarStatus();
     const SidebarStatuses = SidebarStatus();
-    const colorsarray  = MatchColorList();
-    const dropdownOption = DropdownOption();
-    const dispatch = useDispatch<AppDispatch>();
-    const combinedRef = useRef<any>({ fetched: false, form: null });
-    const toast = Toast();
-    const loginuser = useSelector((state: IRootState) => state.auth.user || {});
-    const leads     = useSelector((state: IRootState) => state.leadsslice.leads);
-    const [allleadlist, setallleadlist] = useState<any[]>([]);
-    const [filterleadslist, setfilterleadslist] = useState<any[]>([]);
+    const colorsarray     = MatchColorList();
+    const dropdownOption  = DropdownOption();
+    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, });
+    const toast           = Toast();
+    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
+    const leads           = useSelector((state: IRootState) => state.leadsslice.leads);
+    const [AllLeadList, setAllLeadList] = useState<any[]>([]);
+    const [FilterLeadsList, setFilterLeadsList] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const [selectedTab, setSelectedTab] = useState('assignedtab');
+    const [selectedTab, setSelectedTab] = useState<any>();
+    
 
     useEffect(() => {
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
@@ -55,25 +57,16 @@ const DashboardBox = () => {
             dispatch(Leadslist({ formData }));
             combinedRef.current.fetched = true;
         }
-
-        if(selectedTab == 'assignedtab'){
-
-        }
-
-        console.log(selectedTab);
-
     }, [loginuser?.client_user_id, dispatch]);
-    useEffect(() => {
-        if(leads){
-            setallleadlist(leads);  
-        }
-    }, [leads]);
-    
-    useEffect(() => {
-        const data = allleadlist.filter((lead: any) => lead.lead_status == 2);
-        setfilterleadslist(data);
-    }, [allleadlist]);
 
+    useEffect(() => {
+        if (leads) {  
+            console.log(leads);
+            setAllLeadList(leads);
+         }
+    }, [leads]);
+
+    
     const defaultParams = {
         id: null,
         from: 'vristo@mail.com',
@@ -104,13 +97,8 @@ const DashboardBox = () => {
         setSearchText('');
     };
 
-    const selectLead = (lead: any) => {
-        if(lead){
-            setSelectedLead(lead);
-            // openMail('', lead);
-        }else{
-            console.log('no-any leads is selected..')
-        }
+    const selectLead = (selectSingleLead: any) => {
+        if(selectSingleLead){ setSelectedLead(selectSingleLead); }
     }
 
     const openMail = (type: string, item: any) => {
@@ -146,19 +134,14 @@ const DashboardBox = () => {
         setIsEdit(false);
         setSelectedTab('inbox');
     };
-
-    const handleFilterLeads = (var_this:number, tab:any) => {
-        if(var_this){
-            // switch (tab) {
-            //     case 'assignedtab':  
-            //     default:
-            //         console.log(`Fetching leads for tab: ${tab}`);
-            // }
-
-             return GetLeads(var_this); 
-            }
-        else{ toast.error('Not Found...') }
-    }
+    // tab:any
+    const LeadsTabs = (leadStatus: number) => {
+        if (leadStatus) {
+            getLeads(leadStatus);
+        } else {
+            toast.error('Not Found...');
+        }
+    };
 
     const getNotesByLeadStatus = (leadStatus:number) => {    
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
@@ -173,19 +156,25 @@ const DashboardBox = () => {
         e.preventDefault();
         if (combinedRef.current.form) {
             const formData = new FormData(combinedRef.current.form);
-            const status = formData.get('lead_status');
+            const selectedStatus = formData.get('lead_status');
             try {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
+                        setSelectedLead(null); 
+                        const updatedLead = response.payload.data;
+                        
+                        // Update the lead list
+                        // const updatedAllLeadList = AllLeadList.map((lead: any) =>
+                        //     lead.id == updatedLead.id ? updatedLead : lead
+                        // );
 
-                        // console.log(response.payload);
+                        // setFilterLeadsList(updatedAllLeadList); // Assuming you have a setter for AllLeadList
+                        getLeads(Number(selectedStatus));
 
-                        // toast.success(`${response.payload.data.message}`);
-                        // combinedRef.current.form?.reset();
-                        setSelectedLead(null);
-                        if (status) {
-                            return GetLeads(Number(status)); 
-                        }
+
+                       
+                        
+                        
                     }else{
                         setErrors(response.payload.errors);
                         return
@@ -195,19 +184,10 @@ const DashboardBox = () => {
             }
         }
     }
-
-    const handleChange = (selected:any) => {
-        setSelectedLead(selected?.value); 
-    }
-
-    // filter data for every Status
-    const GetLeads = (status: number) => {
-        const newfilterdata = allleadlist.filter((lead: any) => lead.lead_status == status);
-        setfilterleadslist(newfilterdata);
+    const getLeads = (status: number) => {
+        const filterLead = AllLeadList.filter((lead: any) => lead.lead_status == status);
+        setFilterLeadsList(filterLead);
     };
-
-    
-
 
     return (
         <div>
@@ -233,12 +213,14 @@ const DashboardBox = () => {
                                         <div className="ltr:ml-3 rtl:mr-3">Inbox</div>
                                     </div>
                                     <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
-                                        {allleadlist && allleadlist.filter((d) => d.value == 2).length}
+                                        {/* {AllLeadList && AllLeadList.filter((d) => d.value == 2).length} */}
+                                        djddjdj
                                     </div>
                                 </button>
+                                {/* sidebarstatus?.tab */}
                                 {
                                     SidebarStatuses.map((sidebarstatus) => (
-                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => handleFilterLeads(sidebarstatus?.value, sidebarstatus?.tab)} >
+                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => LeadsTabs(sidebarstatus?.value,)} >
                                         <div className="flex items-center">
                                             {sidebarstatus.icon}
                                             <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
@@ -303,8 +285,9 @@ const DashboardBox = () => {
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
+                                    {/* status.tab */}
                                     {TopbarStatuses.map((status) => (
-                                        <button  key={status.value} onClick={() => handleFilterLeads(status.value, status.tab)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
+                                        <button  key={status.value} onClick={() => LeadsTabs(status.value)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
                                     ))}
                    
                                 </div>
@@ -331,11 +314,11 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                {filterleadslist.length ? (
+                                {FilterLeadsList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>
-                                                {filterleadslist.map((lead: any) => {
+                                                {FilterLeadsList.map((lead: any) => {
                                                     return (
                                                         <tr key={lead.id} className="cursor-pointer" onClick={() => selectLead(lead)}>
                                                             <td>
