@@ -48,25 +48,7 @@ const DashboardBox = () => {
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [selectedTab, setSelectedTab] = useState<any>();
-    
 
-    useEffect(() => {
-        if (loginuser?.client_user_id && !combinedRef.current.fetched) {
-            const formData = new FormData();
-            formData.append('client_user_id', loginuser.client_user_id);
-            dispatch(Leadslist({ formData }));
-            combinedRef.current.fetched = true;
-        }
-    }, [loginuser?.client_user_id, dispatch]);
-
-    useEffect(() => {
-        if (leads) {  
-            console.log(leads);
-            setAllLeadList(leads);
-         }
-    }, [leads]);
-
-    
     const defaultParams = {
         id: null,
         from: 'vristo@mail.com',
@@ -85,13 +67,50 @@ const DashboardBox = () => {
     const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
     const [pagedMails, setPagedMails] = useState<any>([]);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const [pager] = useState<any>({
+    const [pager, setPager] = useState<any>({
         currentPage: 1,
         totalPages: 0,
         pageSize: 10,
         startIndex: 0,
         endIndex: 0,
     });
+
+    useEffect(() => {
+        if (loginuser?.client_user_id && !combinedRef.current.fetched) {
+            const formData = new FormData();
+            formData.append('client_user_id', loginuser.client_user_id);
+            dispatch(Leadslist({ formData }));
+            combinedRef.current.fetched = true;
+        }
+    }, [loginuser?.client_user_id, dispatch]);
+
+    useEffect(() => {
+        if (leads) {  
+            setAllLeadList(leads);
+         }
+    }, [leads]);
+
+
+    
+
+
+    
+    
+
+
+
+    useEffect(() => {
+        const totalPages = Math.ceil(FilterLeadsList.length / pager.pageSize);
+        const startIndex = (pager.currentPage - 1) * pager.pageSize;
+        const endIndex = startIndex + pager.pageSize;
+        setPager((prev: any) => ({
+            ...prev,
+            totalPages,
+            startIndex,
+            endIndex: endIndex > FilterLeadsList.length ? FilterLeadsList.length : endIndex,
+        }));
+    }, [FilterLeadsList, pager.currentPage, pager.pageSize]);
+
 
     const refreshMails = () => {
         setSearchText('');
@@ -162,19 +181,9 @@ const DashboardBox = () => {
                     if (response.payload.status === 200 || response.payload.status === 201){
                         setSelectedLead(null); 
                         const updatedLead = response.payload.data;
-                        
-                        // Update the lead list
-                        // const updatedAllLeadList = AllLeadList.map((lead: any) =>
-                        //     lead.id == updatedLead.id ? updatedLead : lead
-                        // );
-
-                        // setFilterLeadsList(updatedAllLeadList); // Assuming you have a setter for AllLeadList
+                        console.log(updatedLead);
                         getLeads(Number(selectedStatus));
 
-
-                       
-                        
-                        
                     }else{
                         setErrors(response.payload.errors);
                         return
