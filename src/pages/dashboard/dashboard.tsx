@@ -68,7 +68,6 @@ const DashboardBox = () => {
     }, [leads]);
 
 
-   
 
 
     const refreshMails = () => {
@@ -112,9 +111,10 @@ const DashboardBox = () => {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
                         setSelectedLead(null); 
+
                         const updatedLead = response.payload.data;
-                        console.log(updatedLead);
-                        getLeads(Number(selectedStatus));
+                        console.log(updatedLead[0].lead_status);
+                        getLeads(Number(updatedLead[0].lead_status));
 
                     }else{
                         setErrors(response.payload.errors);
