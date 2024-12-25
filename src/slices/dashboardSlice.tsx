@@ -33,7 +33,7 @@ import apiClient from '../utils/apiClient';
         try {
             const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
             const response = await apiClient.post(url, formData);
-            return {data: response.data, status: response.status};
+            return {data: response?.data.data, status: response?.status};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -57,11 +57,12 @@ import apiClient from '../utils/apiClient';
     });
     
     const initialState = {
-        leads: [],
+        leads: [] as { lead_id: number; }[],
         success: false,
         loading: false,
         message : '',
         status : 0,
+        
     };
 
 const LeadsSlice = createSlice({
@@ -88,17 +89,19 @@ const LeadsSlice = createSlice({
                 state.success = true;
                 state.leads = action.payload.leadsdata?.data || [];
                 state.loading = false;
-                
-            })
-            .addCase(updateSingleLead.fulfilled, (state, action) => {
+            }).addCase(updateSingleLead.fulfilled, (state, action) => {
                 state.success = true;
-                state.status =  action.payload.status
-                action.payload?.data
-                // console.log(action.payload.data);
-
-                // state.leads = action.payload.data?.data || [];
-            })
-            .addCase(deleteLeads.fulfilled, (state, action) => {
+                state.status = action.payload.status;
+                const updatedLead = action.payload?.data?.[0];
+                if (updatedLead) {
+                    const index = state.leads.findIndex(lead => lead.lead_id == updatedLead.lead_id);
+                    if (index !== -1) {
+                        state.leads[index] = { ...updatedLead };
+                    } else {
+                        state.leads.push(updatedLead);
+                    }
+                }
+            }).addCase(deleteLeads.fulfilled, (state, action) => {
                 state.success = true;
                 const { id } = action.payload;
                 // state.leads = state.leads.filter((blog) => blog.id !== id);  

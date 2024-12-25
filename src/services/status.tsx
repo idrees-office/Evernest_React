@@ -17,6 +17,8 @@ export const STATUSES = [
         bgColor : 'bg-success',
         notes   : 'From Interested Lead',
         notes2  : 'New Lead Created and Marked <span class="text-success">Interested </span>',
+        tab   : 'newtab',
+
     },
     {
         value: 2,
@@ -27,6 +29,8 @@ export const STATUSES = [
         bgColor : 'bg-dark',
         notes: 'From Assigned',
         notes2  : '<span class="text-dark">Assigned </span> Lead to',
+        tab   : 'assignedtab',
+        activeColor: "btn-outline-dark bg-dark",
     },
     {
         value: 3,
@@ -37,6 +41,8 @@ export const STATUSES = [
         bgColor : 'bg-secondary',
         notes   : 'From Connected',
         notes2  : 'Moved to: <span class="text-secondary">Connected </span>',
+        tab   : 'connectedtab',
+        activeColor: "btn-outline-secondary bg-secondary",
 
     },
     {
@@ -47,7 +53,11 @@ export const STATUSES = [
         outlineColor: 'btn-outline-success',
         bgColor : 'bg-success',
         notes  : 'From Cold',
-        notes2 : 'Moved to: <span class="text-success">Cold </span>'
+        notes2 : 'Moved to: <span class="text-success">Cold </span>',
+        tab   : 'coldtab',
+        activeColor: "btn-outline-success bg-success",
+
+
     },
     {
         value: 5,
@@ -57,7 +67,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-warning',
         bgColor : 'bg-warning',
         notes : 'From Warm',
-        notes2 : 'Moved to: <span class="text-warning">Warm Lead</span>'
+        notes2 : 'Moved to: <span class="text-warning">Warm Lead</span>',
+        tab   : 'warmtab',
     },
     {
         value: 6,
@@ -67,7 +78,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-info',
         bgColor : 'bg-info',
         notes : 'From Hot',
-        notes2 : 'Moved to: <span class="text-info">Hot </span> Leads'
+        notes2 : 'Moved to: <span class="text-info">Hot </span> Leads',
+        tab   : 'hottab',
     },
     {
         value: 7,
@@ -77,7 +89,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-primary',
         bgColor : 'bg-primary',
         notes   : 'From Meeting Schedule',
-        notes2  : 'Moved to: <span class="text-primary">Meeting Schedule </span>'
+        notes2  : 'Moved to: <span class="text-primary">Meeting Schedule </span>',
+        tab   : 'meetingtab',
     },
     {
         value: 8,
@@ -97,7 +110,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
         notes   : 'From No Answer',
-        notes2  : 'Moved to: <span class="text-primary">No Answer </span>'
+        notes2  : 'Moved to: <span class="text-primary">No Answer </span>',
+        tab   : 'noanswertab',
     },
     {
         value: 10,
@@ -108,6 +122,8 @@ export const STATUSES = [
         bgColor : 'bg-secondary',
         notes   : 'From Low Buget',
         notes2  : 'Moved to: <span class="text-primary">Low-Budget</span>',
+        tab   : 'lowbudgettab',
+
     },
     {
         value: 11,
@@ -117,7 +133,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
         notes   : 'From Not Responding AnyMore',
-        notes2  : 'Moved to: <span class="text-primary">Not Responding </span> AnyMore'
+        notes2  : 'Moved to: <span class="text-primary">Not Responding </span> AnyMore',
+        tab     : 'notrespondingtab',
     },
     {
         value: 12,
@@ -127,7 +144,9 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
         notes   : 'From Incorrect Detail',
-        notes2  : 'Moved to: <span class="text-primary">Incorrect Detail </span>'
+        notes2  : 'Moved to: <span class="text-primary">Incorrect Detail </span>',
+        tab     : 'incorrecttab',
+
     },
     {
         value: 13,
@@ -137,7 +156,9 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-primary',
         notes   : 'From Agent',
-        notes2  : 'Moved to: <span class="text-primary">Agent </span>'
+        notes2  : 'Moved to: <span class="text-primary">Agent </span>',
+        tab     : 'agenttab',
+
     },
     {
         value: 14,
@@ -147,7 +168,9 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-primary',
         notes   : 'From Junk',
-        notes2  : 'Moved to: <span class="text-primary">Junk </span>'
+        notes2  : 'Moved to: <span class="text-primary">Junk </span>',
+        tab     : 'junktab',
+
     },
     {
         value: 15,
@@ -162,8 +185,8 @@ export const STATUSES = [
 
 ];
 
-export const topBarStatus = ()     => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
-export const SidebarStatus = ()    => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
+export const topBarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
+export const SidebarStatus  = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
 export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
 export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
 
