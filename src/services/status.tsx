@@ -30,7 +30,7 @@ export const STATUSES = [
         notes: 'From Assigned',
         notes2  : '<span class="text-dark">Assigned </span> Lead to',
         tab   : 'assignedtab',
-        activeColor: "btn-outline-dark bg-dark",
+        activeColor: "btn-dark",
     },
     {
         value: 3,
@@ -42,7 +42,7 @@ export const STATUSES = [
         notes   : 'From Connected',
         notes2  : 'Moved to: <span class="text-secondary">Connected </span>',
         tab   : 'connectedtab',
-        activeColor: "btn-outline-secondary bg-secondary",
+        activeColor: "btn-secondary",
 
     },
     {
@@ -55,7 +55,7 @@ export const STATUSES = [
         notes  : 'From Cold',
         notes2 : 'Moved to: <span class="text-success">Cold </span>',
         tab   : 'coldtab',
-        activeColor: "btn-outline-success bg-success",
+        activeColor: "btn-success",
 
 
     },
@@ -69,6 +69,7 @@ export const STATUSES = [
         notes : 'From Warm',
         notes2 : 'Moved to: <span class="text-warning">Warm Lead</span>',
         tab   : 'warmtab',
+        activeColor: "btn-warning",
     },
     {
         value: 6,
@@ -80,6 +81,7 @@ export const STATUSES = [
         notes : 'From Hot',
         notes2 : 'Moved to: <span class="text-info">Hot </span> Leads',
         tab   : 'hottab',
+        activeColor: "btn-info",
     },
     {
         value: 7,
@@ -91,6 +93,7 @@ export const STATUSES = [
         notes   : 'From Meeting Schedule',
         notes2  : 'Moved to: <span class="text-primary">Meeting Schedule </span>',
         tab   : 'meetingtab',
+        activeColor: "btn-primary",
     },
     {
         value: 8,
@@ -100,7 +103,8 @@ export const STATUSES = [
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
         notes   : 'From Meeting Complete',
-        notes2  : 'Moved to: <span class="text-secondary">Meeting Complete </span>'
+        notes2  : 'Moved to: <span class="text-secondary">Meeting Complete </span>',
+        activeColor: "btn-secondary",
     },
     {
         value: 9,

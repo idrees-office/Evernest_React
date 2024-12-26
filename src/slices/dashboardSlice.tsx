@@ -56,7 +56,8 @@ import apiClient from '../utils/apiClient';
         }
     });
     const initialState = {
-        leads: [] as { lead_id: number; }[],
+        leads: [] as { lead_id: number }[],
+        lead_status: 0,
         success: false,
         loading: false,
         message : '',
@@ -91,14 +92,14 @@ const LeadsSlice = createSlice({
             }).addCase(updateSingleLead.fulfilled, (state, action) => {
                 state.success = true;
                 state.status = action.payload.status;
+                state.lead_status = action.payload?.data?.[0].lead_status;
+                // console.log(action.payload?.data?.[0].lead_status);
+                
                 const updatedLead = action.payload?.data?.[0];
                 if (updatedLead) {
-                    const index = state.leads.findIndex(lead => lead.lead_id == updatedLead.lead_id);
-                    if (index !== -1) {
-                        state.leads[index] = { ...updatedLead };
-                    } else {
-                        state.leads.push(updatedLead);
-                    }
+                    state.leads = state.leads.map(lead => 
+                        lead.lead_id === updatedLead.lead_id ? updatedLead : lead
+                    );
                 }
             }).addCase(deleteLeads.fulfilled, (state, action) => {
                 state.success = true;
