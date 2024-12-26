@@ -63,18 +63,15 @@ const DashboardBox = () => {
         }
     }, [loginuser?.client_user_id, dispatch]);
 
-    useEffect(() => {
-        if (leads) {   setAllLeadList(leads); }
-    }, [leads]);
-
-
-
-
+    useEffect(() => { if (leads) { setAllLeadList(leads); } }, [leads]);
+    
+   
     const refreshMails = () => {
         setSearchText('');
     };
 
-    const selectLead = (selectSingleLead: any) => {
+    const selectLead = (selectSingleLead:  any) => {
+
         if(selectSingleLead){ setSelectedLead(selectSingleLead); }
     }
 
@@ -84,7 +81,7 @@ const DashboardBox = () => {
         setIsEdit(false);
         setSelectedTab('inbox');
     };
-    // tab:any
+
     const LeadsTabs = (leadStatus: number) => {
         if (leadStatus) {
             getLeads(leadStatus);
@@ -111,10 +108,10 @@ const DashboardBox = () => {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
                         setSelectedLead(null); 
-
                         const updatedLead = response.payload.data;
-                        console.log(updatedLead[0].lead_status);
-                        getLeads(Number(updatedLead[0].lead_status));
+                        setFilterLeadsList(  {...updatedLead } );
+                        // console.log(updatedLead[0].lead_status);
+                        // getLeads(Number(updatedLead[0].lead_status));
 
                     }else{
                         setErrors(response.payload.errors);
@@ -125,22 +122,17 @@ const DashboardBox = () => {
             }
         }
     }
+
     const getLeads = (status: number) => {
         const filterLead = AllLeadList.filter((lead: any) => lead.lead_status == status);
         setFilterLeadsList(filterLead);
     };
 
-
     useEffect(() => {
         const totalPages = Math.ceil(FilterLeadsList.length / pager.pageSize);
         const startIndex = (pager.currentPage - 1) * pager.pageSize;
         const endIndex = Math.min(startIndex + pager.pageSize, FilterLeadsList.length);
-        setPager((prev:any) => ({
-            ...prev,
-            totalPages,
-            startIndex,
-            endIndex,
-        }));
+        setPager((prev:any) => ({ ...prev, totalPages, startIndex, endIndex, }));
     }, [FilterLeadsList, pager.currentPage, pager.pageSize]);
 
     const handlePageChange = (newPage: number) => {
@@ -164,19 +156,18 @@ const DashboardBox = () => {
                         </div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
-                                {
-                                    SidebarStatuses.map((sidebarstatus) => (
-                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => LeadsTabs(sidebarstatus?.value,)} >
-                                        <div className="flex items-center">
-                                            {sidebarstatus.icon}
-                                            <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                        </div>
-                                        <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
-                                            24
-                                        </div>
-                                    </button>
-                                    ))
-                                }
+                                     {SidebarStatuses.map((sidebarstatus) => { 
+                                        const sidebarcount = AllLeadList.filter((lead) => lead.lead_status == sidebarstatus.value).length;
+                                        return(
+                                            <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => LeadsTabs(sidebarstatus?.value,)} >
+                                            <div className="flex items-center">
+                                                {sidebarstatus.icon}
+                                                <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                            </div>
+                                             <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
+                                           </button>
+                                        )
+                                    })}
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
                                     <div className="flex items-center">
@@ -219,9 +210,14 @@ const DashboardBox = () => {
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
-                                    {TopbarStatuses.map((status) => (
-                                        <button  key={status.value} onClick={() => LeadsTabs(status.value)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}  </button>
-                                    ))}
+                                    {TopbarStatuses.map((status) => { 
+                                        const topcounter = AllLeadList.filter((lead) => lead.lead_status == status.value).length;
+                                        return(
+                                        <button  key={status.value} onClick={() => LeadsTabs(status.value)}  type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.label}`}> {status.icon} {status.label}
+                                            <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>
+                                        </button>
+                                        )
+                                    })}
                                 </div>
                                 <div className="mt-4 md:flex-auto flex-1">
                                     <div className="flex items-center md:justify-end justify-center">
@@ -376,7 +372,7 @@ const DashboardBox = () => {
                                             <div className="flex flex-col justify-between lg:flex-row">
                                                 <div className="w-full cursor-pointer">
                                                     <div className="mt-3 items-center">
-                                                       <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
+                                                    <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
                                                       <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
                                                       <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
                                                       <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
