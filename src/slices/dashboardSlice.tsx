@@ -55,7 +55,6 @@ import apiClient from '../utils/apiClient';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-    
     const initialState = {
         leads: [] as { lead_id: number; }[],
         success: false,
@@ -64,7 +63,7 @@ import apiClient from '../utils/apiClient';
         status : 0,
         
     };
-
+    
 const LeadsSlice = createSlice({
     name: 'Leads',
     initialState,
