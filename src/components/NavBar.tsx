@@ -19,32 +19,40 @@ const NavBar = () =>{
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuDashboard className="shrink-0" />
-                                <span className="px-1">{t('dashboard')}</span>
+                                <span className="px-1">{t('Leads Management')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
                             </div>
                         </button>
                         <ul className="sub-menu">
+                            <li> <NavLink to="/">{t('Lead-Dashboard')}</NavLink> </li>
                             <li>
-                                <NavLink to="/">{t('sales')}</NavLink>
+                                <NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/analytics">{t('analytics')}</NavLink>
+                                <NavLink to="/analytics">{t('Re-Assign')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/finance">{t('finance')}</NavLink>
+                                <NavLink to="/finance">{t('All-Leads')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/crypto">{t('crypto')}</NavLink>
+                                <NavLink to="/crypto">{t('Won-Leads')}</NavLink>
                             </li>
+                            <li>
+                                <NavLink to="/crypto">{t('Road-Show Leads')}</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/crypto">{t('Export Pdf')}</NavLink>
+                            </li>
+
                         </ul>
                     </li>
                     <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuApps className="shrink-0" />
-                                <span className="px-1">{t('apps')}</span>
+                                <span className="px-1">{t('Account Setting')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
@@ -52,51 +60,39 @@ const NavBar = () =>{
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/apps/chat">{t('chat')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/mailbox">{t('mailbox')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/todolist">{t('todo_list')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/notes">{t('notes')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/scrumboard">{t('scrumboard')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/contacts">{t('contacts')}</NavLink>
-                            </li>
-                            <li className="relative">
-                                <button type="button">
-                                    {t('invoice')}
-                                    <div className="ltr:ml-auto rtl:mr-auto rtl:rotate-90 -rotate-90">
-                                        <IconCaretDown />
-                                    </div>
-                                </button>
-                                <ul className="rounded absolute top-0 ltr:left-[95%] rtl:right-[95%] min-w-[180px] bg-white z-[10] text-dark dark:text-white-dark dark:bg-[#1b2e4b] shadow p-0 py-2 hidden">
-                                    <li>
-                                        <NavLink to="/apps/invoice/list">{t('list')}</NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink to="/apps/invoice/preview">{t('preview')}</NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink to="/apps/invoice/add">{t('add')}</NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink to="/apps/invoice/edit">{t('edit')}</NavLink>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <NavLink to="/apps/calendar">{t('calendar')}</NavLink>
+                                <NavLink to="/apps/chat">{t('Profile')}</NavLink>
                             </li>
                         </ul>
                     </li>
+
                     <li className="menu nav-item relative">
+                        <button type="button" className="nav-link">
+                            <div className="flex items-center">
+                                <IconMenuElements className="shrink-0" />
+                                <span className="px-1">{t('Manage Team')}</span>
+                            </div>
+                            <div className="right_arrow">
+                                <IconCaretDown />
+                            </div>
+                        </button>
+                        <ul className="sub-menu">
+                            <li>
+                                <NavLink to="/elements/alerts">{t('Add-User')}</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/elements/avatar">{t('Preview-User')}</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/elements/avatar">{t('Add-Role')}</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/elements/avatar">{t('Assign-Permission')}</NavLink>
+                            </li>
+                            
+                        </ul>
+                    </li>
+
+                    {/* <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuComponents className="shrink-0" />
@@ -529,7 +525,7 @@ const NavBar = () =>{
                                 </NavLink>
                             </li>
                         </ul>
-                    </li>
+                    </li> */}
                     </>
 
     );

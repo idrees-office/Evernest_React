@@ -108,6 +108,8 @@ const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
 import ProtectedRoute from '../components/ProtectedRoute';
+const Assign = lazy(() => import('../pages/leads/assign'));
+
 
 const routes = [
     {
@@ -116,6 +118,12 @@ const routes = [
         // element: <Index />,
         element: <DashboardBox />,
 
+    },
+    {
+        path: 'pages/leads/assign',
+        type: 'protected',
+        element : <Assign/>,
+        layout: 'default',
     },
     {
         path: '/analytics',
@@ -588,7 +596,7 @@ const routes = [
         element : <ListAmenities/>,
         layout: 'default',
     },
-    
+
     {
         path: '*',
         element:  ( <ProtectedRoute> <Error /> </ProtectedRoute> ),

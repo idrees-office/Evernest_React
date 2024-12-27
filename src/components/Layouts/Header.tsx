@@ -15,27 +15,13 @@ import IconXCircle from '../Icon/IconXCircle';
 import IconSun from '../Icon/IconSun';
 import IconMoon from '../Icon/IconMoon';
 import IconLaptop from '../Icon/IconLaptop';
-import IconMailDot from '../Icon/IconMailDot';
-import IconArrowLeft from '../Icon/IconArrowLeft';
-import IconInfoCircle from '../Icon/IconInfoCircle';
-import IconBellBing from '../Icon/IconBellBing';
 import IconUser from '../Icon/IconUser';
 import IconMail from '../Icon/IconMail';
 import IconLockDots from '../Icon/IconLockDots';
 import IconLogout from '../Icon/IconLogout';
-import IconMenuDashboard from '../Icon/Menu/IconMenuDashboard';
-import IconCaretDown from '../Icon/IconCaretDown';
-import IconMenuApps from '../Icon/Menu/IconMenuApps';
-import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
-import IconMenuElements from '../Icon/Menu/IconMenuElements';
-import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
-import IconMenuForms from '../Icon/Menu/IconMenuForms';
-import IconMenuPages from '../Icon/Menu/IconMenuPages';
-import IconMenuMore from '../Icon/Menu/IconMenuMore';
 import { logout } from '../../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../NavBar';
-
 
 const Header = () => {
     const location = useLocation();
@@ -59,8 +45,6 @@ const Header = () => {
                 }
             }
         }
-
-
 
     }, [location]);
 
@@ -156,15 +140,14 @@ const Header = () => {
         navigate('/auth/cover-login'); // Redirect to login page
     };
 
-
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
             <div className="shadow-sm">
                 <div className="relative bg-white flex w-full items-center px-5 py-2.5 dark:bg-black">
                     <div className="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
                         <Link to="/" className="main-logo flex items-center shrink-0">
-                            <img className="w-8 ltr:-ml-1 rtl:-mr-1 inline" src="/assets/images/logo.svg" alt="logo" />
-                            <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5  font-semibold  align-middle hidden md:inline dark:text-white-light transition-all duration-300">VRISTO</span>
+                            <img className="w-8 ltr:-ml-1 rtl:-mr-1 inline" src="https://evernest.ae/assets/img/homepage/larger_logo1.png" alt="logo" />
+                            <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5  font-semibold  align-middle hidden md:inline dark:text-white-light transition-all duration-300">Evernest Real Estate</span>
                         </Link>
                         <button
                             type="button"
@@ -177,7 +160,7 @@ const Header = () => {
                         </button>
                     </div>
 
-                    <div className="ltr:mr-2 rtl:ml-2 hidden sm:block">
+                    {/* <div className="ltr:mr-2 rtl:ml-2 hidden sm:block">
                         <ul className="flex items-center space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
                             <li>
                                 <Link to="/apps/calendar" className="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
@@ -195,14 +178,14 @@ const Header = () => {
                                 </Link>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
                     <div className="sm:flex-1 ltr:sm:ml-0 ltr:ml-auto sm:rtl:mr-0 rtl:mr-auto flex items-center space-x-1.5 lg:space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
                         <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
-                            <form
+                            {/* <form
                                 className={`${search && '!block'} sm:relative absolute inset-x-0 sm:top-0 top-1/2 sm:translate-y-0 -translate-y-1/2 sm:mx-0 mx-4 z-10 sm:block hidden`}
                                 onSubmit={() => setSearch(false)}
                             >
-                                <div className="relative">
+                                 <div className="relative">
                                     <input
                                         type="text"
                                         className="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:bg-transparent bg-gray-100 placeholder:tracking-widest"
@@ -214,8 +197,8 @@ const Header = () => {
                                     <button type="button" className="hover:opacity-80 sm:hidden block absolute top-1/2 -translate-y-1/2 ltr:right-2 rtl:left-2" onClick={() => setSearch(false)}>
                                         <IconXCircle />
                                     </button>
-                                </div>
-                            </form>
+                                </div> 
+                            </form> */}
                             <button
                                 type="button"
                                 onClick={() => setSearch(!search)}
@@ -267,7 +250,7 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
-                        <div className="dropdown shrink-0">
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -295,8 +278,8 @@ const Header = () => {
                                     })}
                                 </ul>
                             </Dropdown>
-                        </div>
-                        <div className="dropdown shrink-0">
+                        </div> */}
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -358,8 +341,8 @@ const Header = () => {
                                     )}
                                 </ul>
                             </Dropdown>
-                        </div>
-                        <div className="dropdown shrink-0">
+                        </div> */}
+                        {/* <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -432,7 +415,7 @@ const Header = () => {
                                     )}
                                 </ul>
                             </Dropdown>
-                        </div>
+                        </div> */}
                         <div className="dropdown shrink-0 flex">
                             <Dropdown
                                 offset={[0, 8]}

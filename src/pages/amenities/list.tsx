@@ -4,7 +4,7 @@ import { AppDispatch, IRootState } from '../../store';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import { useNavigate, Link, useParams } from 'react-router-dom';
-import Table from '../../components/Table';
+import DashboardTable from '../../components/DashboardTable';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import Swal from 'sweetalert2';
@@ -40,9 +40,6 @@ const AmenitiesList = () => {
               if (formRef.current) {
                 formRef.current.reset(); 
                 const nameInput = formRef.current?.elements.namedItem('name') as HTMLInputElement;
-
-                console.log(nameInput);
-
                 // const nameInput = formRef.current.querySelector<HTMLInputElement>('input[name="name"]');
                 if (nameInput) {
                   nameInput.value = response.name || '';
@@ -146,7 +143,7 @@ const AmenitiesList = () => {
          </div>
          <div className="datatables">
             {loading ? ( loader  )   : (
-                <Table title="Blog List"
+                <DashboardTable title="Blog List"
                     columns={[
                         { accessor: 'counter', title: '#', sortable: true },
                         { accessor: 'title', title: 'Title', sortable: true },

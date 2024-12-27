@@ -29,6 +29,7 @@ const Todolist = () => {
     useEffect(() => {
         dispatch(setPageTitle('Todolist'));
     });
+
     const defaultParams = {
         id: null,
         title: '',
@@ -1056,9 +1057,7 @@ const Todolist = () => {
 
                         <div className="fixed inset-0 overflow-y-auto">
                             <div className="flex min-h-full items-center justify-center px-4 py-8">
-                                <Transition.Child
-                                    as={Fragment}
-                                    enter="ease-out duration-300"
+                                <Transition.Child as={Fragment} enter="ease-out duration-300"
                                     enterFrom="opacity-0 scale-95"
                                     enterTo="opacity-100 scale-100"
                                     leave="ease-in duration-200"
