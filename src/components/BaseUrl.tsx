@@ -1,8 +1,8 @@
 export const getBaseUrl = () => {
     const currentUrl = window.location.href;
     if (currentUrl.includes('localhost')) {
+        return 'https://newcrmbackend.ddev.site/api'; 
         return 'http://127.0.0.1:8000/api'; 
-        // return 'https://newcrmbackend.ddev.site/api'; 
     } else if (currentUrl.includes('test.leadshub.ae')) {
         return 'https://test_backend.leadshub.ae/api';  
     } else {
