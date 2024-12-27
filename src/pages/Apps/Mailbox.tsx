@@ -1415,13 +1415,8 @@ const Mailbox = () => {
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             </div>
                         </PerfectScrollbar>
-
                         <div className="ltr:left-0 rtl:right-0 absolute bottom-0 p-4 w-full">
-                            <button
-                                type="button"
-                                className="w-full flex p-2 justify-between items-center hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium group"
-                                onClick={() => setIsShowMailMenu(false)}
-                            >
+                            <button type="button" className="w-full flex p-2 justify-between items-center hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium group" onClick={() => setIsShowMailMenu(false)}>
                                 <div className="flex items-center">
                                     <IconUserPlus className="shrink-0" />
                                     <div className="ltr:ml-3 rtl:mr-3">Add Account</div>

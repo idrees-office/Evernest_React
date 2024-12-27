@@ -387,7 +387,7 @@ const DashboardBox = () => {
                                             <div className="flex flex-col justify-between lg:flex-row">
                                                 <div className="w-full cursor-pointer">
                                                     <div className="mt-3 items-center">
-                                                       <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
+                                                    <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
                                                       <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
                                                       <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
                                                       <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
