@@ -4,7 +4,7 @@ import { AppDispatch, IRootState } from '../../store';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconBell from '../../components/Icon/IconBell';
 import { useNavigate, Link } from 'react-router-dom';
-import Table from '../../components/Table';
+import Table from '../../components/DashboardTable';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import Swal from 'sweetalert2';
@@ -22,6 +22,7 @@ const NewsList = () => {
         dispatch(listnews());   
     }, [dispatch]);
     const { news, loading } = useSelector((state: IRootState) => state.news);
+    
     const tableData = (Array.isArray(news) ? news : []).map((news: any, index: number) => ({
         counter: index + 1,
         title: news.title || 'Unknown',

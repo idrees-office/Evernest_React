@@ -1,0 +1,12 @@
+label{
+    margin-bottom: 0px;
+    display: block;
+    font-weight: 500;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.error{
+    font-size: 14px;
+    padding-left: 4px;
+}

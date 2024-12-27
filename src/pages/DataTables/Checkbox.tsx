@@ -507,19 +507,20 @@ const rowData = [
         company: 'PHARMACON',
     },
 ];
+
 const Custom = () => {
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Checkbox Table'));
     });
+    
     const [page, setPage] = useState(1);
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
     const [initialRecords, setInitialRecords] = useState(sortBy(rowData, 'id'));
     const [recordsData, setRecordsData] = useState(initialRecords);
-
     const [selectedRecords, setSelectedRecords] = useState<any>([]);
-
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',

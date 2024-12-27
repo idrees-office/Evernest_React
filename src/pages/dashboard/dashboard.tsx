@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { Disclosure } from '@headlessui/react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
@@ -19,12 +19,15 @@ import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
 import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption } from '../../services/status';
-import { Leadslist } from '../../slices/dashboardSlice';
+import { DashboardLeadslist } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
-import { updateSingleLead } from '../../slices/dashboardSlice';
+import { updateSingleLead, createLeads } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
-
+import { Link } from 'react-router-dom';
+import { Dialog, Transition } from '@headlessui/react';
+import IconX from '../../components/Icon/IconX';
+import './dashboard.css';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -32,37 +35,36 @@ const DashboardBox = () => {
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
-    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, });
+    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, addleadform:null });
     const toast           = Toast();
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
-    const leads           = useSelector((state: IRootState) => state.leadsslice.leads);
-    const currentStatus   = useSelector((state: IRootState) => state.leadsslice.lead_status);
+    const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
+    const currentStatus   = useSelector((state: IRootState) => state.dashboardslice.lead_status);
+
     const [AllLeadList, setAllLeadList] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [selectedTab, setSelectedTab] = useState<any>();
-
     const [isShowMailMenu, setIsShowMailMenu] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [searchText, setSearchText] = useState<any>('');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    const [addTaskModal, setAddTaskModal] = useState(false);
     const [pager, setPager] = useState<any>({
         currentPage: 1,
         totalPages: 0,
-        pageSize: 10,
+        pageSize: 14,
         startIndex: 0,
         endIndex: 0,
     });
-
     useEffect(() => {
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
             formData.append('client_user_id', loginuser.client_user_id);
-            dispatch(Leadslist({ formData })); // this is will fetch all leads on page load
+            dispatch(DashboardLeadslist({ formData })); // this is will fetch all leads on page load
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
- 
     // once lead loaded and globale state is set from dashboardSlice .. it will set the current page state as well
     useEffect(() => {
         if(currentStatus > 0){            
@@ -88,11 +90,20 @@ const DashboardBox = () => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
+
     const getNotes2ByLeadStatus = (leadStatus:number) => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
     }
-
+    const LeadsTabs = (status: number) => {
+        if(status){
+            getLeads(status);
+            setSelectedLead(null);
+        }else{
+            setAllLeadList(leads || []);
+            setSelectedLead(null);
+        }
+    }
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.form) {
@@ -101,14 +112,14 @@ const DashboardBox = () => {
             try {
                     const response = await dispatch(updateSingleLead({ formData }) as any);
                     if (response.payload.status === 200 || response.payload.status === 201){
+                        toast.success('Lead Updated Successfully');
                         setSelectedLead(null);
+                        
                     }else{
                         setErrors(response.payload.errors);
                         return
                     }
-                } catch (error: any) {
-                    console.error('Error creating/updating news:', error);
-            }
+            } catch (error: any) { console.error('Error creating/updating news:', error); }
         }
     }
 
@@ -126,6 +137,30 @@ const DashboardBox = () => {
             }));
         }
     };
+    const addlead = () => {
+        setAddTaskModal(true);
+        setErrors({});
+    } 
+
+    const saveLead = async (e: React.FormEvent) => {
+            e.preventDefault();
+            if (combinedRef.current.addleadform) {
+                const formData = new FormData(combinedRef.current.addleadform);
+                try {
+                    const response = await dispatch(createLeads({ formData }) as any);
+                    if (response.payload.status === 200 || response.payload.status === 201){
+                        toast.success('Lead Create Successfully');
+                        setSelectedLead(null);
+                        setAddTaskModal(false)
+                        combinedRef.current.addleadform.reset();
+                    }else{
+                        setErrors(response.payload.errors);
+                        return
+                    }
+                } catch (error: any) { console.error('Error creating/updating news:', error); }
+
+            }
+    }
 
     return (
         <div>
@@ -134,29 +169,26 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        {/* onClick={() => openMail('add', null)} */}
-                        <div className="pb-5"> <button className="btn btn-primary w-full" type="button"> Add Lead </button>
-                        </div>
+                        <div className="pb-5"> <button className="btn btn-primary w-full" type="button" onClick={() => addlead()}> Add Lead </button> </div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
-                                {
-                                    SidebarStatuses.map((sidebarstatus) => (
-                                        <button key={sidebarstatus?.value} type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}  onClick={() => getLeads(sidebarstatus?.value,)} >
-                                        <div className="flex items-center">
-                                            {sidebarstatus.icon}
-                                            <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                        </div>
-                                        <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap">
-                                            24
-                                        </div>
-                                    </button>
-                                    ))
-                                }
+                                {SidebarStatuses.map((sidebarstatus) => { 
+                                        const sidebarcount = leads.filter((lead: any) => lead.lead_status  == sidebarstatus.value).length;
+                                        return(
+                                            <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`} >
+                                            <div className="flex items-center"> {sidebarstatus.icon}
+                                                <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                            </div>
+                                             <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
+                                           </button>
+                                        )
+                                    })}
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
                                     <div className="flex items-center">
                                         <IconVideo className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">New meeting</div>
+                                        <div className="ltr:ml-3 rtl:mr-3">
+                                            <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
                                     </div>
                                 </button>
                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
@@ -183,7 +215,7 @@ const DashboardBox = () => {
                                             <IconMenu />
                                         </button>
                                         <div className="relative group">
-                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Mail" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Lead" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                                             <div className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                                                 <IconSearch />
                                             </div>
@@ -194,16 +226,14 @@ const DashboardBox = () => {
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
-                                    {TopbarStatuses.map((status) => (
-                                        <button 
-                                            key={status.value} 
-                                            onClick={() => getLeads(status.value)}  
-                                            type="button"  
-                                            className={`btn ${selectedTab === status.value ? status.activeColor : status.outlineColor} flex`}
-                                        > 
-                                            {status.icon} {status.label}  
+                                {TopbarStatuses.map((status) => { 
+                                        const topcounter = leads.filter((lead:any) => lead.lead_status == status.value).length;
+                                        return( 
+                                        <button  key={status.value}  onClick={() => LeadsTabs(status?.value)} type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.value ? status.activeColor : status.outlineColor}`}> {status.icon} {status.label}
+                                            <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>
                                         </button>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                                 <div className="mt-4 md:flex-auto flex-1">
                                     <div className="flex items-center md:justify-end justify-center">
@@ -218,7 +248,7 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                {AllLeadList.length ? (
+                                { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>
@@ -284,8 +314,7 @@ const DashboardBox = () => {
                                                                     )}
                                                                 </div>
                                                             </td>
-                                                             {/* <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">{showTime(lead)}</td>  */}
-                                                            <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">10:15 PM</td> 
+                                                            <td className="whitespace-nowrap font-medium ltr:text-right rtl:text-left">{lead?.assigned_at || 'Not Found'}</td> 
                                                         </tr>
                                                     );
                                                 })}
@@ -383,21 +412,15 @@ const DashboardBox = () => {
                                 <div className="mb-5">
                                     <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
                                         <table className="whitespace-nowrap">
-                                            <thead>
-                                                <tr>
-                                                    <th>History</th>
-                                                </tr>
-                                            </thead>
                                             <tbody className="dark:text-white-dark">
                                                 {selectedLead?.comments?.map((comment:any, i:any) => (
                                                     <div className="maindiv" key={i}>
                                                     <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
-                                                    <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}
-                                                    </small> 
+                                                    <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}</small> 
                                                     <small dangerouslySetInnerHTML={{ __html: getNotesByLeadStatus(comment.lead_status || '') }}></small>
-                                                    {comment.lead_status === '2' && ( <small>&nbsp;{comment?.agent_name}</small> )}
+                                                    {comment.lead_status == 2 && ( <small>&nbsp;{comment?.agent_name}</small> )}
                                                     {i > 0 && ( 
-                                                        <small dangerouslySetInnerHTML={{__html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
+                                                    <small dangerouslySetInnerHTML={{__html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
                                                     )}
                                                     {comment.lead_comment && (
                                                         <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
@@ -415,54 +438,79 @@ const DashboardBox = () => {
                                 </div>
                               </div> 
                             </div>
-                    </div>
-                )}
-                
-                    {isEdit && (
-                        <div className="relative">
-                            <div className="py-4 px-6 flex items-center">
-                                <button type="button" className="xl:hidden hover:text-primary block ltr:mr-3 rtl:ml-3" onClick={() => setIsShowMailMenu(!isShowMailMenu)}>
-                                    <IconMenu />
-                                </button>
-                                <h4 className="text-lg text-gray-600 dark:text-gray-400 font-medium">Message</h4>
-                            </div>
-                            <div className="h-px bg-gradient-to-l from-indigo-900/20 via-black dark:via-white to-indigo-900/20 opacity-[0.1]"></div>
-                            <form className="p-6 grid gap-6">
-                                <div>
-                                    <input id="to" type="text" className="form-input" placeholder="Enter To" />
-                                </div>
-                                <div>
-                                    <input id="cc" type="text" className="form-input" placeholder="Enter Cc"  />
-                                </div>
-                                <div>
-                                    <input id="title" type="text" className="form-input" placeholder="Enter Subject" />
-                                </div>
-                                <div>
-                                    <input
-                                        type="file"
-                                        className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
-                                        multiple
-                                        accept="image/*,.zip,.pdf,.xls,.xlsx,.txt.doc,.docx"
-                                        required
-                                    />
-                                </div>
-                                <div className="flex items-center ltr:ml-auto rtl:mr-auto mt-8">
-                                    <button type="button" className="btn btn-outline-danger ltr:mr-3 rtl:ml-3">
-                                        Close
-                                    </button>
-                                    <button type="button" className="btn btn-success ltr:mr-3 rtl:ml-3">
-                                        Save
-                                    </button>
-                                    <button type="button" className="btn btn-primary">
-                                        Send
-                                    </button>
-                                </div>
-                            </form>
                         </div>
                     )}
                 </div>
             </div>
-        </div>
+            <Transition appear show={addTaskModal} as={Fragment}>
+                <Dialog as="div" open={addTaskModal} onClose={() => setAddTaskModal(false)} className="relative z-[51]">
+                    <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                    <div className="fixed inset-0 bg-[black]/60" />
+                        </Transition.Child>
+                    <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center px-4 py-8">
+                        <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                        <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
+                            <button type="button" onClick={() => setAddTaskModal(false)} className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none">
+                            <IconX />
+                            </button>
+                            <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
+                            {/* {params.id ? 'Edit Task' : 'Add Task'} */} Add Lead...
+                            </div>
+                            <div className="p-5">
+                            <form className="leadForm" ref={(el) => (combinedRef.current.addleadform = el)} onSubmit={saveLead}>
+                                <div className="mb-3">
+                                    <label htmlFor="lead_title">Lead Title </label>
+                                    <input id="lead_title" type="text" placeholder="Lead Title #XXXXXX" name="lead_title" className="form-input" />
+                                    {errors?.lead_title && <p className="text-danger error">{errors.lead_title[0]}</p>}
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="customer_name">Client Name</label>
+                                    <input id="customer_name" type="text" name="customer_name" placeholder="Customer Name" className="form-input" />
+                                    {errors?.customer_name && <p className="text-danger error">{errors.customer_name[0]}</p>}
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="customer_email">Client Email </label>
+                                    <input id="customer_email" type="text" name="customer_email" placeholder="john@gmail.com" className="form-input" />
+                                    {errors?.customer_email && <p className="text-danger error">{errors.customer_email[0]}</p>}
+                                </div>
+                                <div className="mb-3 flex justify-between gap-4">
+                                    <div className="flex-1">
+                                       <label htmlFor="customer_phone">Phone</label>
+                                       <input id="customer_phone" type="text" name="customer_phone" placeholder="+971623523623" className="form-input" />
+                                       {errors?.customer_phone && <p className="text-danger error">{errors.customer_phone[0]}</p>}
+                                    </div>
+                                    <div className="flex-1">
+                                        <label htmlFor="lead_status">Status</label>
+                                        <select id="lead_status" name="lead_status" className="form-select">
+                                        <option value="17">New Lead</option>
+                                        <option value="3">Connected Lead</option>
+                                        <option value="4">Cold Lead</option>
+                                        <option value="5">Warm Lead</option>
+                                        <option value="6">Hot Lead</option>
+                                        <option value="16">Won Lead (Close Deel)</option>
+                                        </select>
+                                        {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="lead_comments">Comments </label>
+                                    <textarea name="lead_comments" id="lead_comments" className="form-input" placeholder='Please add your comments...'></textarea>
+                                    {errors?.lead_comments && <p className="text-danger error">{errors.lead_comments[0]}</p>}
+                                </div>
+                                <div className="ltr:text-right rtl:text-left flex justify-end items-center mt-8">
+                                <button type="button" className="btn btn-outline-danger" onClick={() => setAddTaskModal(false)} > Cancel </button>
+                                <button type="submit" className="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
+                                </div>
+                            </form>
+                            </div>
+                        </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                    </div>
+                </Dialog>
+            </Transition>
+    </div>
     );
 }
 

@@ -5,7 +5,10 @@ import blogSlice from './slices/blogSlice';
 import newsSlice from './slices/newsSlice';
 import DeveloperSlice from './slices/developerSlice';
 import AmenitiesSlice from './slices/amenitiesSlice';
-import LeadsSlice from './slices/dashboardSlice';
+import DashboardSlice from './slices/dashboardSlice';
+import LeadSlice from './slices/leadsSlice';
+
+
 
 const rootReducer = combineReducers({
     themeConfig: themeConfigSlice,
@@ -14,7 +17,9 @@ const rootReducer = combineReducers({
     news: newsSlice,
     developers: DeveloperSlice,
     amenitiesdata: AmenitiesSlice,
-    leadsslice :  LeadsSlice
+    dashboardslice :  DashboardSlice,
+    leadslices :  LeadSlice,
+
 });
 
 const store = configureStore({
