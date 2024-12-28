@@ -8,7 +8,9 @@ const endpoints = {
 export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue }) => {
     try {
         const response = await apiClient.get(endpoints.listApi);
-        return response.data;
+        // console.log(response);
+        // return response.data;
+        return {data: response.data.data, agents: response.data.agents};
     } catch (error: any) {
         return rejectWithValue(error.response?.data || error.message);
     }
@@ -16,6 +18,7 @@ export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue
 
 const initialState = {
     leads: [] as { lead_id: number }[],
+    agents: [] as { client_user_id: number,  client_user_name: string, }[],
     lead_status: 0,
     success: false,
     loading: false,
@@ -35,7 +38,8 @@ const LeadsSlice = createSlice({
             })
             .addCase(newleads.fulfilled, (state, action) => {
                 state.loading = false;
-                state.leads = action.payload.data;
+                state.leads   = action.payload.data;
+                state.agents  = action.payload.agents;
             })
             .addCase(newleads.rejected, (state, action) => {
                 state.loading = false;

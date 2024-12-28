@@ -28,7 +28,6 @@ import apiClient from '../utils/apiClient';
           }
         }
       );
-
       export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
@@ -57,14 +56,13 @@ import apiClient from '../utils/apiClient';
     });
     const initialState = {
         leads: [] as { lead_id: number }[],
-        lead_status: 0,
-        success: false,
-        loading: false,
+        lead_status : 0,
+        success : false,
+        loading : false,
         message : '',
-        status : 0,
-        
+        status  : 0,
     };
-
+    
     const DashboardSlice = createSlice({
         name: 'Leads',
         initialState,
@@ -81,15 +79,17 @@ import apiClient from '../utils/apiClient';
                 .addCase(createLeads.rejected, (state, action) => {
                     state.success = true;                
                     action.payload; 
-                })
-                .addCase(DashboardLeadslist.pending, (state) => {
+                }).addCase(DashboardLeadslist.pending, (state) => {
                     state.loading = true;  
                 })
                 .addCase(DashboardLeadslist.fulfilled, (state, action) => {
                     state.success = true;
                     state.leads = action.payload.leadsdata?.data || [];
                     state.loading = false;
-                }).addCase(updateSingleLead.fulfilled, (state, action) => {
+                }).addCase(DashboardLeadslist.rejected, (state) => {
+                    state.success = false;
+                })
+                .addCase(updateSingleLead.fulfilled, (state, action) => {
                     state.success = true;
                     state.status = action.payload.status;
                     state.lead_status = action.payload?.data?.[0].lead_status;
