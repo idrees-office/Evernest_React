@@ -94,6 +94,7 @@ const DashboardBox = () => {
     };
     
     const getNotes2ByLeadStatus = (leadStatus:number) => {
+        alert(leadStatus)
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
     }
@@ -421,10 +422,10 @@ const DashboardBox = () => {
                                                     <div className="maindiv" key={i}>
                                                     <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
                                                     <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}</small> 
-                                                    <small dangerouslySetInnerHTML={{ __html: getNotesByLeadStatus(comment.lead_status || '') }}></small>
+                                                    <small dangerouslySetInnerHTML={{ __html: getNotes2ByLeadStatus(comment.lead_status || '') }}></small>
                                                     {comment.lead_status == 2 && ( <small>&nbsp;{comment?.agent_name}</small> )}
                                                     {i > 0 && ( 
-                                                    <small dangerouslySetInnerHTML={{__html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
+                                                    <small dangerouslySetInnerHTML={{__html: getNotesByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
                                                     )}
                                                     {comment.lead_comment && (
                                                         <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
