@@ -22,8 +22,6 @@ const Assign = () => {
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
 
-    
-
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('New Leads'));
@@ -32,7 +30,7 @@ const Assign = () => {
         }
     }, [dispatch]); 
     const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
-
+    
     const transformedAgents = agents.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
@@ -47,7 +45,7 @@ const Assign = () => {
     }));
 
     const AddLead = () => {
-        console.log('Add Amenitie');
+        console.log('Add Leads');
     }
 
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
@@ -65,9 +63,16 @@ const Assign = () => {
           toast.error('Please select at least one lead to assign');
           return;
         }
+        const leadIds = selectedRecords.map((record) => record.lead_id); 
+      }
+
+      const RemoveLead = () => {
+        if (selectedRecords.length === 0) {
+          toast.error('Please select at least one lead to remove');
+          return;
+        }
         const leadIds = selectedRecords.map((record) => record.lead_id);
         
-        console.log('Assigning leads', leadIds, 'to agent', agentId)
       }
 
     return (
@@ -84,7 +89,7 @@ const Assign = () => {
         </div>
         <div className="flex items-center space-x-2">
             <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
-            <button type="button" className="btn btn-danger btn-sm"><IconTrash /></button>
+            <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
     </div>
         <div className="datatables">

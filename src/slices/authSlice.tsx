@@ -11,6 +11,8 @@ const endpoints = {
 export const loginUser = createAsyncThunk('auth/cover-login', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
     try {
         const response = await apiClient.post(endpoints.loginApi, formData);
+        // console.log('data');
+        // console.log(response);
         return {data: response.data.data, status: response.status, message:response.data.message};
     } catch (error: any) {
         return rejectWithValue({data: error.response.data, status: error.status, message:error.response.data.message});

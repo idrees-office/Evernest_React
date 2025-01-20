@@ -92,7 +92,7 @@ const DashboardBox = () => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
-
+    
     const getNotes2ByLeadStatus = (leadStatus:number) => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
