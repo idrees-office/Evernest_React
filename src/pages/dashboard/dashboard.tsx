@@ -24,13 +24,14 @@ import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
 import { updateSingleLead, createLeads } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
 import IconX from '../../components/Icon/IconX';
 import './dashboard.css';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
+    const navigate        = useNavigate();
     const TopbarStatuses  = topBarStatus();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
@@ -40,7 +41,6 @@ const DashboardBox = () => {
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
     const currentStatus   = useSelector((state: IRootState) => state.dashboardslice.lead_status);
-
     const [AllLeadList, setAllLeadList] = useState<any[]>([]);
     const [selectedLead, setSelectedLead] = useState<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -50,6 +50,7 @@ const DashboardBox = () => {
     const [searchText, setSearchText] = useState<any>('');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const [addTaskModal, setAddTaskModal] = useState(false);
+    const { successmessage } = useSelector((state: any) => state.dashboardslice.success);
     const [pager, setPager] = useState<any>({
         currentPage: 1,
         totalPages: 0,
@@ -58,6 +59,7 @@ const DashboardBox = () => {
         endIndex: 0,
     });
     useEffect(() => {
+        dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
             formData.append('client_user_id', loginuser.client_user_id);
@@ -90,11 +92,12 @@ const DashboardBox = () => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
-
+    
     const getNotes2ByLeadStatus = (leadStatus:number) => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
     }
+
     const LeadsTabs = (status: number) => {
         if(status){
             getLeads(status);
@@ -104,6 +107,7 @@ const DashboardBox = () => {
             setSelectedLead(null);
         }
     }
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.form) {

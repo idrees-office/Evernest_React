@@ -11,6 +11,7 @@ import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import { newleads } from '../../slices/leadsSlice';
+import Select from 'react-select';
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +20,7 @@ const Assign = () => {
     const loader   = Loader();
     const combinedRef = useRef<any>({ fetched: false, form: null});
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
+    const [disable, setDisable] = useState(true);
 
     useEffect(() => {
         if (!combinedRef.current.fetched) {
@@ -27,36 +29,69 @@ const Assign = () => {
             combinedRef.current.fetched = true;
         }
     }, [dispatch]); 
-
-    const { leads, loading }  =  useSelector((state: IRootState) => state.leadslices);
+    const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
+    
+    const transformedAgents = agents.map(agent => ({
+        value: agent?.client_user_id,
+        label: agent?.client_user_name,
+    }));
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
         lead_id : lead.lead_id || 'Unknown',
         title   : lead.lead_title || 'Unknown',
         name    : lead.customer_name || 'Unknown',
         phone   : lead.customer_phone || 'Unknown',
         source  : lead.lead_source || 'Unknown',
-        date: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date(lead.created_at)),
-    
+        date    : new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date(lead.created_at)),
     }));
 
     const AddLead = () => {
-        console.log('Add Amenitie');
+        console.log('Add Leads');
     }
 
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
         if (isChecked) {
           setSelectedRecords((prevSelected) => [...prevSelected, record]);
+          setDisable(false);
         } else {
-          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.lead_id !== record.lead_id)
-          );
+          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.lead_id !== record.lead_id));
+          if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
+
+      const AssignLead = (agentId: number) => {
+        if (selectedRecords.length === 0) {
+          toast.error('Please select at least one lead to assign');
+          return;
+        }
+        const leadIds = selectedRecords.map((record) => record.lead_id); 
+      }
+
+      const RemoveLead = () => {
+        if (selectedRecords.length === 0) {
+          toast.error('Please select at least one lead to remove');
+          return;
+        }
+        const leadIds = selectedRecords.map((record) => record.lead_id);
+        
+      }
+
     return (
     <div>
-        <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary relative">
-            <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
-            <span className="ltr:mr-3 rtl:ml-3">New leads: </span> <button onClick={() => { AddLead(); }} className="btn btn-primary btn-sm"> <IconPlus/>Add Lead</button>
+        <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
+        <div className="flex items-center">
+            <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
+                <IconBell />
+            </div>
+            <span className="ltr:mr-3 rtl:ml-3">New leads: </span>
+            <button onClick={() => { AddLead(); }} className="btn btn-primary btn-sm">
+                <IconPlus /> Add Lead
+            </button>
         </div>
+        <div className="flex items-center space-x-2">
+            <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
+            <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
+        </div>
+    </div>
         <div className="datatables">
         <Table title="New leads"
             columns={[
@@ -97,8 +132,6 @@ const Assign = () => {
             rows={tableData}
             />
         </div>
-        
-
     </div>
     )
 
