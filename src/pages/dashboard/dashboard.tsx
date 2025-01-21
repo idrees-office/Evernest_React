@@ -18,7 +18,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues } from '../../services/status';
 import { DashboardLeadslist } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
@@ -34,6 +34,7 @@ const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
     const navigate        = useNavigate();
     const TopbarStatuses  = topBarStatus();
+    const Statues  = statues();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
@@ -91,14 +92,16 @@ const DashboardBox = () => {
         }));
     }, [AllLeadList, pager.currentPage, pager.pageSize]);
 
-    const getNotesByLeadStatus = (leadStatus:number) => {    
-        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
-        return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
+    const getNotesByLeadStatus = (leadStatus:number) => {
+        // return leadStatus;    
+        const option = Statues.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes === "string" ? option.notes : "Unknown Status1";
     };
-
+    
     const getNotes2ByLeadStatus = (leadStatus:number) => {
-        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
-        return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
+        // return leadStatus;    
+        const option = Statues.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Statu2s';
     }
 
     const LeadsTabs = (status: number) => {
@@ -352,97 +355,146 @@ const DashboardBox = () => {
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="p-4 relative">
-                            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
-                                <div className="panel">
-                                    <div className="flex items-center justify-between mb-5">
-                                        <h5 className="font-semibold text-lg dark:text-white-light">Client Detail </h5>
-                                    </div>
-                                    <div className="data">
-                                        <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
-                                            <li className="flex items-center gap-2 text-dark">
-                                                <IconUser className="shrink-0" />
-                                                {selectedLead?.customer_name || 'Not-Found'}
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <IconPhone />
-                                                <span className="whitespace-nowrap text-secondary" dir="ltr">
-                                                {selectedLead?.customer_phone || 'Not-Found'}
-                                                </span>
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <IconPhone />
-                                                <span className="whitespace-nowrap text-secondary" dir="ltr">
-                                                {selectedLead?.customer_phone2 || 'Not-Found'}
-                                                </span>
-                                            </li>
-                                            <li>
-                                                <button className="flex items-center gap-2">
-                                                    <IconMail className="w-5 h-5 shrink-0" />
-                                                    <span className="text-info truncate">{selectedLead?.customer_email || 'Not-Found'}</span>
-                                                </button>
-                                            </li>
-                                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                            <li className="flex items-center gap-2"> <IconUser className="shrink-0" />
-                                                {selectedLead?.agents?.client_user_name}
-                                            </li>
-                                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                        </ul>
-                                    </div>
-                                     <form encType="multipart/form-data" ref={(el) => (combinedRef.current.form = el)} onSubmit={handleSubmit}>
-                                        <div className="mt-1">
-                                            <div className="flex flex-col justify-between lg:flex-row">
-                                                <div className="w-full cursor-pointer">
-                                                    <div className="mt-3 items-center">
-                                                    <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
-                                                      <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
-                                                      <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
-                                                      <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
-                                                      {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
-                                                    </div>
-                                                    <div className="mt-3 items-center cursor-pointer">
-                                                       <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
-                                                       {errors?.lead_comment && <p className="text-danger error">{errors.lead_comment[0]}</p>}
-                                                    </div>   
-                                                    <div className="mt-4">
-                                                        <button className="btn btn-secondary w-full">Save</button>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
+                                    <div className="panel">
+                                        <div className="flex items-center justify-between mb-5">
+                                            <h5 className="font-semibold text-lg dark:text-white-light">Client Detail </h5>
+                                        </div>
+                                        <div className="data">
+                                            <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
+                                                <li className="flex items-center gap-2 text-dark">
+                                                    <IconUser className="shrink-0" />
+                                                    {selectedLead?.customer_name || 'Not-Found'}
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <IconPhone />
+                                                    <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                    {selectedLead?.customer_phone || 'Not-Found'}
+                                                    </span>
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <IconPhone />
+                                                    <span className="whitespace-nowrap text-secondary" dir="ltr">
+                                                    {selectedLead?.customer_phone2 || 'Not-Found'}
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <button className="flex items-center gap-2">
+                                                        <IconMail className="w-5 h-5 shrink-0" />
+                                                        <span className="text-info truncate">{selectedLead?.customer_email || 'Not-Found'}</span>
+                                                    </button>
+                                                </li>
+                                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                                <li className="flex items-center gap-2"> <IconUser className="shrink-0" />
+                                                    {selectedLead?.agents?.client_user_name}
+                                                </li>
+                                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                            </ul>
+                                        </div>
+                                        <form encType="multipart/form-data" ref={(el) => (combinedRef.current.form = el)} onSubmit={handleSubmit}>
+                                            <div className="mt-1">
+                                                <div className="flex flex-col justify-between lg:flex-row">
+                                                    <div className="w-full cursor-pointer">
+                                                        <div className="mt-3 items-center">
+                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
+                                                        <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
+                                                        <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
+                                                        <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
+                                                        {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
+                                                        </div>
+                                                        <div className="mt-3 items-center cursor-pointer">
+                                                        <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
+                                                        {errors?.lead_comment && <p className="text-danger error">{errors.lead_comment[0]}</p>}
+                                                        </div>   
+                                                        <div className="mt-4">
+                                                            <button className="btn btn-secondary w-full">Save</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div className="panel lg:col-span-2 xl:col-span-4">
-                                <div className="mb-5">
-                                    <h5 className="font-semibold text-lg dark:text-white-light">History of the Leads </h5>
-                                </div>
-                                <div className="mb-5">
-                                    <div className="table-responsive text-[#515365] dark:text-white-light font-semibold">
-                                        <table className="whitespace-nowrap">
-                                            <tbody className="dark:text-white-dark">
-                                                {selectedLead?.comments?.map((comment:any, i:any) => (
-                                                    <div className="maindiv" key={i}>
-                                                    <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
-                                                    <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}</small> 
-                                                    <small dangerouslySetInnerHTML={{ __html: getNotes2ByLeadStatus(comment.lead_status || '') }}></small>
-                                                    {comment.lead_status == 2 && ( <small>&nbsp;{comment?.agent_name}</small> )}
-                                                    {i > 0 && ( 
-                                                    <small dangerouslySetInnerHTML={{__html: getNotesByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
-                                                    )}
-                                                    {comment.lead_comment && (
-                                                        <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
-                                                        <small>{comment?.updated_at || 'Invalid Time'}</small>&nbsp;
-                                                        <small>{comment?.user_name} :</small>&nbsp;
-                                                        <small>{comment?.lead_comment}</small>
-                                                        </div>
-                                                    )}
-                                                    </div>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                        </form>
                                     </div>
-                                  </div>
-                                </div>
-                              </div> 
+                                    <div className="panel lg:col-span-2 xl:col-span-4">
+                                        <div className="mb-5">
+                                            <h5 className="font-semibold text-lg dark:text-white-light">History of the Leads </h5>
+                                        </div>
+                                        <div className="mb-5">
+                                            <div className="table-responsive text-[#515365] dark:text-white-light font-semibold  overflow-y-hidden">
+                                                <div className="max-w-[900px] mx-auto">
+                                                    {selectedLead?.comments?.map((comment: any, i: any) => (
+                                                        <div className="flex" key={i}>
+                                                            {/* Timestamp */}
+                                                            <p className="text-[#3b3f5c] dark:text-white-light min-w-[120px] max-w-[150px] text-sm font-semibold py-2.5">
+                                                                {comment?.created_at || 'Invalid Time'}
+                                                            </p>
+
+                                                            {/* Timeline dot and line */}
+                                                            <div className={`
+                                                                relative
+                                                                before:absolute before:left-1/2 before:-translate-x-1/2 before:top-[15px] 
+                                                                before:w-2.5 before:h-2.5 before:border-2 before:rounded-full
+                                                                after:absolute after:left-1/2 after:-translate-x-1/2 after:top-[25px] 
+                                                                after:-bottom-[15px] after:w-0 after:h-auto after:border-l-2 
+                                                                after:rounded-full
+                                                                ${i % 5 === 0 ? 'before:border-primary after:border-primary' : 
+                                                                i % 5 === 1 ? 'before:border-dark after:border-dark' :
+                                                                i % 5 === 2 ? 'before:border-success after:border-success' :
+                                                                i % 5 === 3 ? 'before:border-danger after:border-danger' :
+                                                                                'before:border-warning after:border-warning'}
+                                                            `}></div>
+
+                                                            {/* Content */}
+                                                            <div className="p-2.5 self-center ltr:ml-2.5 rtl:mr-2.5 w-full">
+                                                                {/* User and Status */}
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-[#3b3f5c] dark:text-white-light font-semibold text-[13px]">
+                                                                        {comment?.user_id !== null 
+                                                                            ? comment?.user_name 
+                                                                            : i > 0 
+                                                                                ? selectedLead.comments[i - 1]?.user_name 
+                                                                                : ''
+                                                                        }
+                                                                    </span>
+                                                                    
+                                                                    <span 
+                                                                        className="text-gray-500 dark:text-gray-400 text-[13px]"
+                                                                        dangerouslySetInnerHTML={{ 
+                                                                            __html: getNotesByLeadStatus(comment.lead_status || '') 
+                                                                        }}
+                                                                    />
+                                                                    
+                                                                    {comment.lead_status == 2 && (
+                                                                        <span className="text-blue-500 dark:text-blue-400 text-[13px]">
+                                                                            {comment?.agent_name}
+                                                                        </span>
+                                                                    )}
+                                                                {/* Previous Status Note */}
+                                                                {i > 0 && (
+                                                                    <div 
+                                                                        className="text-gray-500 dark:text-gray-400 text-[13px]"
+                                                                        dangerouslySetInnerHTML={{
+                                                                            __html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || '')
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                                </div>
+
+                                                                {/* Comment Content */}
+                                                                {comment.lead_comment && (
+                                                                    <div className="bg-gray-50 dark:bg-gray-800 p-1 border-l-4 border">
+                                                                        <p className="text-[#3b3f5c] dark:text-white-light text-sm italic">
+                                                                            {comment?.lead_comment}
+                                                                        </p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> 
                             </div>
                         </div>
                     )}
