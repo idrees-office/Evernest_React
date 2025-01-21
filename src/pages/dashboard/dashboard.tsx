@@ -18,7 +18,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues } from '../../services/status';
 import { DashboardLeadslist } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
@@ -33,6 +33,7 @@ const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
     const navigate        = useNavigate();
     const TopbarStatuses  = topBarStatus();
+    const Statues  = statues();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
@@ -88,14 +89,16 @@ const DashboardBox = () => {
         }));
     }, [AllLeadList, pager.currentPage, pager.pageSize]);
 
-    const getNotesByLeadStatus = (leadStatus:number) => {    
-        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
-        return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
+    const getNotesByLeadStatus = (leadStatus:number) => {
+        // return leadStatus;    
+        const option = Statues.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes === "string" ? option.notes : "Unknown Status1";
     };
-
+    
     const getNotes2ByLeadStatus = (leadStatus:number) => {
-        const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
-        return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
+        // return leadStatus;    
+        const option = Statues.find((opt) => opt.value == leadStatus);
+        return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Statu2s';
     }
 
     const LeadsTabs = (status: number) => {
@@ -419,20 +422,26 @@ const DashboardBox = () => {
                                             <tbody className="dark:text-white-dark">
                                                 {selectedLead?.comments?.map((comment:any, i:any) => (
                                                     <div className="maindiv" key={i}>
-                                                    <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
-                                                    <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}</small> 
-                                                    <small dangerouslySetInnerHTML={{ __html: getNotes2ByLeadStatus(comment.lead_status || '') }}></small>
-                                                    {comment.lead_status == 2 && ( <small>&nbsp;{comment?.agent_name}</small> )}
-                                                    {i > 0 && ( 
-                                                    <small dangerouslySetInnerHTML={{__html: getNotesByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
-                                                    )}
-                                                    {comment.lead_comment && (
-                                                        <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
-                                                        <small>{comment?.updated_at || 'Invalid Time'}</small>&nbsp;
-                                                        <small>{comment?.user_name} :</small>&nbsp;
-                                                        <small>{comment?.lead_comment}</small>
-                                                        </div>
-                                                    )}
+                                                        <small>{comment?.created_at || 'Invalid Time'}</small>&nbsp;
+                                                        
+                                                        <small> {comment?.user_id !== null ? comment?.user_name : i > 0 ? selectedLead.comments[i - 1]?.user_name : ''}</small> 
+                                                        
+                                                        <small dangerouslySetInnerHTML={{ __html: getNotesByLeadStatus(comment.lead_status || '') }}></small>
+                                                        
+                                                        {comment.lead_status == 2 && ( <small>&nbsp;{comment?.agent_name}</small> )}
+                                                        {i > 0 && ( 
+                                                        
+                                                        <small dangerouslySetInnerHTML={{__html: getNotes2ByLeadStatus(selectedLead.comments[i - 1]?.lead_status || ''), }}></small>
+                                                        )}
+                                                        {comment.lead_comment && (
+                                                            <div className="b-1 shadow-none" style={{ marginBottom: '4px' }}>
+                                                                <small>{comment?.updated_at || 'Invalid Time'}</small>&nbsp;
+                                                                
+                                                                <small>{comment?.user_name} :</small>&nbsp;
+                                                                
+                                                                <small>{comment?.lead_comment}</small>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))}
                                             </tbody>
