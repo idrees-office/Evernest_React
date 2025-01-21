@@ -12,7 +12,9 @@ import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import { newleads, destoryLeads } from '../../slices/leadsSlice';
 import Select from 'react-select';
-import { co, di } from '@fullcalendar/core/internal-common';
+import LeadModal from '../../components/LeadModal';
+import { createLeads } from '../../slices/dashboardSlice';
+import '../dashboard/dashboard.css'; 
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -22,7 +24,7 @@ const Assign = () => {
     const combinedRef = useRef<any>({ fetched: false, form: null});
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('New Leads'));
@@ -45,10 +47,9 @@ const Assign = () => {
         date    : new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date(lead.created_at)),
     }));
 
-    const AddLead = () => {
-        console.log('Add Leads');
+    const openLeadModal = () => {
+        setIsModalOpen(true);
     }
-
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
         if (isChecked) {
           setSelectedRecords((prevSelected) => [...prevSelected, record]);
@@ -58,13 +59,16 @@ const Assign = () => {
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
-
+      
       const AssignLead = (agentId: number) => {
         if (selectedRecords.length === 0) {
           toast.error('Please select at least one lead to assign');
           return;
         }
         const leadIds = selectedRecords.map((record) => record.lead_id);  
+        console.log(agentId);
+        console.log(leadIds);
+
       }
       const RemoveLead = async () => {
         if (selectedRecords.length === 0) {
@@ -79,9 +83,9 @@ const Assign = () => {
             toast.success('Lead removed successfully');
             setSelectedRecords([]);
             dispatch(newleads()); 
-            setDisable(true);       }
+            setDisable(true);       
+        }
       }
-      
     return (
     <div>
         <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
@@ -90,12 +94,12 @@ const Assign = () => {
                 <IconBell />
             </div>
             <span className="ltr:mr-3 rtl:ml-3">New leads: </span>
-            <button onClick={() => { AddLead(); }} className="btn btn-primary btn-sm">
-                <IconPlus /> Add Lead
+                 <button onClick={openLeadModal} className="btn btn-primary btn-sm"> <IconPlus /> Add Lead
             </button>
         </div> 
         <div className="flex items-center space-x-2">
             <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
+
             <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
     </div>
@@ -136,12 +140,11 @@ const Assign = () => {
                       },
                       { accessor: 'date',  title: 'Date', sortable: true },
                 ]} 
-            rows={tableData}
+              rows={tableData}
             />
         </div>
+        <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
     </div>
     )
-
 }
-
 export default Assign;

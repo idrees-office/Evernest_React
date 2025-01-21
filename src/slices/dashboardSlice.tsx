@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../utils/apiClient';
-
     const endpoints = {
         createApi  : '/leads/store',
         listApi    : '/leads/get_all_leads',
@@ -8,11 +7,12 @@ import apiClient from '../utils/apiClient';
         editApi    : '/leads/edit',
         updateLead : '/leads/update_single_lead',
     };
-
+    
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
             const response = await apiClient.post(url, formData);
+            return {response: response.data.data, status: response.status};
             return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);

@@ -16,7 +16,6 @@ export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue
     }
 });
 
-
 export const destoryLeads = createAsyncThunk('destoryleads', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
     try {
         const response = await apiClient.post(endpoints.destoryApi, formData);
@@ -25,7 +24,6 @@ export const destoryLeads = createAsyncThunk('destoryleads', async ({ formData }
         return rejectWithValue(error.response?.data || error.message);
     }
 });
-
 
 const initialState = {
     leads: [] as { lead_id: number }[],
