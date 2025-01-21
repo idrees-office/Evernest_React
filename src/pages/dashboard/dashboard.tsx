@@ -92,7 +92,7 @@ const DashboardBox = () => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status";
     };
-    
+
     const getNotes2ByLeadStatus = (leadStatus:number) => {
         const option = TopbarStatuses.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Status';
@@ -446,6 +446,7 @@ const DashboardBox = () => {
                     )}
                 </div>
             </div>
+            
             <Transition appear show={addTaskModal} as={Fragment}>
                 <Dialog as="div" open={addTaskModal} onClose={() => setAddTaskModal(false)} className="relative z-[51]">
                     <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">

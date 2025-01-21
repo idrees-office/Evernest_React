@@ -20,8 +20,7 @@ export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue
 export const destoryLeads = createAsyncThunk('destoryleads', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
     try {
         const response = await apiClient.post(endpoints.destoryApi, formData);
-        console.log(response)
-        // return {data: response?.data.data, status: response?.status};
+        return {data: response?.data.data, status: response?.status};
     } catch (error: any) {
         return rejectWithValue(error.response?.data || error.message);
     }
@@ -35,6 +34,7 @@ const initialState = {
     success: false,
     loading: false,
     message : '',
+    status : 0,
 };
 
 const LeadsSlice = createSlice({
@@ -62,8 +62,7 @@ const LeadsSlice = createSlice({
             })
             .addCase(destoryLeads.fulfilled, (state, action) => {
                 state.loading = false;
-                console.log(action.payload)
-                
+                state.status = action.payload.status;  
             });
     },
 })

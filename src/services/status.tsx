@@ -176,7 +176,6 @@ export const STATUSES = [
         notes2  : ' Moved to: <span class="text-primary">Agent </span>',
         tab     : 'agenttab',
         activeColor: "bg-white-dark/10 text-secondary",
-
     },
     {
         value: 14,
@@ -189,7 +188,6 @@ export const STATUSES = [
         notes2  : ' Moved to: <span class="text-primary">Junk </span>',
         tab     : 'junktab',
         activeColor: "bg-white-dark/10 text-secondary",
-
     },
     {
         value: 15,
@@ -201,7 +199,26 @@ export const STATUSES = [
         notes   : ' From Junk',
         notes2  : 'System Automatically Move at 8 PM'
     },
-
+    {
+        value: 16,
+        label: 'Congratulations Close Deal',
+        displayIn: ['', '', ''],
+        icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
+        outlineColor: 'bg-white text-secondary',
+        bgColor : 'bg-primary',
+        // notes   : ' From Junk',
+        // notes2  : 'System Automatically Move at 8 PM'
+    },
+    {
+        value: 17,
+        label: 'New Lead Created By',
+        displayIn: ['', '', ''],
+        icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
+        outlineColor: 'bg-white text-secondary',
+        bgColor : 'bg-primary',
+        // notes   : ' From Junk',
+        // notes2  : 'System Automatically Move at 8 PM'
+    },
 ];
 
 export const topBarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));

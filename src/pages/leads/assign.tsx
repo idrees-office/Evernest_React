@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import { newleads } from '../../slices/leadsSlice';
+import { newleads, destoryLeads } from '../../slices/leadsSlice';
 import Select from 'react-select';
+import { co, di } from '@fullcalendar/core/internal-common';
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -63,18 +64,24 @@ const Assign = () => {
           toast.error('Please select at least one lead to assign');
           return;
         }
-        const leadIds = selectedRecords.map((record) => record.lead_id); 
+        const leadIds = selectedRecords.map((record) => record.lead_id);  
       }
-
-      const RemoveLead = () => {
+      const RemoveLead = async () => {
         if (selectedRecords.length === 0) {
           toast.error('Please select at least one lead to remove');
           return;
         }
         const leadIds = selectedRecords.map((record) => record.lead_id);
-        
+        const formData = new FormData();
+        leadIds.forEach((id) => formData.append('lead_id[]', id));
+        const response = await dispatch(destoryLeads({ formData }) as any);
+        if (response.payload.status === 200 || response.payload.status === 201){
+            toast.success('Lead removed successfully');
+            setSelectedRecords([]);
+            dispatch(newleads()); 
+            setDisable(true);       }
       }
-
+      
     return (
     <div>
         <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
@@ -86,7 +93,7 @@ const Assign = () => {
             <button onClick={() => { AddLead(); }} className="btn btn-primary btn-sm">
                 <IconPlus /> Add Lead
             </button>
-        </div>
+        </div> 
         <div className="flex items-center space-x-2">
             <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
             <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
