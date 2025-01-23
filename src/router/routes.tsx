@@ -109,6 +109,14 @@ const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
 import ProtectedRoute from '../components/ProtectedRoute';
 const Assign = lazy(() => import('../pages/leads/assign'));
+const ReAssign = lazy(() => import('../pages/leads/reassign'));
+const WonLeads = lazy(() => import('../pages/leads/won'));
+const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
+const RoadShow = lazy(() => import('../pages/leads/roadshow'));
+
+
+
+
 
 
 const routes = [
@@ -117,7 +125,6 @@ const routes = [
         type: 'protected',
         // element: <Index />,
         element: <DashboardBox />,
-
     },
     {
         path: 'pages/leads/assign',
@@ -125,6 +132,33 @@ const routes = [
         element : <Assign/>,
         layout: 'default',
     },
+    {
+        path: 'pages/leads/reassign',
+        type: 'protected',
+        element : <ReAssign/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/leads/won',
+        type: 'protected',
+        element : <WonLeads/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/leads/exportpdf',
+        type: 'protected',
+        element : <ExportLeads/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/leads/roadshow',
+        type: 'protected',
+        element : <RoadShow/>,
+        layout: 'default',
+    },
+
     {
         path: '/analytics',
         type: 'protected',

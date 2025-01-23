@@ -29,12 +29,14 @@ import { Dialog, Transition } from '@headlessui/react';
 import IconX from '../../components/Icon/IconX';
 import './dashboard.css';
 import LeadModal from '../../components/LeadModal';
+import Loader from '../../services/loader';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
     const navigate        = useNavigate();
     const TopbarStatuses  = topBarStatus();
-    const Statues  = statues();
+    const Statues         = statues();
+    const loader          = Loader();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
@@ -54,7 +56,7 @@ const DashboardBox = () => {
 
     // const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const { successmessage } = useSelector((state: any) => state.dashboardslice.success);
+    const { successmessage, loading } = useSelector((state: any) => state.dashboardslice);
     const [pager, setPager] = useState<any>({
         currentPage: 1,
         totalPages: 0,
@@ -92,18 +94,16 @@ const DashboardBox = () => {
         }));
     }, [AllLeadList, pager.currentPage, pager.pageSize]);
 
-    const getNotesByLeadStatus = (leadStatus:number) => {
-        // return leadStatus;    
+    const getNotesByLeadStatus = (leadStatus:number) => { 
         const option = Statues.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes === "string" ? option.notes : "Unknown Status1";
     };
     
     const getNotes2ByLeadStatus = (leadStatus:number) => {
-        // return leadStatus;    
         const option = Statues.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Statu2s';
     }
-
+    
     const LeadsTabs = (status: number) => {
         if(status){
             getLeads(status);
@@ -148,28 +148,7 @@ const DashboardBox = () => {
     };
     const openLeadModal = () => {
         setIsModalOpen(true);
-        // setErrors({});
     } 
-
-    // const saveLead = async (e: React.FormEvent) => {
-    //         e.preventDefault();
-    //         if (combinedRef.current.addleadform) {
-    //             const formData = new FormData(combinedRef.current.addleadform);
-    //             try {
-    //                 const response = await dispatch(createLeads({ formData }) as any);
-    //                 if (response.payload.status === 200 || response.payload.status === 201){
-    //                     toast.success('Lead Create Successfully');
-    //                     setSelectedLead(null);
-    //                     setIsModalOpen(false)
-    //                     combinedRef.current.addleadform.reset();
-    //                 }else{
-    //                     setErrors(response.payload.errors);
-    //                     return
-    //                 }
-    //             } catch (error: any) { console.error('Error creating/updating news:', error); }
-
-    //         }
-    // }
 
     return (
         <div>
@@ -257,7 +236,7 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                { AllLeadList.length ? (
+                                { AllLeadList.length   ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>
@@ -331,7 +310,12 @@ const DashboardBox = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
+
+                                    <div className="absolute inset-0 flex justify-center items-center z-10 bg-white bg-opacity-50">
+                                       <span className="animate-[spin_3s_linear_infinite] border-8 border-r-warning border-l-primary border-t-danger border-b-success rounded-full w-14 h-14 inline-block align-middle m-auto"></span>
+                                    </div>
+
+                                    // <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
                                 )}
                         </div>
                     )}
@@ -427,7 +411,6 @@ const DashboardBox = () => {
                                                             <p className="text-[#3b3f5c] dark:text-white-light min-w-[120px] max-w-[150px] text-sm font-semibold py-2.5">
                                                                 {comment?.created_at || 'Invalid Time'}
                                                             </p>
-
                                                             {/* Timeline dot and line */}
                                                             <div className={`
                                                                 relative

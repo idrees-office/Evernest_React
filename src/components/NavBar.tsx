@@ -31,19 +31,16 @@ const NavBar = () =>{
                                 <NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/analytics">{t('Re-Assign')}</NavLink>
+                                <NavLink to="/pages/leads/reassign">{t('Re-Assign')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/finance">{t('All-Leads')}</NavLink>
+                                <NavLink to="/pages/leads/won">{t('Won-Leads')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/crypto">{t('Won-Leads')}</NavLink>
+                                <NavLink to="/pages/leads/roadshow">{t('Road-Show Leads')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/crypto">{t('Road-Show Leads')}</NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/crypto">{t('Export Pdf')}</NavLink>
+                                <NavLink to="/pages/leads/exportpdf">{t('Export Pdf')}</NavLink>
                             </li>
 
                         </ul>

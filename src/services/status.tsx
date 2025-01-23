@@ -228,5 +228,35 @@ export const MatchColorList = ()   => STATUSES.filter((status) => status.display
 export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
 
 
+//  country list
+export const CountryList = [
+    {
+      value: 'Delhi',
+      name: 'Delhi',
+    },
+    {
+      value: 'Vienna',
+      name: 'Vienna',
+    },
+    {
+      value: 'Prague',
+      name: 'Prague',
+    },
+    {
+      value: 'Canada',
+      name: 'Canada',
+    },
+    {
+      value: 'USA',
+      name: 'USA',
+    },
+    {
+      value: 'Riyadh',
+      name: 'Riyadh',
+    },
+  ];
+
+
+
 
 

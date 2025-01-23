@@ -86,7 +86,8 @@ import apiClient from '../utils/apiClient';
                     state.success = true;
                     state.leads = action.payload.leadsdata?.data || [];
                     state.loading = false;
-                }).addCase(DashboardLeadslist.rejected, (state) => {
+                })
+                .addCase(DashboardLeadslist.rejected, (state) => {
                     state.success = false;
                 })
                 .addCase(updateSingleLead.fulfilled, (state, action) => {

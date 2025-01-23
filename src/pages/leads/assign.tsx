@@ -10,11 +10,13 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import { newleads, destoryLeads } from '../../slices/leadsSlice';
+import { newleads, destoryLeads, assignleads } from '../../slices/leadsSlice';
 import Select from 'react-select';
 import LeadModal from '../../components/LeadModal';
-import { createLeads } from '../../slices/dashboardSlice';
 import '../dashboard/dashboard.css'; 
+import Swal from 'sweetalert2';
+
+// assign-multiple-lead
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -34,9 +36,11 @@ const Assign = () => {
     }, [dispatch]); 
     const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
     
-    const transformedAgents = agents.map(agent => ({
+    const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
+        phone: agent?.client_user_phone,
+
     }));
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
         lead_id : lead.lead_id || 'Unknown',
@@ -50,6 +54,7 @@ const Assign = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     }
+
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
         if (isChecked) {
           setSelectedRecords((prevSelected) => [...prevSelected, record]);
@@ -59,52 +64,80 @@ const Assign = () => {
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
-      
-      const AssignLead = (agentId: number) => {
-        if (selectedRecords.length === 0) {
-          toast.error('Please select at least one lead to assign');
-          return;
-        }
-        const leadIds = selectedRecords.map((record) => record.lead_id);  
-        console.log(agentId);
-        console.log(leadIds);
 
-      }
-      const RemoveLead = async () => {
-        if (selectedRecords.length === 0) {
-          toast.error('Please select at least one lead to remove');
-          return;
+      const AssignLead = async (agentId: number, phone:number) => {
+
+        if (selectedRecords.length === 0) { 
+            toast.error('Please select at least one lead to assign');
+            return;
         }
         const leadIds = selectedRecords.map((record) => record.lead_id);
         const formData = new FormData();
         leadIds.forEach((id) => formData.append('lead_id[]', id));
-        const response = await dispatch(destoryLeads({ formData }) as any);
+        formData.append('agent_id', agentId.toString());
+        formData.append('agent_phone', phone.toString());
+        const response = await dispatch(assignleads({ formData }) as any);
         if (response.payload.status === 200 || response.payload.status === 201){
-            toast.success('Lead removed successfully');
-            setSelectedRecords([]);
-            dispatch(newleads()); 
-            setDisable(true);       
+             toast.success('Leads Have Been Assigned Successfully');
+             dispatch(newleads());
+             setSelectedRecords([]);
+             setDisable(true);
         }
       }
+
+      const RemoveLead = async () => {
+        if (selectedRecords.length === 0) {
+            toast.error('Please select at least one lead to remove');
+            return;
+        }
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to remove ${selectedRecords.length} selected lead(s). This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        });
+        if (result.isConfirmed) {
+            try {
+                const leadIds = selectedRecords.map((record) => record.lead_id);
+                const formData = new FormData();
+                leadIds.forEach((id) => formData.append('lead_id[]', id));
+                const response = await dispatch(destoryLeads({ formData }) as any);
+                if (response.payload.status === 200 || response.payload.status === 201) {
+                    toast.success('Lead removed successfully');
+                    setSelectedRecords([]);
+                    dispatch(newleads());
+                    setDisable(true);
+                } else {
+                    toast.error('Failed to remove leads. Please try again.');
+                }
+            } catch (error) {
+                toast.error('An error occurred while removing leads.');
+            }
+        }
+    };
     return (
     <div>
         <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
-        <div className="flex items-center">
-            <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
-                <IconBell />
+            <div className="flex items-center">
+                <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
+                    <IconBell />
+                </div>
+                <span className="ltr:mr-3 rtl:ml-3">Details of Your New Leads: </span>
+                    <button onClick={openLeadModal} className="btn btn-primary btn-sm"> <IconPlus /> Add Lead
+                </button>
+            </div> 
+            <div className="flex items-center space-x-2">
+                <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value, selectedOption.phone); }}/>
+                <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-default btn-sm" style={{ background: "#d33", color : '#fff' }}><IconTrash/></button>
             </div>
-            <span className="ltr:mr-3 rtl:ml-3">New leads: </span>
-                 <button onClick={openLeadModal} className="btn btn-primary btn-sm"> <IconPlus /> Add Lead
-            </button>
-        </div> 
-        <div className="flex items-center space-x-2">
-            <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
-
-            <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
-    </div>
         <div className="datatables">
-        <Table title="New leads"
+        {loading ? ( loader  )   : (
+         <Table title="New leads"
             columns={[
                     {
                         accessor: 'lead_id',
@@ -142,6 +175,7 @@ const Assign = () => {
                 ]} 
               rows={tableData}
             />
+            )}
         </div>
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
     </div>
