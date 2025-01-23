@@ -77,7 +77,7 @@ const NavBar = () =>{
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/elements/alerts">{t('Add-User')}</NavLink>
+                                <NavLink to="/users">{t('Add-User')}</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/elements/avatar">{t('Preview-User')}</NavLink>
