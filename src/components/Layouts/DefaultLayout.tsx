@@ -31,7 +31,6 @@ const DefaultLayout = ({ children }: PropsWithChildren) => {
     };
 
     useEffect(() => {
-
         window.addEventListener('scroll', onScrollHandler);
         const screenLoader = document.getElementsByClassName('screen_loader');
         if (screenLoader?.length) {

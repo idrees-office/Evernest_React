@@ -1,80 +1,8 @@
-// import React, { useEffect, useState,} from 'react';
-// import { DataTable, DataTableSortStatus } from 'mantine-datatable';
-// import sortBy from 'lodash/sortBy';
-
-// interface Column {
-//     accessor: string;
-//     title: string;
-//     sortable?: boolean;
-//     render?: (record: any) => JSX.Element;
-// }
-
-// interface TableProps {
-//     columns: Column[];
-//     rows: any[];
-//     title: string;
-// }
-
-// const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
-//     const [page, setPage] = useState(1);
-//     const PAGE_SIZES = [10, 20, 30, 50, 100];
-//     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-//     // const [recordsData, setRecordsData] = useState<any[]>(rows);
-//     const [recordsData, setRecordsData] = useState<any[]>([]);
-//     const [selectedRecords, setSelectedRecords] = useState<any>([]);
-//     const [search, setSearch] = useState('');
-//     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'desc', });
-
-//      useEffect(() => {
-//             const filtered = rows.filter((row) => columns.some((col) => String(row[col.accessor] || '').toLowerCase().includes(search.toLowerCase())));
-//             const sortedData = sortBy(filtered, sortStatus.columnAccessor);
-//             setRecordsData(sortStatus.direction === 'desc' ? sortedData.reverse() : sortedData);
-//             setPage(1); 
-//         }, [rows, search, columns, sortStatus]);
-    
-//         useEffect(() => {
-//             const from = (page - 1) * pageSize;
-//             const to = from + pageSize;
-//             setRecordsData(recordsData.slice(from, to));
-//         }, [page, pageSize, recordsData]);
-        
-//   return (
-//     <div>
-//          <div className="panel mt-6">
-//                 <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
-//                     <h5 className="font-semibold text-lg dark:text-white-light">{title}</h5>
-//                     <div className="ltr:ml-auto rtl:mr-auto"> <input type="text" className="form-input w-auto" placeholder="Search..." value={search} /> </div>
-//                 </div>
-//                 <div className="datatables">
-//                      <DataTable
-//                         className="whitespace-nowrap table-hover"
-//                         records={recordsData}
-//                         columns={columns}
-//                         highlightOnHover
-//                         totalRecords={recordsData.length}
-//                         recordsPerPage={pageSize}
-//                         page={page}
-//                         onPageChange={(p) => setPage(p)}
-//                         recordsPerPageOptions={PAGE_SIZES}
-//                         onRecordsPerPageChange={setPageSize}
-//                         sortStatus={sortStatus}
-//                         onSortStatusChange={setSortStatus}
-//                         selectedRecords={selectedRecords}
-//                         onSelectedRecordsChange={setSelectedRecords}
-//                         minHeight={150}
-//                         paginationText={({ from, to, totalRecords }) => `Showing  ${from} to ${to} of ${totalRecords} entries`}
-//                     /> 
-//                 </div>
-//             </div>
-//     </div>
-//   );
-// }
-
-// export default Table;
-
 import React, { useEffect, useState } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import sortBy from 'lodash/sortBy';
+import { IRootState } from '../store';
+import { useSelector } from 'react-redux';
 
 interface Column {
   accessor: string;
@@ -91,7 +19,7 @@ interface TableProps {
 
 const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
   const [page, setPage] = useState(1);
-  const PAGE_SIZES = [10, 20, 30, 50, 100];
+  const PAGE_SIZES = [20, 30, 40, 50, 100];
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
   const [filteredRecords, setFilteredRecords] = useState<any[]>([]);
   const [paginatedRecords, setPaginatedRecords] = useState<any[]>([]);
@@ -100,7 +28,7 @@ const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
     columnAccessor: 'id',
     direction: 'desc',
   });
-
+  
   // Filter and sort records based on search and sortStatus
   useEffect(() => {
     const filtered = rows.filter((row) =>
@@ -123,7 +51,7 @@ const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
 
   return (
     <div>
-      <div className="panel mt-6">
+      <div className="panel">
         <div className="flex md:items-center md:flex-row flex-col mb-5 gap-5">
           <h5 className="font-semibold text-lg dark:text-white-light">
             {title}
@@ -153,9 +81,7 @@ const Table: React.FC<TableProps> = ({ columns, rows, title }) => {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             minHeight={150}
-            paginationText={({ from, to, totalRecords }) =>
-              `Showing ${from} to ${to} of ${totalRecords} entries`
-            }
+            paginationText={({ from, to, totalRecords }) => `Showing ${from} to ${to} of ${totalRecords} entries` }
           />
         </div>
       </div>

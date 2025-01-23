@@ -5,9 +5,6 @@ const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed')
 const UnlockBoxed = lazy(() => import('../pages/Authentication/UnlockBox'));
 const RecoverIdBoxed = lazy(() => import('../pages/Authentication/RecoverIdBox'));
 const LoginCover = lazy(() => import('../pages/Authentication/LoginCover'));
-const RegisterCover = lazy(() => import('../pages/Authentication/RegisterCover'));
-const RecoverIdCover = lazy(() => import('../pages/Authentication/RecoverIdCover'));
-const UnlockCover = lazy(() => import('../pages/Authentication/UnlockCover'));
 const Error = lazy(() => import('../components/Error'));
 const BlogCreate = lazy(() => import('../pages/Blogs/Create'));
 const BlogList = lazy(() => import('../pages/Blogs/list'));
@@ -18,8 +15,13 @@ const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
 const Users = lazy(() => import('../pages/Users/Users'));
+const Roles = lazy(() => import('../pages/Roles/Roles'));
 import ProtectedRoute from '../components/ProtectedRoute';
 const Assign = lazy(() => import('../pages/leads/assign'));
+const ReAssign = lazy(() => import('../pages/leads/reassign'));
+const WonLeads = lazy(() => import('../pages/leads/won'));
+const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
+const RoadShow = lazy(() => import('../pages/leads/roadshow'));
 
 const routes = [
     {
@@ -27,13 +29,64 @@ const routes = [
         type: 'protected',
         // element: <Index />,
         element: <DashboardBox />,
-
     },
     {
         path: 'pages/leads/assign',
         type: 'protected',
         element : <Assign/>,
         layout: 'default',
+    },
+    {
+        path: 'pages/leads/reassign',
+        type: 'protected',
+        element : <ReAssign/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/leads/won',
+        type: 'protected',
+        element : <WonLeads/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/leads/exportpdf',
+        type: 'protected',
+        element : <ExportLeads/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/leads/roadshow',
+        type: 'protected',
+        element : <RoadShow/>,
+        layout: 'default',
+    },
+
+    {
+        path: '/analytics',
+        type: 'protected',
+        element: <Analytics />,
+    },
+    {
+        path: '/auth/boxed-signin',
+        element: <LoginBoxed />,
+        layout: 'blank',
+    },
+    {
+        path: '/auth/boxed-signup',
+        element: <RegisterBoxed />,
+        layout: 'blank',
+    },
+    {
+        path: '/auth/boxed-lockscreen',
+        element: <UnlockBoxed />,
+        layout: 'blank',
+    },
+    {
+        path: '/auth/boxed-password-reset',
+        element: <RecoverIdBoxed />,
+        layout: 'blank',
     },
     {
         path: '/auth/cover-login',
@@ -88,6 +141,18 @@ const routes = [
         path: 'users',
         type: 'protected',
         element : <Users/>,
+        layout: 'default',
+    },
+    {
+        path: 'roles',
+        type: 'protected',
+        element : <Roles/>,
+        layout: 'default',
+    },
+    {
+        path: 'error',
+        type: 'protected',
+        element : <Error/>,
         layout: 'default',
     },
     

@@ -4,9 +4,13 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import Swal from 'sweetalert2';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
+import Table from "./../../components/Table";
+import Loader from '../../services/loader';
 
 const Users = () => {
     const dispatch = useDispatch();
+    const loader   = Loader();
+
     const [options] = useState([
         { value: '1', name: 'Active' },
         { value: '0', name: 'Inactive' }
@@ -21,6 +25,7 @@ const Users = () => {
     const [users, usersList] = useState([]);
     
     const [formData, setFormData] = useState({
+        client_user_id: '',
         client_user_name: '',
         client_user_phone: '',
         client_user_designation: '',
@@ -36,6 +41,15 @@ const Users = () => {
         fetchRoles();
         fetchUserLists();
     }, []);
+
+    const tableData = (Array.isArray(users) ? users : []).map((user: any, index: number) => ({
+        client_user_id: user.client_user_id,
+        client_user_name: user.client_user_name,
+        client_user_email: user.client_user_email,
+        client_role: user.roles[0]?.name,
+        user: user
+        
+    }));
 
     const fetchRoles = async () => {
         try {
@@ -81,8 +95,9 @@ const Users = () => {
             const response = await apiClient.post(`${getBaseUrl()}/users/create_user`, formData);
             
             if (response.data.status === 'success') {
-                showSuccessToast('User created successfully');
+                showSuccessToast(response.data.message);
                 setFormData({
+                    client_user_id: '',
                     client_user_name: '',
                     client_user_phone: '',
                     client_user_designation: '',
@@ -92,12 +107,17 @@ const Users = () => {
                     client_sort_order: '',
                     role_id: ''
                 });
+                fetchUserLists();
                 setErrors({})
             }
         } catch (error: any) {
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
-            } else {
+            }
+            else if(error.response?.status === 403) {
+                window.location.href = '/error';
+            }
+            else {
                 showServerError();
             }
         }
@@ -125,6 +145,7 @@ const Users = () => {
 
     const handleEdit = async (user: any) => {
         setFormData({
+            client_user_id: user.client_user_id,
             client_user_name: user.client_user_name,
             client_user_phone: user.client_user_phone,
             client_user_designation: user.client_user_designation,
@@ -167,9 +188,7 @@ const Users = () => {
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
-                        <div className="panel-header">
-                            <h2 className="font-semibold">Create User</h2>
-                        </div>
+                        {/* <h2 className="font-semibold fs-3">Create User</h2> */}
                         <div className="panel-body">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="form-group">
@@ -315,57 +334,37 @@ const Users = () => {
                     </div>
                 </div>
                 
-                <div className="w-full lg:w-2/3 px-4">
-                    <div className='panel'> 
-                        <div className="panel-header">
-                            <h5 className="font-semibold">User List</h5>
-                        </div>
-                        <div className="panel-body">
-                            <div className="table-responsive">
-                                <table className="table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Status</th>
-                                            <th>#</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {users.map((user: any) => (
-                                            <tr key={user.client_user_id}>
-                                                <td>{user.client_user_name}</td>
-                                                <td>{user.client_user_email}</td>
-                                                <td>{user.roles[0]?.name}</td>
-                                                <td>
-                                                    <span className={`badge ${user.client_user_status === 1 ? 'bg-success' : 'bg-danger'}`}>
-                                                        {user.client_user_status === 1 ? 'Active' : 'Inactive'}
-                                                    </span>
-                                                </td>
-                                                <td>Action</td>
-                                            <td className="flex space-x-2">
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => handleEdit(user)}
-                                                    className="btn btn-sm btn-outline-primary"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => handleDelete(user)}
-                                                    className="btn btn-sm btn-outline-danger"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div className="w-full lg:w-2/3 px-2">
+                    <div className="datatables">
+                        <Table title="User List"
+                            columns={[
+                                { accessor: 'client_user_id', title: '#', sortable: true },
+                                { accessor: 'client_user_name',  title: 'Name', sortable: true },
+                                { accessor: 'client_user_email',  title: 'Email', sortable: true },
+                                { accessor: 'client_role', title: 'Role', sortable: true},
+                                { accessor: 'action',  title: 'Action', sortable: true,
+                                    render: (user) => (
+                                        <div className="flex space-x-2">
+                                            <button 
+                                                type="button"
+                                                onClick={() => handleEdit(user.user)}
+                                                className="btn btn-sm btn-outline-primary"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                type="button"
+                                                onClick={() => handleDelete(user.user)}
+                                                className="btn btn-sm btn-outline-danger"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    ),
+                                },
+                            ]} 
+                            rows={tableData}
+                        />
                     </div>
                 </div>
             </div>
