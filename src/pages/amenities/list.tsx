@@ -33,7 +33,6 @@ const AmenitiesList = () => {
          dispatch(showAmenities());
     }, [dispatch]);
 
-
     useEffect(() => {
         if (paramsId !== undefined) {
           dispatch(editAmenities(paramsId)).unwrap().then((response: any) => {
@@ -50,7 +49,7 @@ const AmenitiesList = () => {
               console.error('Failed to fetch amenity details:', error);
             });
         }
-      }, [paramsId, dispatch]); // Re-run when paramsId changes
+      }, [paramsId, dispatch]);
 
     
     const { loading, amenities } = useSelector((state:IRootState) => state.amenitiesdata);

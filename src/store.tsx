@@ -7,8 +7,7 @@ import DeveloperSlice from './slices/developerSlice';
 import AmenitiesSlice from './slices/amenitiesSlice';
 import DashboardSlice from './slices/dashboardSlice';
 import LeadSlice from './slices/leadsSlice';
-
-
+import TeamSlice from './slices/teamSlice';
 
 const rootReducer = combineReducers({
     themeConfig: themeConfigSlice,
@@ -19,7 +18,8 @@ const rootReducer = combineReducers({
     amenitiesdata: AmenitiesSlice,
     dashboardslice :  DashboardSlice,
     leadslices :  LeadSlice,
-
+    teamlices :  TeamSlice,
+    
 });
 
 const store = configureStore({
