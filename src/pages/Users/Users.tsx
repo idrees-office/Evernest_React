@@ -22,18 +22,14 @@ const Users = () => {
     const dispatch = useDispatch();
     const loader = Loader();
     const combinedRef = useRef<any>({ userformRef: null });
-
-    // const [defineRoles, setDefineRoles] = useState<any | null>(null);
     const [users, usersList] = useState([]);
     const [status, setStatus] = useState<any | null>(null);
-    const [urole, setRoles] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    interface Role {
-        value: number;
-        label: string;
-    }
-    const [defineRoles, setDefineRoles] = useState<Role[]>([]);
+    const [urole, setRoles] = useState<any | null>(null); 
+    const [selectedRole, setSelectedRole] = useState<any | null>(null);
+
+   
 
 
     useEffect(() => {
@@ -54,8 +50,13 @@ const Users = () => {
         try {
             const response = await apiClient.get(endpoints.roleApi);
             if (response.data) {
-                setDefineRoles(response.data);
-                setRoles(response.data);
+
+                const roleOptions = response.data.map((role: any) => ({
+                    value: role.id,
+                    label: role.name,
+                }));
+
+                setRoles(roleOptions);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -132,10 +133,17 @@ const Users = () => {
             form.client_user_designation.value = user.client_user_designation || '';
             form.client_sort_order.value = user.client_sort_order || '';
             setStatus(user.client_user_status || '');
-            const userRole = user.roles && user.roles[0] ? user.roles[0].id : '';
-            console.log(userRole);
+            const userrole = user.roles && user.roles[0];
+            if (userrole) {
+                const selectedRole = {
+                    value: userrole.id,
+                    label: userrole.name,
+                };
+                setSelectedRole(selectedRole); 
+            } else {
+                setSelectedRole(null); 
+            }
 
-            // setDefineRoles(userRole);
         }
     };
 
@@ -164,6 +172,11 @@ const Users = () => {
             }
         }
     };
+
+    const handleRoleChange = (selectedOption: any) => {
+        setSelectedRole(selectedOption); // Update selected role
+    };
+
 
     return (
         <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={handleSubmit} className="space-y-5">
@@ -218,15 +231,7 @@ const Users = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
-                                    
-
-
-                                    <Select name="role_id" placeholder="Select an option" options={defineRoles} value={defineRoles.find((option) => option.value === urole)}   />
-
-                                    {/* <Select name="role_id" placeholder="Select an option" options={defineRoles.map(item => ({ value: item.value, label: item.label }))}  value={defineRoles.find((option) => option.value === urole)}  
-                                    /> */}
-                                     {/* <Select name="role_id" placeholder="Select an option" options={defineRoles}  value={defineRoles.find((option) => option.value === urole)}/>  */}
-
+                                    <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole}/>
                                 </div>
                                 {errors.role_id && <span className="text-red-500 text-sm">{errors.role_id}</span>}
 

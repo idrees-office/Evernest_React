@@ -39,7 +39,7 @@ const AmenitiesList = () => {
               if (formRef.current) {
                 formRef.current.reset(); 
                 const nameInput = formRef.current?.elements.namedItem('name') as HTMLInputElement;
-                // const nameInput = formRef.current.querySelector<HTMLInputElement>('input[name="name"]');
+                
                 if (nameInput) {
                   nameInput.value = response.name || '';
                 }
