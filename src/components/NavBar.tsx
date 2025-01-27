@@ -74,13 +74,13 @@ const NavBar = () =>{
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/users">{t('Add-User')}</NavLink>
+                                <NavLink to="/pages/users/create">{t('Add-User')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/profile">{t('Preview-User')}</NavLink>
+                                <NavLink to="/pages/users/profile">{t('Preview-User')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/roles">{t('Add-Role')}</NavLink>
+                                <NavLink to="/pages/roles/create">{t('Add-Role')}</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/assign_permission">{t('Assign-Permission')}</NavLink>
