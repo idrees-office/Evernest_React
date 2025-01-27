@@ -4,7 +4,7 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import Swal from 'sweetalert2';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
-import Table from './../../components/Table';
+import Table from '../../components/Table';
 import Loader from '../../services/loader';
 import { options } from '../../services/status';
 import Select from 'react-select';
@@ -16,6 +16,8 @@ const endpoints = {
     roleApi: `${getBaseUrl()}/users/get_user_role`,
     listApi: `${getBaseUrl()}/users/user_list`,
     destoryApi: `${getBaseUrl()}/users/delete_user`,
+    updateApi: `${getBaseUrl()}/users/update_user`,
+
 };
 
 const Users = () => {
@@ -25,12 +27,8 @@ const Users = () => {
     const [users, usersList] = useState([]);
     const [status, setStatus] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
-
     const [urole, setRoles] = useState<any | null>(null); 
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
-
-   
-
 
     useEffect(() => {
         dispatch(setPageTitle('Create User'));
@@ -50,12 +48,10 @@ const Users = () => {
         try {
             const response = await apiClient.get(endpoints.roleApi);
             if (response.data) {
-
                 const roleOptions = response.data.map((role: any) => ({
                     value: role.id,
                     label: role.name,
                 }));
-
                 setRoles(roleOptions);
             }
         } catch (error: any) {
@@ -85,8 +81,13 @@ const Users = () => {
         try {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
-                const response = await apiClient.post(endpoints.createApi, formData);
-                if (response.data.status === 'success') {
+                const userId = formData.get('client_user_name');
+
+                alert(userId);
+                return
+                const response = userId ? await apiClient.put(`${endpoints.updateApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
+                // const response = await apiClient.post(endpoints.createApi, formData);
+                if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
                     setErrors({});
@@ -156,13 +157,12 @@ const Users = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
-
         if (result.isConfirmed) {
             try {
                 const response = await apiClient.delete(endpoints.destoryApi + `/${user.client_user_id}`);
                 if (response.data.status === 'success') {
                     showSuccessToast('User deleted successfully');
-                    fetchUserLists(); // Refresh the user list
+                    fetchUserLists(); 
                 }
             } catch (error: any) {
                 if (error.response?.status === 403) {
@@ -174,9 +174,8 @@ const Users = () => {
     };
 
     const handleRoleChange = (selectedOption: any) => {
-        setSelectedRole(selectedOption); // Update selected role
+        setSelectedRole(selectedOption); 
     };
-
 
     return (
         <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={handleSubmit} className="space-y-5">
@@ -191,13 +190,11 @@ const Users = () => {
                                     <input name="client_user_name" type="text" placeholder="Username" className="form-input" />
                                     {errors.client_user_name && <span className="text-red-500 text-sm">{errors.client_user_name}</span>}
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="client_user_phone">Phone</label>
                                     <input name="client_user_phone" type="tel" placeholder="Phone" className="form-input" />
                                     {errors.client_user_phone && <span className="text-red-500 text-sm">{errors.client_user_phone}</span>}
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="client_user_designation">Designation</label>
                                     <input name="client_user_designation" type="text" placeholder="Designation" className="form-input" />
@@ -209,21 +206,16 @@ const Users = () => {
                                     <input name="client_user_email" type="email" placeholder="Email" className="form-input" />
                                     {errors.client_user_email && <span className="text-red-500 text-sm">{errors.client_user_email}</span>}
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="password">Password</label>
                                     <input name="password" type="password" placeholder="Password" className="form-input" />
                                     {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="client_user_status">Status</label>
-
                                     <Select name="client_user_status" placeholder="Select an option" options={options} value={options.find((option) => option.value === status)} />
-
                                     {errors.client_user_status && <span className="text-red-500 text-sm">{errors.client_user_status}</span>}
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="client_sort_order">Sort Order</label>
                                     <input name="client_sort_order" type="text" placeholder="Sort Order" className="form-input" />
@@ -231,10 +223,9 @@ const Users = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
-                                    <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole}/>
+                                    <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole} onChange={handleRoleChange}/>
                                 </div>
                                 {errors.role_id && <span className="text-red-500 text-sm">{errors.role_id}</span>}
-
                                 <div className="sm:col-span-2 flex justify-end">
                                     <button type="submit" className="btn btn-primary">
                                         Submit
@@ -244,7 +235,6 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="w-full lg:w-2/3 px-2">
                     <div className="datatables">
                         <Table

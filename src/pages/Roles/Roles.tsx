@@ -4,8 +4,17 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import Swal from 'sweetalert2';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
-import Table from "./../../components/Table";
+import Table from "../../components/Table";
 import Loader from '../../services/loader';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrashLines from '../../components/Icon/IconTrashLines';
+
+const endpoints = {
+    listApi    : `${getBaseUrl()}/users/get_user_role`,
+    createApi  : `${getBaseUrl()}/users/create_role`,
+    destoryApi : `${getBaseUrl()}/users/delete_role`,
+    updateApi  : `${getBaseUrl()}/users/update_role`,
+};
 
 const Roles = () => {
     const dispatch = useDispatch();
@@ -21,7 +30,6 @@ const Roles = () => {
         name: string;
     }
     const [roles, rolesList] = useState([]);
-    
     const [formData, setFormData] = useState({
         id: '',
         name: '',
@@ -41,7 +49,7 @@ const Roles = () => {
 
     const fetchRoleLists = async () => {
         try {
-            const response = await apiClient.get(`${getBaseUrl()}/users/get_user_role`);
+            const response = await apiClient.get(endpoints.listApi);
             if (response.data) {
                 rolesList(response.data);
             }
@@ -54,7 +62,6 @@ const Roles = () => {
     };
 
     const [errors, setErrors] = useState<Record<string, string>>({});
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
             ...formData,
@@ -64,16 +71,17 @@ const Roles = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        const isUpdate = !!formData.id;
+        let response;
+        if(isUpdate == true){
+            response = await apiClient.post(endpoints.updateApi+'/'+formData.id, formData);
+        }else{
+            response = await apiClient.post(endpoints.createApi, formData);
+        }
         try {
-            const response = await apiClient.post(`${getBaseUrl()}/users/create_role`, formData);
-            
-            if (response.data.status === 'success') {
+            if (response.status === 200 || response.status === 201) {
                 showSuccessToast(response.data.message);
-                setFormData({
-                    id: '',
-                    name: ''
-                });
+                setFormData({ id: '', name: '' });
                 fetchRoleLists();
                 setErrors({})
             }
@@ -85,6 +93,11 @@ const Roles = () => {
             }
         }
     };
+
+
+   
+    
+
 
     const showSuccessToast = (message: string) => {
         Swal.fire({
@@ -113,7 +126,7 @@ const Roles = () => {
         });
     };
 
-    const handleDelete = async (user: any) => {
+    const handleDelete = async (id: number) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -122,13 +135,12 @@ const Roles = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
-
         if (result.isConfirmed) {
             try {
-                const response = await apiClient.delete(`${getBaseUrl()}/roles/delete_user/${user.id}`);
-                if (response.data.status === 'success') {
+                const response = await apiClient.delete(endpoints.destoryApi+'/'+id);
+                if (response.status == 200 || response.status === 200) {
                     showSuccessToast('Roles deleted successfully');
-                    fetchRoleLists(); // Refresh the user list
+                    fetchRoleLists(); 
                 }
             } catch (error: any) {
                 if (error.response?.status === 403) {
@@ -147,31 +159,15 @@ const Roles = () => {
                         <div className="panel-body">
                             <div className="form-group">
                                 <label htmlFor="name">Name</label>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    placeholder="Name"
-                                    className="form-input"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                />
-                                {errors.name && (
-                                    <span className="text-red-500 text-sm">{errors.name}</span>
-                                )}
+                                <input name="name" type="text" placeholder="Name" className="form-input" value={formData.name} onChange={handleChange} />
+                                {errors.name && ( <span className="text-red-500 text-sm">{errors.name}</span> )}
                             </div>
-
-                            <div className="sm:col-span-2 flex justify-end">
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                >
-                                    Submit
-                                </button>
+                            <div className="sm:col-span-2 flex justify-end mt-3">
+                                <button type="submit" className="btn btn-primary"> Submit </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
                 <div className="w-full lg:w-2/3 px-2">
                     <div className="datatables">
                         <Table title="Role List"
@@ -181,19 +177,11 @@ const Roles = () => {
                                 { accessor: 'action',  title: 'Action', sortable: true,
                                     render: (role) => (
                                         <div className="flex space-x-2">
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleEdit(role)}
-                                                className="btn btn-sm btn-outline-primary"
-                                            >
-                                                Edit
+                                            <button type="button" onClick={() => handleEdit(role)} className="btn px-1 py-0.5 rounded text-white bg-info">
+                                                <IconPencil />
                                             </button>
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleDelete(role)}
-                                                className="btn btn-sm btn-outline-danger"
-                                            >
-                                                Delete
+                                            <button type="button" onClick={() => handleDelete(role.id)} className="btn px-1 py-0.5 rounded text-white" style={{ background: '#d33', color: '#fff' }}>
+                                                <IconTrashLines />
                                             </button>
                                         </div>
                                     ),
