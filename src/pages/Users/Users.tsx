@@ -29,7 +29,7 @@ const Users = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [urole, setRoles] = useState<any | null>(null); 
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
-
+    
     useEffect(() => {
         dispatch(setPageTitle('Create User'));
         fetchRoles();
@@ -81,16 +81,13 @@ const Users = () => {
         try {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
-                const userId = formData.get('client_user_name');
-
-                alert(userId);
-                return
-                const response = userId ? await apiClient.put(`${endpoints.updateApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
-                // const response = await apiClient.post(endpoints.createApi, formData);
+                const userId = formData.get('client_user_id');
+                const response = userId ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
                     setErrors({});
+                    combinedRef.current.userformRef.reset();
                 }
             }
         } catch (error: any) {
@@ -115,7 +112,7 @@ const Users = () => {
             icon: 'success',
         });
     };
-
+    
     const showServerError = () => {
         Swal.fire({
             text: 'Something went wrong on the server',
@@ -125,9 +122,11 @@ const Users = () => {
     };
 
     const handleEdit = async (user: any) => {
+
         if (combinedRef.current.userformRef) {
             const form = combinedRef.current.userformRef;
             form.reset();
+            form.client_user_id.value = user.client_user_id || '';
             form.client_user_name.value = user.client_user_name || '';
             form.client_user_email.value = user.client_user_email || '';
             form.client_user_phone.value = user.client_user_phone || '';
@@ -160,7 +159,7 @@ const Users = () => {
         if (result.isConfirmed) {
             try {
                 const response = await apiClient.delete(endpoints.destoryApi + `/${user.client_user_id}`);
-                if (response.data.status === 'success') {
+                if (response.status === 200 || response.status === 201) {
                     showSuccessToast('User deleted successfully');
                     fetchUserLists(); 
                 }
@@ -188,6 +187,7 @@ const Users = () => {
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
                                     <input name="client_user_name" type="text" placeholder="Username" className="form-input" />
+                                    <input type="hidden" name="client_user_id" id="client_user_id" />
                                     {errors.client_user_name && <span className="text-red-500 text-sm">{errors.client_user_name}</span>}
                                 </div>
                                 <div className="form-group">
