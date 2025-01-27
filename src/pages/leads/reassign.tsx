@@ -33,10 +33,15 @@ const ReAssign = () => {
         }
     }, [dispatch]); 
     const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
-    // const transformedAgents = agents.map(agent => ({
-    //     value: agent?.client_user_id,
-    //     label: agent?.client_user_name,
-    // }));
+
+    
+
+    const transformedAgents = agents?.map(agent => ({
+        value: agent?.client_user_id,
+        label: agent?.client_user_name,
+        phone: agent?.client_user_phone,
+    }));
+
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
         lead_id : lead.lead_id || 'Unknown',
         title   : lead.lead_title || 'Unknown',
@@ -97,7 +102,7 @@ const ReAssign = () => {
             </button>
         </div> 
         <div className="flex items-center space-x-2">
-            {/* <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="z-10" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/> */}
+            <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
             <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
     </div>

@@ -128,6 +128,7 @@ const LeadsSlice = createSlice({
         .addCase(reassigleads.fulfilled, (state, action) => {
             state.loading = false;
             state.leads   = action.payload.data;
+            state.agents  = action.payload.agents;
         }).addCase(closeleads.pending, (state) => {
             state.loading = true;
         }).addCase(closeleads.fulfilled, (state, action) => {
