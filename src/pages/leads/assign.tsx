@@ -39,7 +39,6 @@ const Assign = () => {
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
     }));
-    
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
         lead_id : lead.lead_id || 'Unknown',
         title   : lead.lead_title || 'Unknown',

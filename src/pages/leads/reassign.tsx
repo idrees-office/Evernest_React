@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import { destoryLeads, reassigleads } from '../../slices/leadsSlice';
+import { assignleads, destoryLeads, reassigleads } from '../../slices/leadsSlice';
 import Select from 'react-select';
 import LeadModal from '../../components/LeadModal';
 import { createLeads } from '../../slices/dashboardSlice';
@@ -63,17 +63,28 @@ const ReAssign = () => {
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
-      
-      const AssignLead = (agentId: number) => {
-        if (selectedRecords.length === 0) {
-          toast.error('Please select at least one lead to assign');
-          return;
-        }
-        const leadIds = selectedRecords.map((record) => record.lead_id);  
-        console.log(agentId);
-        console.log(leadIds);
 
-      }
+
+
+      const AssignLead = async (agentId: number, phone:number) => {
+            if (selectedRecords.length === 0) { 
+                toast.error('Please select at least one lead to assign');
+                return;
+            }
+            const leadIds = selectedRecords.map((record) => record.lead_id);
+            const formData = new FormData();
+            leadIds.forEach((id) => formData.append('lead_id[]', id));
+            formData.append('agent_id', agentId.toString());
+            formData.append('agent_phone', phone.toString());
+            const response = await dispatch(assignleads({ formData }) as any);
+            if (response.payload.status === 200 || response.payload.status === 201){
+                toast.success('Leads Have Been Assigned Successfully');
+                dispatch(reassigleads());
+                setSelectedRecords([]);
+                setDisable(true);
+            }
+        }
+
       const RemoveLead = async () => {
         if (selectedRecords.length === 0) {
           toast.error('Please select at least one lead to remove');
@@ -102,7 +113,7 @@ const ReAssign = () => {
             </button>
         </div> 
         <div className="flex items-center space-x-2">
-            <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value); }}/>
+            <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) AssignLead(selectedOption.value, selectedOption.phone); }}/>
             <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
     </div>

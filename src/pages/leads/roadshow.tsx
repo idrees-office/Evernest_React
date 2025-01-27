@@ -59,6 +59,7 @@ const RoadShow = () => {
         setSelectedCity(value.value);
         dispatch(roadshowleads({ cityname: value.value }));
     }
+
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => {
         const createdAt = lead?.created_at;
         const formattedDate = createdAt && !isNaN(new Date(createdAt).getTime())
@@ -72,6 +73,7 @@ const RoadShow = () => {
               }).format(new Date(createdAt))
             : 'Invalid Date'; 
         return {
+            key     : `ro-${lead.lead_id}` || `ro-${index}`,
             title   : lead?.lead_title || 'Unknown',
             name    : lead?.customer_name || 'Unknown',
             phone   : lead?.customer_phone || 'Unknown',
@@ -79,6 +81,7 @@ const RoadShow = () => {
             date    : formattedDate,
         };
     });
+
     const copyEmails = () => {
         const allEmails = tableData.map((row) => row.email).join('\n');
         navigator.clipboard

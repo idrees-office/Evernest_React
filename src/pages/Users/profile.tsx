@@ -116,8 +116,8 @@ const UserProfile = () => {
                                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label htmlFor="name">Full Name</label>
-                                        <input id="name" name='client_user_name' type="text" placeholder="Jimmy Turner" className="form-input" value={LoginUser?.client_user_name} />
-                                        <input id="name" name='client_user_id' type="hidden" placeholder="Jimmy Turner" className="form-input" value={LoginUser?.client_user_id} />
+                                        <input id="name" name='client_user_name' type="text" placeholder="Name" className="form-input" value={LoginUser?.client_user_name} />
+                                        <input id="name" name='client_user_id' type="hidden"  className="form-input" value={LoginUser?.client_user_id} />
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Designation</label>
