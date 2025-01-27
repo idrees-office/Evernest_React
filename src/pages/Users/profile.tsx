@@ -116,9 +116,7 @@ const UserProfile = () => {
                                     <div>
                                         <label htmlFor="name">Full Name</label>
                                         <input id="name" name='client_user_name' type="text" placeholder="Jimmy Turner" className="form-input" value={LoginUser?.client_user_name} />
-
-                                        <input id="name" name='client_user_id' type="text" placeholder="Jimmy Turner" className="form-input" value={LoginUser?.client_user_id} />
-
+                                        <input id="name" name='client_user_id' type="hidden" placeholder="Jimmy Turner" className="form-input" value={LoginUser?.client_user_id} />
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Designation</label>

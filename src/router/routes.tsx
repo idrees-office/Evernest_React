@@ -140,20 +140,20 @@ const routes = [
     },
 
     {
-        path: 'users',
+        path: 'pages/users/create',
         type: 'protected',
         element : <Users/>,
         layout: 'default',
     },
     {
-        path: 'roles',
+        path: 'pages/roles/create',
         type: 'protected',
         element : <Roles/>,
         layout: 'default',
     },
 
     {
-        path: 'profile',
+        path: 'pages/users/profile',
         type: 'protected',
         element : <Profile/>,
         layout: 'default',
