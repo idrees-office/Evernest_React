@@ -104,6 +104,7 @@ const UserProfile = () => {
                         </li>
                     </ul>
                 </div>
+                
                 {tabs === 'home' ? (
                     <div>
                         <form ref={(el) => (combinedRef.current.profile = el)} onSubmit={handleSubmit} className="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 mb-5 bg-white dark:bg-black">
