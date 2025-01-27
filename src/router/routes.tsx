@@ -22,6 +22,8 @@ const ReAssign = lazy(() => import('../pages/leads/reassign'));
 const WonLeads = lazy(() => import('../pages/leads/won'));
 const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
 const RoadShow = lazy(() => import('../pages/leads/roadshow'));
+const Profile = lazy(() => import('../pages/users/profile'));
+
 
 const routes = [
     {
@@ -149,6 +151,14 @@ const routes = [
         element : <Roles/>,
         layout: 'default',
     },
+
+    {
+        path: 'profile',
+        type: 'protected',
+        element : <Profile/>,
+        layout: 'default',
+    },
+
     {
         path: 'error',
         type: 'protected',
