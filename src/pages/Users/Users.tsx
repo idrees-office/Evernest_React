@@ -10,6 +10,7 @@ import { options } from '../../services/status';
 import Select from 'react-select';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
+import Error404 from '../errors/error404';
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
@@ -112,7 +113,7 @@ const Users = () => {
             icon: 'success',
         });
     };
-    
+
     const showServerError = () => {
         Swal.fire({
             text: 'Something went wrong on the server',

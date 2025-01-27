@@ -23,6 +23,8 @@ const WonLeads = lazy(() => import('../pages/leads/won'));
 const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
 const RoadShow = lazy(() => import('../pages/leads/roadshow'));
 const Profile = lazy(() => import('../pages/users/profile'));
+const Error404 = lazy(() => import('../pages/errors/error404'));
+
 
 
 const routes = [
@@ -162,7 +164,7 @@ const routes = [
     {
         path: 'error',
         type: 'protected',
-        element : <Error/>,
+        element : <Error404/>,
         layout: 'default',
     },
     
