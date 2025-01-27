@@ -20,7 +20,7 @@ const AccountSetting = () => {
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
-
+    
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
