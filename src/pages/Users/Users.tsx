@@ -12,12 +12,10 @@ import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
 
 const endpoints = {
-    createApi: `${getBaseUrl()}/users/create_user`,
-    roleApi: `${getBaseUrl()}/users/get_user_role`,
     listApi: `${getBaseUrl()}/users/user_list`,
+    roleApi: `${getBaseUrl()}/users/get_user_role`,
+    createApi: `${getBaseUrl()}/users/create_user`,
     destoryApi: `${getBaseUrl()}/users/delete_user`,
-    updateApi: `${getBaseUrl()}/users/update_user`,
-
 };
 
 const Users = () => {
@@ -82,7 +80,7 @@ const Users = () => {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
                 const userId = formData.get('client_user_id');
-                const response = userId ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
+                const response = userId ? await apiClient.post(`${endpoints.createApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
@@ -224,8 +222,8 @@ const Users = () => {
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
                                     <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole} onChange={handleRoleChange}/>
+                                    {errors.role_id && <span className="text-red-500 text-sm">{errors.role_id}</span>}
                                 </div>
-                                {errors.role_id && <span className="text-red-500 text-sm">{errors.role_id}</span>}
                                 <div className="sm:col-span-2 flex justify-end">
                                     <button type="submit" className="btn btn-primary">
                                         Submit

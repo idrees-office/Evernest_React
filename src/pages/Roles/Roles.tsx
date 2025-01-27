@@ -13,22 +13,11 @@ const endpoints = {
     listApi    : `${getBaseUrl()}/users/get_user_role`,
     createApi  : `${getBaseUrl()}/users/create_role`,
     destoryApi : `${getBaseUrl()}/users/delete_role`,
-    updateApi  : `${getBaseUrl()}/users/update_role`,
 };
 
 const Roles = () => {
     const dispatch = useDispatch();
-    const loader   = Loader();
-
-    const [options] = useState([
-        { value: '1', name: 'Active' },
-        { value: '0', name: 'Inactive' }
-    ]);
     
-    interface Role {
-        id: number;
-        name: string;
-    }
     const [roles, rolesList] = useState([]);
     const [formData, setFormData] = useState({
         id: '',
@@ -71,33 +60,31 @@ const Roles = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const isUpdate = !!formData.id;
-        let response;
-        if(isUpdate == true){
-            response = await apiClient.post(endpoints.updateApi+'/'+formData.id, formData);
-        }else{
-            response = await apiClient.post(endpoints.createApi, formData);
-        }
+        setErrors({});
+
         try {
+            const response = await apiClient.post(
+                formData.id ? `${endpoints.createApi}/${formData.id}` : endpoints.createApi,
+                formData
+            );
+
             if (response.status === 200 || response.status === 201) {
                 showSuccessToast(response.data.message);
                 setFormData({ id: '', name: '' });
                 fetchRoleLists();
-                setErrors({})
             }
         } catch (error: any) {
+            console.log(error);
+            
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
+            } else if (error.response?.status === 403) {
+                window.location.href = '/error';
             } else {
-                showServerError(error.response?.data?.message || 'An error occurred');
+                // showServerError();
             }
         }
     };
-
-
-   
-    
-
 
     const showSuccessToast = (message: string) => {
         Swal.fire({
