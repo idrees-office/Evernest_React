@@ -57,7 +57,7 @@ const NavBar = () =>{
                         </button>
                         <ul className="sub-menu">
                             <li>
-                                <NavLink to="/apps/chat">{t('Profile')}</NavLink>
+                                <NavLink to="/pages/users/profile">{t('Profile')}</NavLink>
                             </li>
                         </ul>
                     </li>
