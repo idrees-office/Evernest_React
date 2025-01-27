@@ -6,6 +6,8 @@ import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
 import Table from "./../../components/Table";
 import Loader from '../../services/loader';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrashLines from '../../components/Icon/IconTrashLines';
 
 const Roles = () => {
     const dispatch = useDispatch();
@@ -160,10 +162,10 @@ const Roles = () => {
                                 )}
                             </div>
 
-                            <div className="sm:col-span-2 flex justify-end">
+                            <div className="flex justify-end mt-2">
                                 <button
                                     type="submit"
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-sm"
                                 >
                                     Submit
                                 </button>
@@ -181,19 +183,11 @@ const Roles = () => {
                                 { accessor: 'action',  title: 'Action', sortable: true,
                                     render: (role) => (
                                         <div className="flex space-x-2">
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleEdit(role)}
-                                                className="btn btn-sm btn-outline-primary"
-                                            >
-                                                Edit
+                                            <button type="button" onClick={() => handleEdit(role)} className="btn px-1 py-0.5 rounded text-white bg-info">
+                                                <IconPencil />
                                             </button>
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleDelete(role)}
-                                                className="btn btn-sm btn-outline-danger"
-                                            >
-                                                Delete
+                                            <button type="button" onClick={() => handleDelete(role)} className="btn px-1 py-0.5 rounded text-white" style={{ background: '#d33', color: '#fff' }}>
+                                                <IconTrashLines />
                                             </button>
                                         </div>
                                     ),
