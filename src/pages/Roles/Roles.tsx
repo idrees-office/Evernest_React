@@ -30,9 +30,9 @@ const Roles = () => {
     }, []);
 
     const tableData = (Array.isArray(roles) ? roles : []).map((role: any, index: number) => ({
-        id: role.id,
-        name: role.name,
-        role: role
+        id: role.id || 'Unknown',
+        name: role.name || 'Unknown',
+        role: role || 'Unknown'
         
     }));
 

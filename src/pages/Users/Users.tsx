@@ -10,6 +10,7 @@ import { options } from '../../services/status';
 import Select from 'react-select';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
+import Error404 from '../errors/error404';
 
 const endpoints = {
     listApi: `${getBaseUrl()}/users/user_list`,
@@ -35,7 +36,7 @@ const Users = () => {
     }, []);
 
     const tableData = (Array.isArray(users) ? users : []).map((user: any, index: number) => ({
-        client_user_id: user.client_user_id,
+        id : user.client_user_id,
         client_user_name: user.client_user_name,
         client_user_email: user.client_user_email,
         client_role: user.roles[0]?.name,
@@ -110,7 +111,7 @@ const Users = () => {
             icon: 'success',
         });
     };
-    
+
     const showServerError = () => {
         Swal.fire({
             text: 'Something went wrong on the server',
@@ -146,6 +147,7 @@ const Users = () => {
     };
 
     const handleDelete = async (user: any) => {
+        
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -238,7 +240,7 @@ const Users = () => {
                         <Table
                             title="User List"
                             columns={[
-                                { accessor: 'client_user_id', title: '#', sortable: true },
+                                { accessor: 'id', title: '#', sortable: true },
                                 { accessor: 'client_user_name', title: 'Name', sortable: true },
                                 { accessor: 'client_user_email', title: 'Email', sortable: true },
                                 { accessor: 'client_role', title: 'Role', sortable: true },

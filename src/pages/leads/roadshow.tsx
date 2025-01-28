@@ -46,19 +46,12 @@ const RoadShow = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     }
-    const handleCheckboxChange = (record: any, isChecked: boolean) => {
-        if (isChecked) {
-          setSelectedRecords((prevSelected) => [...prevSelected, record]);
-          setDisable(false);
-        } else {
-          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.lead_id !== record.lead_id));
-          if(selectedRecords.length === 1) { setDisable(true); } 
-        }
-      };
+
       const SelectCity = (value:any) => {
         setSelectedCity(value.value);
         dispatch(roadshowleads({ cityname: value.value }));
     }
+
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => {
         const createdAt = lead?.created_at;
         const formattedDate = createdAt && !isNaN(new Date(createdAt).getTime())
@@ -72,6 +65,7 @@ const RoadShow = () => {
               }).format(new Date(createdAt))
             : 'Invalid Date'; 
         return {
+            id      : lead?.lead_id || 'Unknown',
             title   : lead?.lead_title || 'Unknown',
             name    : lead?.customer_name || 'Unknown',
             phone   : lead?.customer_phone || 'Unknown',
@@ -79,6 +73,7 @@ const RoadShow = () => {
             date    : formattedDate,
         };
     });
+
     const copyEmails = () => {
         const allEmails = tableData.map((row) => row.email).join('\n');
         navigator.clipboard
@@ -101,7 +96,7 @@ const RoadShow = () => {
             <Select placeholder="Choose City.." options={list.map(item => ({ value: item.value, label: item.name }))} onChange={(selectedOption) => SelectCity(selectedOption)}name="name" className="cursor-pointer custom-multiselect z-10 w-[300px]" />
         </div>
     </div>
-        <div className="datatables">
+        <div className="datatables mt-6">
         {loading ? ( loader  )   : (
         <Table title="Export-pdf Agents-wise"
             columns={[

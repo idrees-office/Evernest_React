@@ -104,6 +104,7 @@ const Tables = () => {
                             </tr>
                         </thead>
                         <tbody>
+                            
                             {tableData.map((data) => {
                                 return (
                                     <tr key={data.id}>

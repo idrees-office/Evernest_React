@@ -57,7 +57,7 @@ const ExportPdf = () => {
           setSelectedRecords((prevSelected) => [...prevSelected, record]);
           setDisable(false);
         } else {
-          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.lead_id !== record.lead_id));
+          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.id !== record.id));
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
@@ -145,6 +145,7 @@ const ExportPdf = () => {
             : 'Invalid Date'; // Default if invalid date
         
         return {
+            id      : lead.lead_id || 'Unknown',
             title   : lead?.lead_title || 'Unknown',
             name    : lead?.customer_name || 'Unknown',
             phone   : lead?.customer_phone || 'Unknown',
@@ -172,7 +173,7 @@ const ExportPdf = () => {
         <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus />Download </button>
     </div>
     </div>
-        <div className="datatables">
+        <div className="datatables mt-6">
         {loading ? ( loader  )   : (
          <Table title="Export-pdf Agents-wise"
             columns={[

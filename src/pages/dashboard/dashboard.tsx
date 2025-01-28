@@ -53,7 +53,6 @@ const DashboardBox = () => {
     const [searchText, setSearchText] = useState<any>('');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     // const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const { successmessage, loading } = useSelector((state: any) => state.dashboardslice);
@@ -113,7 +112,7 @@ const DashboardBox = () => {
             setSelectedLead(null);
         }
     }
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.form) {
