@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios'; // Assuming you're using axios
 import Toast from '../../services/toast';
 import apiClient from '../../utils/apiClient';
@@ -10,19 +9,13 @@ interface PermissionData {
     counter: number;
 }
 
-interface FormData {
-    roles: string;
-    clients: string;
-    checkedItems: number[];
-}
-
 const AssignPermission = () => {
     const [roles, setRoles] = useState<any[]>([]);
     const [allAgents, setAllAgents] = useState<any[]>([]);
     const [dataSource, setDataSource] = useState<PermissionData[]>([]);
     const [checkedItems, setCheckedItems] = useState<number[]>([]);
     
-    const { register, handleSubmit, reset } = useForm<FormData>();
+    const combinedRef = useRef<any>({ userformRef: null });
     const toast = Toast();
 
     useEffect(() => {
@@ -63,7 +56,7 @@ const AssignPermission = () => {
     };
 
     const handleRoleChange = async (roleId: string) => {
-        reset({ clients: '' }); // Reset client selection
+        combinedRef.current.userformRef.client_user_id.value = ''; // Reset client selection
         try {
             const response = await apiClient.get(`/users/role_permissions/${roleId}`);
             setCheckedItems(response.data);
@@ -73,7 +66,7 @@ const AssignPermission = () => {
     };
 
     const handleAgentChange = async (userId: string) => {
-        reset({ roles: '' }); // Reset role selection
+        combinedRef.current.userformRef.role_id.value = ''; // Reset role selection
         try {
             console.log(userId);
             const response = await apiClient.get(`/users/user_permissions/${userId}`);
@@ -92,21 +85,16 @@ const AssignPermission = () => {
         });
     };
 
-    const onSubmit = async (formData: FormData) => {
+    const onSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
         try {
-            const payload = new FormData();
-            if (formData.clients) {
-                payload.append('client_user_id', formData.clients);
-            }
-            if (formData.roles) {
-                payload.append('role_id', formData.roles);
-            }
-            payload.append('permission', checkedItems.join(','));
+            const formData = new FormData(combinedRef.current.userformRef);
+            formData.append('permission', checkedItems.join(','));
 
-            const response = await apiClient.post('/users/assign_permission', payload);
+            const response = await apiClient.post('/users/assign_permission', formData);
             if (response.data.status === 'success') {
                 toast.success('Permissions assigned successfully');
-                reset();
+                combinedRef.current.userformRef.reset();
                 setCheckedItems([]);
             }
         } catch (error) {
@@ -115,7 +103,7 @@ const AssignPermission = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 bg-white shadow-md rounded-md">
+        <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={onSubmit} className="p-6 bg-white shadow-md rounded-md">
             <div className="mb-4">
                 <h2 className="text-xl font-bold">Assign Permission</h2>
             </div>
@@ -123,7 +111,7 @@ const AssignPermission = () => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700">User-Role</label>
                     <select
-                        {...register('roles')}
+                        name="role_id"
                         onChange={(e) => handleRoleChange(e.target.value)}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md"
                     >
@@ -136,7 +124,7 @@ const AssignPermission = () => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Users</label>
                     <select
-                        {...register('clients')}
+                        name="client_user_id"
                         onChange={(e) => handleAgentChange(e.target.value)}
                         className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md"
                     >
@@ -170,7 +158,6 @@ const AssignPermission = () => {
                                             onChange={() => toggleCheckbox(item)}
                                             className="mr-2"
                                         />
-                                        {/* {item.counter} -  */}
                                         {item.name}
                                     </td>
                                 ) : <td key={offset} className="px-6 py-4 whitespace-nowrap"></td>;
