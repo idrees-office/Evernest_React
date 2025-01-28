@@ -83,7 +83,7 @@ const NavBar = () =>{
                                 <NavLink to="/pages/roles/create">{t('Add-Role')}</NavLink>
                             </li>
                             <li>
-                                <NavLink to="/assign_permission">{t('Assign-Permission')}</NavLink>
+                                <NavLink to="/pages/permissions/assign">{t('Assign-Permission')}</NavLink>
                             </li>
                             
                         </ul>

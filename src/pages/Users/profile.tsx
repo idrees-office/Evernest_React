@@ -16,6 +16,7 @@ import Toast from '../../services/toast';
 
 const endpoints = {
     updateApi: `${getBaseUrl()}/users/update_user`,
+    updateApi2: `${getBaseUrl()}/users/update_status`,
 };
 
 const UserProfile = () => {
@@ -23,6 +24,7 @@ const UserProfile = () => {
     const combinedRef = useRef<any>({ profile: null });
     const dispatch = useDispatch();
     const toast = Toast();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
@@ -55,11 +57,13 @@ const UserProfile = () => {
                 const userId = formData.get('client_user_id');
                 const response = await apiClient.post(endpoints.updateApi+'/'+userId, formData);
                 if (response.status === 200 || response.status === 201) {
+                    setErrors({});
                     toast.success('Profile updated successfully');
                 }
             }
         } catch (error: any) {
             if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
             } else if (error.response?.status === 403) {
                 window.location.href = '/error';
             } else {
@@ -133,18 +137,22 @@ const UserProfile = () => {
                                         <input id="name" name='client_user_name' type="text" placeholder="Name" className="form-input" value={formData.client_user_name}
                                         onChange={handleInputChange} />
                                         <input id="name" name='client_user_id' type="hidden"  className="form-input" value={LoginUser?.client_user_id} />
+                                        {errors.client_user_name && <span className="text-red-500 text-sm">{errors.client_user_name}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Designation</label>
                                         <input id="profession" name='client_user_designation' type="text" placeholder="Web Developer" className="form-input" value={formData.client_user_designation} onChange={handleInputChange}/>
+                                        {errors.client_user_designation && <span className="text-red-500 text-sm">{errors.client_user_designation}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Email</label>
                                         <input id="profession" name='client_user_email' type="text" placeholder="Email" className="form-input" value={formData?.client_user_email} onChange={handleInputChange}/>
+                                        {errors.client_user_email && <span className="text-red-500 text-sm">{errors.client_user_email}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Phone</label>
                                         <input id="profession" type="text" name='client_user_phone' placeholder="Phone" className="form-input" value={formData?.client_user_phone} onChange={handleInputChange}/>
+                                        {errors.client_user_phone && <span className="text-red-500 text-sm">{errors.client_user_phone}</span>}
                                     </div>
                                     <div className="sm:col-span-2 mt-3">
                                         <button type="submit" className="btn btn-primary"> Save </button> 
@@ -497,7 +505,22 @@ const UserProfile = () => {
                                 <h5 className="font-semibold text-lg mb-4">Deactivate Account</h5>
                                 <p>The agent is no longer part of the team.</p>
                                 <label className="w-12 h-6 relative">
-                                    <input type="checkbox" className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id="custom_switch_checkbox7" />
+                                    <input
+                                        type="checkbox"
+                                        className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                        id="custom_switch_checkbox7"
+                                        onChange={async (e) => {
+                                            const status = e.target.checked ? 0 : 1;
+                                            try {
+                                                const response = await apiClient.post(`${endpoints.updateApi}/status`, { status });
+                                                if (response.status === 200 || response.status === 201) {
+                                                    toast.success('Status updated successfully');
+                                                }
+                                            } catch (error: any) {
+                                                toast.error('Failed to update status');
+                                            }
+                                        }}
+                                    />
                                     <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
                                 </label>
                             </div>
