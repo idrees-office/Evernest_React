@@ -40,7 +40,7 @@ const Assign = () => {
         phone: agent?.client_user_phone,
     }));
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
-        id      : lead.lead_id || 'Unknown',
+        lead_id : lead.lead_id || 'Unknown',
         title   : lead.lead_title || 'Unknown',
         name    : lead.customer_name || 'Unknown',
         phone   : lead.customer_phone || 'Unknown',
@@ -57,7 +57,7 @@ const Assign = () => {
           setSelectedRecords((prevSelected) => [...prevSelected, record]);
           setDisable(false);
         } else {
-          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.id !== record.id));
+          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.lead_id !== record.lead_id));
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
@@ -68,7 +68,7 @@ const Assign = () => {
             toast.error('Please select at least one lead to assign');
             return;
         }
-        const leadIds = selectedRecords.map((record) => record.id);
+        const leadIds = selectedRecords.map((record) => record.lead_id);
         const formData = new FormData();
         leadIds.forEach((id) => formData.append('lead_id[]', id));
         formData.append('agent_id', agentId.toString());
@@ -81,7 +81,7 @@ const Assign = () => {
              setDisable(true);
         }
       }
-      
+
       const RemoveLead = async () => {
         if (selectedRecords.length === 0) {
             toast.error('Please select at least one lead to remove');
@@ -99,7 +99,7 @@ const Assign = () => {
         });
         if (result.isConfirmed) {
             try {
-                const leadIds = selectedRecords.map((record) => record.id);
+                const leadIds = selectedRecords.map((record) => record.lead_id);
                 const formData = new FormData();
                 leadIds.forEach((id) => formData.append('lead_id[]', id));
                 const response = await dispatch(destoryLeads({ formData }) as any);
@@ -137,11 +137,11 @@ const Assign = () => {
          <Table title="New leads"
             columns={[
                     {
-                        accessor: 'id',
+                        accessor: 'lead_id',
                         title: 'Select',
                         sortable: false,
                         render: (record) => (
-                        <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.id === record.id)}
+                        <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.lead_id === record.lead_id)}
                         onChange={(e) => handleCheckboxChange(record, e.target.checked)} /> ),
                     },
                     { accessor: 'title', title: 'Title', sortable: true },
