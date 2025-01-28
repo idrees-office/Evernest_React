@@ -6,23 +6,24 @@ const UnlockBoxed = lazy(() => import('../pages/Authentication/UnlockBox'));
 const RecoverIdBoxed = lazy(() => import('../pages/Authentication/RecoverIdBox'));
 const LoginCover = lazy(() => import('../pages/Authentication/LoginCover'));
 const Error = lazy(() => import('../components/Error'));
-const BlogCreate = lazy(() => import('../pages/blogs/create'));
-const BlogList = lazy(() => import('../pages/blogs/list'));
+const BlogCreate = lazy(() => import('../pages/Blogs/Create'));
+const BlogList = lazy(() => import('../pages/Blogs/list'));
 const NewsCreate = lazy(() => import('../pages/news/create'));
 const NewsList = lazy(() => import('../pages/news/list'));
 const CreateDevelopers = lazy(() => import('../pages/developers/create'));
 const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
-const Users = lazy(() => import('../pages/users/users'));
-const Roles = lazy(() => import('../pages/Roles/roles'));
+const Users = lazy(() => import('../pages/Users/Users'));
+const Roles = lazy(() => import('../pages/Roles/Roles'));
 import ProtectedRoute from '../components/ProtectedRoute';
+import AssignPermission from '../pages/Permissions/AssignPermission';
 const Assign = lazy(() => import('../pages/leads/assign'));
 const ReAssign = lazy(() => import('../pages/leads/reassign'));
 const WonLeads = lazy(() => import('../pages/leads/won'));
 const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
 const RoadShow = lazy(() => import('../pages/leads/roadshow'));
-const Profile = lazy(() => import('../pages/users/profile'));
+const Profile = lazy(() => import('../pages/Users/profile'));
 const Error404 = lazy(() => import('../pages/errors/error404'));
 
 
@@ -158,6 +159,13 @@ const routes = [
         path: 'pages/users/profile',
         type: 'protected',
         element : <Profile/>,
+        layout: 'default',
+    },
+
+    {
+        path: 'pages/permissions/assign',
+        type: 'protected',
+        element : <AssignPermission/>,
         layout: 'default',
     },
 
