@@ -15,9 +15,8 @@ import { getBaseUrl } from '../../components/BaseUrl';
 import Toast from '../../services/toast';
 
 const endpoints = {
-    updateApi: `${getBaseUrl()}/users/update_user`,
+    updateApi: `${getBaseUrl()}/users/update_user_profile`,
 };
-
 
 const UserProfile = () => {
     const LoginUser = useSelector((state: any) => state.auth.user || {});
