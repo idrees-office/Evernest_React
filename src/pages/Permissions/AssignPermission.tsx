@@ -157,19 +157,26 @@ const AssignPermission = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {dataSource.map((row) => (
-                            <tr key={row.id}>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <input
-                                        type="checkbox"
-                                        checked={checkedItems.includes(row.id)}
-                                        onChange={() => toggleCheckbox(row)}
-                                        className="mr-2"
-                                    />
-                                    {row.counter}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">{row.name}</td>
+                        {dataSource.map((row, index) => (
+                            index % 4 === 0 && (
+                            <tr key={index}>
+                                {[0, 1, 2, 3].map((offset) => {
+                                const item = dataSource[index + offset];
+                                return item ? (
+                                    <td key={item.id} className="px-6 py-4 whitespace-nowrap">
+                                        <input
+                                            type="checkbox"
+                                            checked={checkedItems.includes(item.id)}
+                                            onChange={() => toggleCheckbox(item)}
+                                            className="mr-2"
+                                        />
+                                        {/* {item.counter} -  */}
+                                        {item.name}
+                                    </td>
+                                ) : <td key={offset} className="px-6 py-4 whitespace-nowrap"></td>;
+                                })}
                             </tr>
+                            )
                         ))}
                     </tbody>
                 </table>
@@ -179,9 +186,7 @@ const AssignPermission = () => {
                 type="submit"
                 disabled={!checkedItems.length}
                 className="mt-6 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400"
-            >
-                Assign
-            </button>
+            > Assign </button>
         </form>
     );
 };
