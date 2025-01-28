@@ -18,13 +18,11 @@ const endpoints = {
     updateApi: `${getBaseUrl()}/users/update_user`,
 };
 
-
 const UserProfile = () => {
     const LoginUser = useSelector((state: any) => state.auth.user || {});
     const combinedRef = useRef<any>({ profile: null });
     const dispatch = useDispatch();
     const toast = Toast();
-
 
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
@@ -38,7 +36,6 @@ const UserProfile = () => {
         client_user_email: LoginUser?.client_user_email || '',
         client_user_phone: LoginUser?.client_user_phone || '',
     });
-
 
     const toggleTabs = (name: string) => {
         setTabs(name);
@@ -70,7 +67,6 @@ const UserProfile = () => {
             }
         }
     };
-
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
