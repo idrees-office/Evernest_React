@@ -24,13 +24,31 @@ const UserProfile = () => {
     const combinedRef = useRef<any>({ profile: null });
     const dispatch = useDispatch();
     const toast = Toast();
+
+
     useEffect(() => {
         dispatch(setPageTitle('Account Setting'));
     });
     const [tabs, setTabs] = useState<string>('home');
+
+    const [formData, setFormData] = useState({
+        client_user_name: LoginUser?.client_user_name || '',
+        client_user_id: LoginUser?.client_user_id || '',
+        client_user_designation: LoginUser?.client_user_designation || '',
+        client_user_email: LoginUser?.client_user_email || '',
+        client_user_phone: LoginUser?.client_user_phone || '',
+    });
+
+
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -116,20 +134,21 @@ const UserProfile = () => {
                                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label htmlFor="name">Full Name</label>
-                                        <input id="name" name='client_user_name' type="text" placeholder="Name" className="form-input" value={LoginUser?.client_user_name} />
+                                        <input id="name" name='client_user_name' type="text" placeholder="Name" className="form-input" value={formData.client_user_name}
+                                        onChange={handleInputChange} />
                                         <input id="name" name='client_user_id' type="hidden"  className="form-input" value={LoginUser?.client_user_id} />
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Designation</label>
-                                        <input id="profession" name='client_user_designation' type="text" placeholder="Web Developer" className="form-input" value={LoginUser?.client_user_designation} />
+                                        <input id="profession" name='client_user_designation' type="text" placeholder="Web Developer" className="form-input" value={formData.client_user_designation} onChange={handleInputChange}/>
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Email</label>
-                                        <input id="profession" name='client_user_email' type="text" placeholder="Email" className="form-input" value={LoginUser?.client_user_email} />
+                                        <input id="profession" name='client_user_email' type="text" placeholder="Email" className="form-input" value={formData?.client_user_email} onChange={handleInputChange}/>
                                     </div>
                                     <div>
                                         <label htmlFor="profession">Phone</label>
-                                        <input id="profession" type="text" name='client_user_phone' placeholder="Phone" className="form-input" value={LoginUser?.client_user_phone} />
+                                        <input id="profession" type="text" name='client_user_phone' placeholder="Phone" className="form-input" value={formData?.client_user_phone} onChange={handleInputChange}/>
                                     </div>
                                     <div className="sm:col-span-2 mt-3">
                                         <button type="submit" className="btn btn-primary"> Save </button> 
