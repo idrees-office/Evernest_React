@@ -9,7 +9,7 @@ import apiClient from '../utils/apiClient';
         allLeadsApi      : '/leads/all-leads',
         pdfurl           : 'leads/filter-pdf-data',
         roadshowLeadApi  : 'leads/roadshow-leads',
-        assignLeadsApi  : 'leads/assign-multiple-lead'
+        assignLeadsApi   : 'leads/assign-multiple-lead'
     };
 
     export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue }) => {

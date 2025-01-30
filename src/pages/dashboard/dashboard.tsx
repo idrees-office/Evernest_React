@@ -53,45 +53,27 @@ const DashboardBox = () => {
     const [searchText, setSearchText] = useState<any>('');
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const { successmessage, loading } = useSelector((state: any) => state.dashboardslice);
-    const [pager, setPager] = useState<any>({
-        currentPage: 1,
-        totalPages: 0,
-        pageSize: 14,
-        startIndex: 0,
-        endIndex: 0,
-    });
+    const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
+
     useEffect(() => {
+
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
             formData.append('client_user_id', loginuser.client_user_id);
-            dispatch(DashboardLeadslist({ formData })); // this is will fetch all leads on page load
+            dispatch(DashboardLeadslist({}));
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
-    // once lead loaded and globale state is set from dashboardSlice .. it will set the current page state as well
+
     useEffect(() => {
-        if(currentStatus > 0){            
+        if(currentStatus > 0){         
             getLeads(currentStatus);
         }else{
             setAllLeadList(leads || []);
         }
     }, [leads]);
-
-    useEffect(() => {
-        const totalPages = Math.ceil(AllLeadList.length / pager.pageSize);
-        const startIndex = (pager.currentPage - 1) * pager.pageSize;
-        const endIndex = Math.min(startIndex + pager.pageSize, AllLeadList.length);
-        setPager((prev:any) => ({
-            ...prev,
-            totalPages,
-            startIndex,
-            endIndex,
-        }));
-    }, [AllLeadList, pager.currentPage, pager.pageSize]);
 
     const getNotesByLeadStatus = (leadStatus:number) => { 
         const option = Statues.find((opt) => opt.value == leadStatus);
@@ -102,14 +84,11 @@ const DashboardBox = () => {
         const option = Statues.find((opt) => opt.value == leadStatus);
         return option && typeof option.notes2 === 'string' ? option.notes2 : 'Unknown Statu2s';
     }
-    
-    const LeadsTabs = (status: number) => {
-        if(status){
-            getLeads(status);
-            setSelectedLead(null);
-        }else{
-            setAllLeadList(leads || []);
-            setSelectedLead(null);
+
+    const LeadsTabs = async (status: number) => {
+        const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status,  }) as any);
+        if(response.payload.status === 200 || response.payload.status === 201){
+         setSelectedTab(status);
         }
     }
 
@@ -118,15 +97,19 @@ const DashboardBox = () => {
         if (combinedRef.current.form) {
             const formData = new FormData(combinedRef.current.form);
             const selectedStatus = formData.get('lead_status');
+
+            formData.append('current_status', currentStatus.toString());
             try {
-                    const response = await dispatch(updateSingleLead({ formData }) as any);
-                    if (response.payload.status === 200 || response.payload.status === 201){
-                        toast.success('Lead Updated Successfully');
-                        setSelectedLead(null);
-                    }else{
-                        setErrors(response.payload.errors);
-                        return
-                    }
+                const response = await dispatch(updateSingleLead({ formData }) as any);
+                if (response.payload.status === 200 || response.payload.status === 201){
+                    toast.success('Lead Updated Successfully');
+                    LeadsTabs(Number(selectedStatus));
+
+                    setSelectedLead(null);
+                }else{
+                    setErrors(response.payload.errors);
+                    return
+                }
             } catch (error: any) { console.error('Error creating/updating news:', error); }
         }
     }
@@ -136,13 +119,11 @@ const DashboardBox = () => {
         setAllLeadList(filterLead);
         setSelectedTab(status);
     };
-
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= pager.totalPages) {
-            setPager((prev:any) => ({
-                ...prev,
-                currentPage: newPage,
-            }));
+    
+    const handlePageChange = async (page_number: number) => {
+        if (page_number >= 1 && page_number <= meta.total) {    
+            await dispatch(DashboardLeadslist({ page_number : page_number, lead_status : currentStatus,  }) as any);
+            setSelectedTab(currentStatus);
         }
     };
     const openLeadModal = () => {
@@ -160,7 +141,8 @@ const DashboardBox = () => {
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
                                 {SidebarStatuses.map((sidebarstatus) => { 
-                                        const sidebarcount = leads.filter((lead: any) => lead.lead_status  == sidebarstatus.value).length;
+                                    const counterKey = sidebarstatus.tab || '';
+                                    const sidebarcount = counters[counterKey] || 0;
                                         return(
                                             <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`} >
                                             <div className="flex items-center"> {sidebarstatus.icon}
@@ -214,7 +196,8 @@ const DashboardBox = () => {
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
-                                        const topcounter = leads.filter((lead:any) => lead.lead_status == status.value).length;
+                                        const counterKey = status.tab || '';
+                                        const topcounter = counters[counterKey] || 0;
                                         return( 
                                         <button  key={status.value}  onClick={() => LeadsTabs(status?.value)} type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.value ? status.activeColor : status.outlineColor}`}> {status.icon} {status.label}
                                             <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>
@@ -224,22 +207,22 @@ const DashboardBox = () => {
                                 </div>
                                 <div className="mt-4 md:flex-auto flex-1">
                                     <div className="flex items-center md:justify-end justify-center">
-                                        <div className="ltr:mr-3 rtl:ml-3"> {pager.startIndex + 1 + '-' + (pager.endIndex) + ' of ' + AllLeadList.length} </div>
-                                        <button onClick={() => handlePageChange(pager.currentPage - 1)} type="button" disabled={pager.currentPage === 1}
+                                        <div className="ltr:mr-3 rtl:ml-3"> {meta.from + '-' + (meta.to) + ' of ' + meta.total} </div>
+                                        <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}
                                             className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed">
                                             <IconCaretDown className="w-5 h-5 rtl:-rotate-90 rotate-90" />
                                         </button>
-                                        <button onClick={() => handlePageChange(pager.currentPage + 1)} type="button" disabled={pager.currentPage === pager.totalPages} className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"> <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" />
+                                        <button onClick={() => handlePageChange(meta.current_page + 1)} type="button" disabled={meta.current_page === meta.total} className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"> <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                { AllLeadList.length   ? (
+                                { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>
-                                              { AllLeadList.slice(pager.startIndex, pager.endIndex).map((lead: any) => {
+                                              { AllLeadList.map((lead: any) => {
                                                     return (
                                                         <tr key={lead.lead_id} className="cursor-pointer" onClick={() => setSelectedLead(lead)}>
                                                             <td>
@@ -309,10 +292,10 @@ const DashboardBox = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    <div className="absolute inset-0 flex justify-center items-center z-10 bg-white bg-opacity-50">
-                                       <span className="animate-[spin_3s_linear_infinite] border-8 border-r-warning border-l-primary border-t-danger border-b-success rounded-full w-14 h-14 inline-block align-middle m-auto"></span>
-                                    </div>
-                                    // <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
+                                    // <div className="absolute inset-0 flex justify-center items-center z-10 bg-white bg-opacity-50">
+                                    //    <span className="animate-[spin_3s_linear_infinite] border-8 border-r-warning border-l-primary border-t-danger border-b-success rounded-full w-14 h-14 inline-block align-middle m-auto"></span>
+                                    // </div>
+                                    <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
                                 )}
                         </div>
                     )}

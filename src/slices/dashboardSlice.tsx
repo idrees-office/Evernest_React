@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../utils/apiClient';
+import { co } from '@fullcalendar/core/internal-common';
     const endpoints = {
         createApi  : '/leads/store',
-        listApi    : '/leads/get_all_leads',
+        listApi    : '/leads/get_all_leads?page=',
         destoryApi : '/leads/delete',
         editApi    : '/leads/edit',
         updateLead : '/leads/update_single_lead',
@@ -17,18 +18,32 @@ import apiClient from '../utils/apiClient';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ formData, status }: { formData: FormData; status?: number }, { rejectWithValue }) => {
-          try {
-            const url = status ? `${endpoints.listApi}/${status}` : endpoints.listApi;
-            const response = await apiClient.post(url, formData);
-            console.log(response);
-            
-            return {leadsdata: response.data, status: response.status};
-          } catch (error: any) {
+    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number }: { lead_status?: number, page_number?: number }, { rejectWithValue }) => {
+        try {
+            const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
+            // const url = lead_status ? `${endpoints.listApi}${page_number}/${lead_status}` : `${endpoints.listApi}${page_number}`;
+            const response = await apiClient.post(url);
+            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
+                counters: response.data.counters || {}
+
+            };
+        } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
-          }
         }
-      );
+        }
+    );
+
+    // export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ formData, status }: { formData: FormData; status?: number }, { rejectWithValue }) => {
+    //       try {
+    //         const url = status ? `${endpoints.listApi}/${status}` : endpoints.listApi;
+    //         const response = await apiClient.post(url, formData);
+    //         return { leadsdata: response.data, status: response.status };
+    //       } catch (error: any) {
+    //         return rejectWithValue(error.response?.data || error.message);
+    //       }
+    //     }
+    //   );
+
       export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
@@ -62,6 +77,10 @@ import apiClient from '../utils/apiClient';
         loading : false,
         message : '',
         status  : 0,
+        links  : {},
+        meta  : {},
+        counters : {},
+
     };
     
     const DashboardSlice = createSlice({
@@ -85,8 +104,14 @@ import apiClient from '../utils/apiClient';
                 })
                 .addCase(DashboardLeadslist.fulfilled, (state, action) => {
                     state.success = true;
-                    state.leads = action.payload.leadsdata?.data || [];
+                    state.leads   = action.payload.leadsdata?.data || [];
+                    state.status  = action.payload.status;
+                    state.links   = action.payload.links;
+                    state.meta    = action.payload.meta || {};
+                    state.lead_status = action.payload.lead_status;
+                    state.counters = action.payload.counters;
                     state.loading = false;
+                    
                 })
                 .addCase(DashboardLeadslist.rejected, (state) => {
                     state.success = false;

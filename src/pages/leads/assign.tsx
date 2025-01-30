@@ -32,8 +32,8 @@ const Assign = () => {
             combinedRef.current.fetched = true;
         }
     }, [dispatch]); 
-    const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
     
+    const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,

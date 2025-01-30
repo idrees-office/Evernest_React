@@ -30,12 +30,16 @@ const Users = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [urole, setRoles] = useState<any | null>(null); 
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
-    
+    const requestMade = useRef(false);
+
     useEffect(() => {
-        dispatch(setPageTitle('Create User'));
-        fetchRoles();
-        fetchUserLists();
-    }, []);
+        if (!requestMade.current) {
+            dispatch(setPageTitle('Create User'));
+            fetchRoles();
+            fetchUserLists();
+            requestMade.current = true;
+        }
+    }, [dispatch]);
 
     const tableData = (Array.isArray(users) ? users : []).map((user: any, index: number) => ({
         id : user.client_user_id,
