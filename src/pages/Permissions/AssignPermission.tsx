@@ -14,14 +14,18 @@ const AssignPermission = () => {
     const [allAgents, setAllAgents] = useState<any[]>([]);
     const [dataSource, setDataSource] = useState<PermissionData[]>([]);
     const [checkedItems, setCheckedItems] = useState<number[]>([]);
-    
     const combinedRef = useRef<any>({ userformRef: null });
     const toast = Toast();
+    const requestMade = useRef(false);
+
 
     useEffect(() => {
-        getRoles();
-        getAgents();
-        getPermissions();
+        if (!requestMade.current) {
+            getRoles();
+             getAgents();
+            getPermissions();
+            requestMade.current = true;
+        }    
     }, []);
 
     const getRoles = async () => {
@@ -64,9 +68,9 @@ const AssignPermission = () => {
             toast.error('Failed to fetch role permissions');
         }
     };
-
+    
     const handleAgentChange = async (userId: string) => {
-        combinedRef.current.userformRef.role_id.value = ''; // Reset role selection
+        combinedRef.current.userformRef.role_id.value = ''; 
         try {
             console.log(userId);
             const response = await apiClient.get(`/users/user_permissions/${userId}`);
@@ -123,10 +127,7 @@ const AssignPermission = () => {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Users</label>
-                    <select
-                        name="client_user_id"
-                        onChange={(e) => handleAgentChange(e.target.value)}
-                        className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md"
+                    <select name="client_user_id" onChange={(e) => handleAgentChange(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md"
                     >
                         <option value="">Select Agent</option>
                         {allAgents.map((agent) => (
@@ -153,10 +154,10 @@ const AssignPermission = () => {
                                 return item ? (
                                     <td key={item.id} className="px-6 py-4 whitespace-nowrap">
                                         <input
-                                            type="checkbox"
+                                            type="checkbox" 
                                             checked={checkedItems.includes(item.id)}
                                             onChange={() => toggleCheckbox(item)}
-                                            className="mr-2"
+                                            className="mr-2 form-checkbox"
                                         />
                                         {item.name}
                                     </td>

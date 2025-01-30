@@ -54,7 +54,7 @@ const DashboardBox = () => {
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const { loading, meta } = useSelector((state: any) => state.dashboardslice);
+    const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
 
     useEffect(() => {
 
@@ -62,11 +62,11 @@ const DashboardBox = () => {
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
             formData.append('client_user_id', loginuser.client_user_id);
-            dispatch(DashboardLeadslist({}));// this is will fetch all leads on page load
+            dispatch(DashboardLeadslist({}));
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
-    // once lead loaded and globale state is set from dashboardSlice .. it will set the current page state as well
+
     useEffect(() => {
         if(currentStatus > 0){         
             getLeads(currentStatus);
@@ -74,18 +74,6 @@ const DashboardBox = () => {
             setAllLeadList(leads || []);
         }
     }, [leads]);
-
-    // useEffect(() => {
-    //     const totalPages = Math.ceil(AllLeadList.length / pager.pageSize);
-    //     const startIndex = (pager.currentPage - 1) * pager.pageSize;
-    //     const endIndex = Math.min(startIndex + pager.pageSize, AllLeadList.length);
-    //     setPager((prev:any) => ({
-    //         ...prev,
-    //         totalPages,
-    //         startIndex,
-    //         endIndex,
-    //     }));
-    // }, [AllLeadList, pager.currentPage, pager.pageSize]);
 
     const getNotesByLeadStatus = (leadStatus:number) => { 
         const option = Statues.find((opt) => opt.value == leadStatus);
@@ -102,14 +90,6 @@ const DashboardBox = () => {
         if(response.payload.status === 200 || response.payload.status === 201){
          setSelectedTab(status);
         }
-
-        // if(status){
-        //     getLeads(status);
-        //     setSelectedLead(null);
-        // }else{
-        //     setAllLeadList(leads || []);
-        //     setSelectedLead(null);
-        // }
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -117,10 +97,14 @@ const DashboardBox = () => {
         if (combinedRef.current.form) {
             const formData = new FormData(combinedRef.current.form);
             const selectedStatus = formData.get('lead_status');
+
+            formData.append('current_status', currentStatus.toString());
             try {
                 const response = await dispatch(updateSingleLead({ formData }) as any);
                 if (response.payload.status === 200 || response.payload.status === 201){
                     toast.success('Lead Updated Successfully');
+                    LeadsTabs(Number(selectedStatus));
+
                     setSelectedLead(null);
                 }else{
                     setErrors(response.payload.errors);
@@ -129,6 +113,7 @@ const DashboardBox = () => {
             } catch (error: any) { console.error('Error creating/updating news:', error); }
         }
     }
+
     const getLeads = (status: number) => {
         const filterLead = leads.filter((lead: any) => lead.lead_status == status);        
         setAllLeadList(filterLead);
@@ -136,7 +121,6 @@ const DashboardBox = () => {
     };
     
     const handlePageChange = async (page_number: number) => {
-
         if (page_number >= 1 && page_number <= meta.total) {    
             await dispatch(DashboardLeadslist({ page_number : page_number, lead_status : currentStatus,  }) as any);
             setSelectedTab(currentStatus);
@@ -157,7 +141,8 @@ const DashboardBox = () => {
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
                                 {SidebarStatuses.map((sidebarstatus) => { 
-                                        const sidebarcount = leads.filter((lead: any) => lead.lead_status  == sidebarstatus.value).length;
+                                    const counterKey = sidebarstatus.tab || '';
+                                    const sidebarcount = counters[counterKey] || 0;
                                         return(
                                             <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`} >
                                             <div className="flex items-center"> {sidebarstatus.icon}
@@ -211,7 +196,8 @@ const DashboardBox = () => {
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
-                                        const topcounter = leads.filter((lead:any) => lead.lead_status == status.value).length;
+                                        const counterKey = status.tab || '';
+                                        const topcounter = counters[counterKey] || 0;
                                         return( 
                                         <button  key={status.value}  onClick={() => LeadsTabs(status?.value)} type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.value ? status.activeColor : status.outlineColor}`}> {status.icon} {status.label}
                                             <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>

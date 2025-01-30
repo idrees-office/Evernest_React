@@ -112,6 +112,7 @@ export const STATUSES = [
         bgColor : 'bg-secondary',
         notes  : ' Moved to: <span class="text-secondary">Meeting Complete </span>',
         notes2   : ' From Meeting Complete',
+        tab   : 'meetingcompletetab',
         activeColor: "bg-secondary text-white",
     },
     {

@@ -24,7 +24,10 @@ import { co } from '@fullcalendar/core/internal-common';
             const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
             // const url = lead_status ? `${endpoints.listApi}${page_number}/${lead_status}` : `${endpoints.listApi}${page_number}`;
             const response = await apiClient.post(url);
-            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0 };
+            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
+                counters: response.data.counters || {}
+
+            };
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -77,6 +80,7 @@ import { co } from '@fullcalendar/core/internal-common';
         status  : 0,
         links  : {},
         meta  : {},
+        counters : {},
 
     };
     
@@ -106,6 +110,7 @@ import { co } from '@fullcalendar/core/internal-common';
                     state.links   = action.payload.links;
                     state.meta    = action.payload.meta || {};
                     state.lead_status = action.payload.lead_status;
+                    state.counters = action.payload.counters;
                     state.loading = false;
                     
                 })
