@@ -13,7 +13,6 @@ import apiClient from '../utils/apiClient';
             const url = id ? `${endpoints.createApi}/${id}` : endpoints.createApi;
             const response = await apiClient.post(url, formData);
             return {response: response.data.data, status: response.status};
-            return response;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -22,6 +21,8 @@ import apiClient from '../utils/apiClient';
           try {
             const url = status ? `${endpoints.listApi}/${status}` : endpoints.listApi;
             const response = await apiClient.post(url, formData);
+            console.log(response);
+            
             return {leadsdata: response.data, status: response.status};
           } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
