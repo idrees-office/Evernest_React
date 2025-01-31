@@ -18,20 +18,18 @@ import { co } from '@fullcalendar/core/internal-common';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number }: { lead_status?: number, page_number?: number }, { rejectWithValue }) => {
+
+    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number, search }: { lead_status?: number, page_number?: number, search?: string }, { rejectWithValue }) => {
         try {
             const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
-            // const url = lead_status ? `${endpoints.listApi}${page_number}/${lead_status}` : `${endpoints.listApi}${page_number}`;
-            const response = await apiClient.post(url);
+            const response = await apiClient.post(url, {search: search});
             return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
                 counters: response.data.counters || {}
-
             };
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
-        }
-    );
+    });
 
     // export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ formData, status }: { formData: FormData; status?: number }, { rejectWithValue }) => {
     //       try {
