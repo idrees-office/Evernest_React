@@ -125,9 +125,8 @@ const Users = () => {
             title: 'Server Error',
         });
     };
-
+    
     const handleEdit = async (user: any) => {
-
         if (combinedRef.current.userformRef) {
             const form = combinedRef.current.userformRef;
             form.reset();
@@ -151,9 +150,7 @@ const Users = () => {
 
         }
     };
-
     const handleDelete = async (user: any) => {
-        
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -177,7 +174,6 @@ const Users = () => {
             }
         }
     };
-
     const handleRoleChange = (selectedOption: any) => {
         setSelectedRole(selectedOption); 
     };

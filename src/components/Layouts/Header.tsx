@@ -250,183 +250,17 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
-                        {/* <div className="dropdown shrink-0">
-                            <Dropdown
-                                offset={[0, 8]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
-                                button={<img className="w-5 h-5 object-cover rounded-full" src={`/assets/images/flags/${flag.toUpperCase()}.svg`} alt="flag" />}
-                            >
-                                <ul className="!px-2 text-dark dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
-                                    {themeConfig.languageList.map((item: any) => {
-                                        return (
-                                            <li key={item.code}>
-                                                <button
-                                                    type="button"
-                                                    className={`flex w-full hover:text-primary rounded-lg ${i18next.language === item.code ? 'bg-primary/10 text-primary' : ''}`}
-                                                    onClick={() => {
-                                                        i18next.changeLanguage(item.code);
-                                                        // setFlag(item.code);
-                                                        setLocale(item.code);
-                                                    }}
-                                                >
-                                                    <img src={`/assets/images/flags/${item.code.toUpperCase()}.svg`} alt="flag" className="w-5 h-5 object-cover rounded-full" />
-                                                    <span className="ltr:ml-3 rtl:mr-3">{item.name}</span>
-                                                </button>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </Dropdown>
-                        </div> */}
-                        {/* <div className="dropdown shrink-0">
-                            <Dropdown
-                                offset={[0, 8]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
-                                button={<IconMailDot />}
-                            >
-                                <ul className="!py-0 text-dark dark:text-white-dark w-[300px] sm:w-[375px] text-xs">
-                                    <li className="mb-5" onClick={(e) => e.stopPropagation()}>
-                                        <div className="hover:!bg-transparent overflow-hidden relative rounded-t-md p-5 text-white w-full !h-[68px]">
-                                            <div
-                                                className="absolute h-full w-full bg-no-repeat bg-center bg-cover inset-0 bg-"
-                                                style={{
-                                                    backgroundImage: `url('/assets/images/menu-heade.jpg')`,
-                                                    backgroundRepeat: 'no-repeat',
-                                                    width: '100%',
-                                                    height: '100%',
-                                                }}
-                                            ></div>
-                                            <h4 className="font-semibold relative z-10 text-lg">Messages</h4>
-                                        </div>
-                                    </li>
-                                    {messages.length > 0 ? (
-                                        <>
-                                            <li onClick={(e) => e.stopPropagation()}>
-                                                {messages.map((message) => {
-                                                    return (
-                                                        <div key={message.id} className="flex items-center py-3 px-5">
-                                                            <div dangerouslySetInnerHTML={createMarkup(message.image)}></div>
-                                                            <span className="px-3 dark:text-gray-500">
-                                                                <div className="font-semibold text-sm dark:text-white-light/90">{message.title}</div>
-                                                                <div>{message.message}</div>
-                                                            </span>
-                                                            <span className="font-semibold bg-white-dark/20 rounded text-dark/60 px-1 ltr:ml-auto rtl:mr-auto whitespace-pre dark:text-white-dark ltr:mr-2 rtl:ml-2">
-                                                                {message.time}
-                                                            </span>
-                                                            <button type="button" className="text-neutral-300 hover:text-danger" onClick={() => removeMessage(message.id)}>
-                                                                <IconXCircle />
-                                                            </button>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </li>
-                                            <li className="border-t border-white-light text-center dark:border-white/10 mt-5">
-                                                <button type="button" className="text-primary font-semibold group dark:text-gray-400 justify-center !py-4 !h-[48px]">
-                                                    <span className="group-hover:underline ltr:mr-1 rtl:ml-1">VIEW ALL ACTIVITIES</span>
-                                                    <IconArrowLeft className="group-hover:translate-x-1 transition duration-300 ltr:ml-1 rtl:mr-1" />
-                                                </button>
-                                            </li>
-                                        </>
-                                    ) : (
-                                        <li className="mb-5" onClick={(e) => e.stopPropagation()}>
-                                            <button type="button" className="!grid place-content-center hover:!bg-transparent text-lg min-h-[200px]">
-                                                <div className="mx-auto ring-4 ring-primary/30 rounded-full mb-4 text-primary">
-                                                    <IconInfoCircle fill={true} className="w-10 h-10" />
-                                                </div>
-                                                No data available.
-                                            </button>
-                                        </li>
-                                    )}
-                                </ul>
-                            </Dropdown>
-                        </div> */}
-                        {/* <div className="dropdown shrink-0">
-                            <Dropdown
-                                offset={[0, 8]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="relative block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
-                                button={
-                                    <span>
-                                        <IconBellBing />
-                                        <span className="flex absolute w-3 h-3 ltr:right-0 rtl:left-0 top-0">
-                                            <span className="animate-ping absolute ltr:-left-[3px] rtl:-right-[3px] -top-[3px] inline-flex h-full w-full rounded-full bg-success/50 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full w-[6px] h-[6px] bg-success"></span>
-                                        </span>
-                                    </span>
-                                }
-                            >
-                                <ul className="!py-0 text-dark dark:text-white-dark w-[300px] sm:w-[350px] divide-y dark:divide-white/10">
-                                    <li onClick={(e) => e.stopPropagation()}>
-                                        <div className="flex items-center px-4 py-2 justify-between font-semibold">
-                                            <h4 className="text-lg">Notification</h4>
-                                            {notifications.length ? <span className="badge bg-primary/80">{notifications.length}New</span> : ''}
-                                        </div>
-                                    </li>
-                                    {notifications.length > 0 ? (
-                                        <>
-                                            {notifications.map((notification) => {
-                                                return (
-                                                    <li key={notification.id} className="dark:text-white-light/90" onClick={(e) => e.stopPropagation()}>
-                                                        <div className="group flex items-center px-4 py-2">
-                                                            <div className="grid place-content-center rounded">
-                                                                <div className="w-12 h-12 relative">
-                                                                    <img className="w-12 h-12 rounded-full object-cover" alt="profile" src={`/assets/images/${notification.profile}`} />
-                                                                    <span className="bg-success w-2 h-2 rounded-full block absolute right-[6px] bottom-0"></span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="ltr:pl-3 rtl:pr-3 flex flex-auto">
-                                                                <div className="ltr:pr-3 rtl:pl-3">
-                                                                    <h6
-                                                                        dangerouslySetInnerHTML={{
-                                                                            __html: notification.message,
-                                                                        }}
-                                                                    ></h6>
-                                                                    <span className="text-xs block font-normal dark:text-gray-500">{notification.time}</span>
-                                                                </div>
-                                                                <button
-                                                                    type="button"
-                                                                    className="ltr:ml-auto rtl:mr-auto text-neutral-300 hover:text-danger opacity-0 group-hover:opacity-100"
-                                                                    onClick={() => removeNotification(notification.id)}
-                                                                >
-                                                                    <IconXCircle />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </li>
-                                                );
-                                            })}
-                                            <li>
-                                                <div className="p-4">
-                                                    <button className="btn btn-primary block w-full btn-small">Read All Notifications</button>
-                                                </div>
-                                            </li>
-                                        </>
-                                    ) : (
-                                        <li onClick={(e) => e.stopPropagation()}>
-                                            <button type="button" className="!grid place-content-center hover:!bg-transparent text-lg min-h-[200px]">
-                                                <div className="mx-auto ring-4 ring-primary/30 rounded-full mb-4 text-primary">
-                                                    <IconInfoCircle fill={true} className="w-10 h-10" />
-                                                </div>
-                                                No data available.
-                                            </button>
-                                        </li>
-                                    )}
-                                </ul>
-                            </Dropdown>
-                        </div> */}
                         <div className="dropdown shrink-0 flex">
                             <Dropdown
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                                 btnClassName="relative group block"
-                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />}
+                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />}
                             >
                                 <ul className="text-dark dark:text-white-dark !py-0 w-[230px] font-semibold dark:text-white-light/90">
                                     <li>
                                         <div className="flex items-center px-4 py-4">
-                                            <img className="rounded-md w-10 h-10 object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
+                                            <img className="rounded-md w-10 h-10 object-cover" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
                                                 {user.client_user_name || 'john'} 
@@ -444,7 +278,7 @@ const Header = () => {
                                             Profile
                                         </Link>
                                     </li>
-                                    <li>
+                                    {/* <li>
                                         <Link to="/apps/mailbox" className="dark:hover:text-white">
                                             <IconMail className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
                                             Inbox
@@ -455,7 +289,7 @@ const Header = () => {
                                             <IconLockDots className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
                                             Lock Screen
                                         </Link>
-                                    </li>
+                                    </li> */}
                                     <li className="border-t border-white-light dark:border-white-light/10">
                                       <button onClick={handleLogout} className="text-danger !py-3 flex items-center">
                                         <IconLogout className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />

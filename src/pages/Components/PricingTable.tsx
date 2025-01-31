@@ -22,9 +22,7 @@ const PricingTable = () => {
             setCodeArr([...codeArr, name]);
         }
     };
-
     const [yearlyPrice, setYearlyPrice] = useState<any>(false);
-
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">

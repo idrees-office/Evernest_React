@@ -19,7 +19,6 @@ const NavBar = () => {
     useEffect(() => {
         const storedPermissions = JSON.parse(localStorage.getItem('permissions') || '[]');
         const userrole = localStorage.getItem('role') || '';
-
         setPermissions(storedPermissions);
         setRoles(userrole);
     }, []);
@@ -37,7 +36,7 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('view dashboard')) && (
+                    {(permissions.includes('view dashboard') ) && (
                         <li>
                             <NavLink to="/">{t('Lead-Dashboard')}</NavLink>
                         </li>
@@ -118,17 +117,17 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('create user') || role === 'super admin') && (
+                    {(permissions.includes('create user')) && (
                         <li>
                             <NavLink to="/pages/users/create">{t('Add-User')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('create role') || role === 'super admin') && (
+                    {(permissions.includes('create role')) && (
                         <li>
                             <NavLink to="/pages/roles/create">{t('Add-Role')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('view permission') || role === 'super admin') && (
+                    {(permissions.includes('view permission')) && (
                         <li>
                             <NavLink to="/pages/permissions/assign">{t('Assign-Permission')}</NavLink>
                         </li>

@@ -6,16 +6,24 @@
     import Toast from '../services/toast';
     import { useDispatch, useSelector } from 'react-redux';
     import { AppDispatch, IRootState } from '../store';
-    interface LeadModalProps { 
-        isOpen: boolean; onClose: () => void;
-    }
+    interface LeadModalProps {  isOpen: boolean; onClose: () => void; }
     const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const combinedRef     = useRef<any>({ addleadform:null });
     const toast           = Toast();
+    const [permissions, setPermissions] = useState<any>([]);
+    const [role, setRoles] = useState<string>();
+
     useEffect(() => {
         if (isOpen) { setErrors({}); }
+        
+        const storedPermissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+        const userrole = localStorage.getItem('role') || '';
+        setPermissions(storedPermissions);
+        setRoles(userrole);
+      
+
     }, [isOpen]);
 
     const saveLead = async (e: React.FormEvent) => {
@@ -49,15 +57,19 @@
                     <button type="button" onClick={onClose} className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none">
                     <IconX />
                     </button>
-                    <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                     Add Lead...
-                    </div>
+                    <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]"> Add Lead...</div>
                     <div className="p-5">
                     <form className="leadForm" ref={(el) => (combinedRef.current.addleadform = el)} onSubmit={saveLead}>
                         <div className="mb-3">
                             <label htmlFor="lead_title">Lead Title </label>
                             <input id="lead_title" type="text" placeholder="Lead Title #XXXXXX" name="lead_title" className="form-input" />
                             {errors?.lead_title && <p className="text-danger error">{errors.lead_title[0]}</p>}
+
+                            {/* {( role === 'agent' ) &&   (
+                                <input id="lead_id" type="text" name="agent_id" className="form-input"   />
+                            )} */}
+
+
                         </div>
                         <div className="mb-3">
                             <label htmlFor="customer_name">Client Name</label>

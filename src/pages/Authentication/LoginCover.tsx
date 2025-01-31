@@ -17,7 +17,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const formRef = useRef<HTMLFormElement>(null);
+    const formRef = useRef<any>(null);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -45,23 +45,31 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         const formData = new FormData(formRef.current);
         try {
             const response = await dispatch(loginUser({ formData }) as any);
+
+            console.log(response);
+
             if ([200, 201].includes(response.payload.status)) {
                 toast.success(response.payload.message);
-                formRef?.current.reset(); 
+                if (formRef.current) formRef.current.reset();
                 navigate('/'); 
                 return
             }else if([401, 400].includes(response.payload.status)){
                 toast.error(response.payload.message);
-                formRef?.current.reset(); 
+                if (formRef.current) formRef.current.reset();
                 return
             } else {
                 setErrors(response.payload.data);
-                formRef?.current.reset(); 
+                if (formRef.current) formRef.current.reset();
             }
         } catch (error: any) {
             Swal.fire('Error:', error.message || error);
         }
-    };
+    };  
+
+    const HandleSoicalLogin = () => {
+        toast.error('Work is in progress for the social icon login.');
+    }
+
 
     return (
         <div>
@@ -174,9 +182,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                             <div className="mb-10 md:mb-[60px]">
                                 <ul className="flex justify-center gap-3.5 text-white">
                                     <li>
-                                        <Link
-                                            to="#"
-                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
+                                        <Link to="#" onClick={HandleSoicalLogin} className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
                                             style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)' }}
                                         >
                                             {' '}
@@ -185,7 +191,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                     </li>
                                     <li>
                                         <Link
-                                            to="#"
+                                            to="#" onClick={HandleSoicalLogin}
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
                                             style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)' }}
                                         >
@@ -204,7 +210,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                     </li> */}
                                     <li>
                                         <Link
-                                            to="#"
+                                            to="#" onClick={HandleSoicalLogin}
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
                                             style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)' }}
                                         >

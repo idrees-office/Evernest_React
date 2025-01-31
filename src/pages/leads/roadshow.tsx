@@ -97,7 +97,7 @@ const RoadShow = () => {
         </div>
     </div>
         <div className="datatables mt-6">
-        {loading ? ( loader  )   : (
+        {loading ? ( loader  )   : tableData.length > 0 ? (
         <Table title="Export-pdf Agents-wise"
             columns={[
                     { accessor: 'title', title: 'Title', sortable: true },
@@ -117,6 +117,10 @@ const RoadShow = () => {
                 ]} 
               rows={tableData}
             />
+        ) : (
+            <div className="panel text-center text-primary-500 mt-4">
+                <span className='badge bg-secondary'> Sorry, I am unable to retrieve data. Please check your API . </span>
+            </div>
          )}
         </div>
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
