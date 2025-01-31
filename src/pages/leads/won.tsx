@@ -54,7 +54,7 @@ const ReAssign = () => {
           {/* use select input here if you want */}
         </div>
     </div>
-        <div className="datatables">
+        <div className="datatables mt-6">
         {loading ? ( loader  )   : (
           <Table title="Re-Assign leads"
               columns={[

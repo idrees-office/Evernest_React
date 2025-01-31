@@ -11,7 +11,6 @@ import IconInfoHexagon from '../components/Icon/IconInfoHexagon';
 import IconBookmark from '../components/Icon/IconBookmark';
 import IconTrash from '../components/Icon/IconTrash';
 
-
 export const options = [
     { value: 1, label: 'Active' },
     { value: 2, label: 'Inactive' },

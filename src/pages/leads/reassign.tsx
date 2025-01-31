@@ -61,7 +61,7 @@ const ReAssign = () => {
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
-
+      
       const AssignLead = async (agentId: number, phone:number) => {
             if (selectedRecords.length === 0) { 
                 toast.error('Please select at least one lead to assign');
@@ -113,7 +113,7 @@ const ReAssign = () => {
             <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-danger btn-sm"><IconTrash /></button>
         </div>
     </div>
-        <div className="datatables">
+        <div className="datatables mt-6">
          {loading ? ( loader  )   : (
             <Table title="Re-Assign leads"
                 columns={[

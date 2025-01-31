@@ -17,7 +17,6 @@ const Setting = () => {
     return (
         <div>
             <div className={`${(showCustomizer && '!block') || ''} fixed inset-0 bg-[black]/60 z-[51] px-4 hidden transition-[display]`} onClick={() => setShowCustomizer(false)}></div>
-
             <nav
                 className={`${
                     (showCustomizer && 'ltr:!right-0 rtl:!left-0') || ''

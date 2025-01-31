@@ -57,7 +57,6 @@ const DashboardBox = () => {
     const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
 
     useEffect(() => {
-
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             const formData = new FormData();
@@ -129,7 +128,6 @@ const DashboardBox = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     } 
-
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">

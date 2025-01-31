@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useEffect } from 'react';
 
 const Colorlibrary = () => {

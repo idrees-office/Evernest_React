@@ -60,7 +60,7 @@ const AssignPermission = () => {
     };
 
     const handleRoleChange = async (roleId: string) => {
-        combinedRef.current.userformRef.client_user_id.value = ''; // Reset client selection
+        combinedRef.current.userformRef.client_user_id.value = ''; 
         try {
             const response = await apiClient.get(`/users/role_permissions/${roleId}`);
             setCheckedItems(response.data);
@@ -68,7 +68,7 @@ const AssignPermission = () => {
             toast.error('Failed to fetch role permissions');
         }
     };
-    
+
     const handleAgentChange = async (userId: string) => {
         combinedRef.current.userformRef.role_id.value = ''; 
         try {

@@ -32,6 +32,7 @@ import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
 import IconMenuDocumentation from '../Icon/Menu/IconMenuDocumentation';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../NavBar';
 
 const Sidebar = () => {
     const [currentMenu, setCurrentMenu] = useState<string>('');
@@ -93,9 +94,11 @@ const Sidebar = () => {
                             <IconCaretsDown className="m-auto rotate-90" />
                         </button>
                     </div>
-                    <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
+                    <PerfectScrollbar className="h-[calc(100vh-80px)]">
                         <ul className="relative font-semibold space-y-0.5 p-4 py-0">
-                            <li className="menu nav-item">
+                            <NavBar></NavBar>
+                            
+                            {/* <li className="menu nav-item">
                                 <button type="button" className={`${currentMenu === 'dashboard' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('dashboard')}>
                                     <div className="flex items-center">
                                         <IconMenuDashboard
@@ -796,7 +799,7 @@ const Sidebar = () => {
                                         <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('documentation')}</span>
                                     </div>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </PerfectScrollbar>
                 </div>

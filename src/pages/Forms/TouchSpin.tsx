@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CodeHighlight from '../../components/Highlight';
 import { useDispatch } from 'react-redux';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconCode from '../../components/Icon/IconCode';
 import IconMinus from '../../components/Icon/IconMinus';
 import IconPlus from '../../components/Icon/IconPlus';

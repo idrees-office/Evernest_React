@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { setPageTitle } from '../store/themeConfigSlice';
+import { setPageTitle } from '../slices/themeConfigSlice';
 import { useDispatch } from 'react-redux';
 import IconBell from '../components/Icon/IconBell';
 import IconStar from '../components/Icon/IconStar';
