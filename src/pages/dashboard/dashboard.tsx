@@ -59,12 +59,20 @@ const DashboardBox = () => {
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
-            const formData = new FormData();
-            formData.append('client_user_id', loginuser.client_user_id);
-            dispatch(DashboardLeadslist({}));
+            dispatch(DashboardLeadslist({search: searchText}));
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
+
+    useEffect(() => {
+        if (loginuser?.client_user_id) {
+            const delayDebounceFn = setTimeout(() => {
+                dispatch(DashboardLeadslist({search: searchText}));
+            }, 500);
+
+            return () => clearTimeout(delayDebounceFn);
+        }
+    }, [searchText, loginuser?.client_user_id]);
 
     useEffect(() => {
         if(currentStatus > 0){         
