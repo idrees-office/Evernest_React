@@ -71,12 +71,23 @@ const Roles = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
         const isUpdate = !!formData.id;
+
+       
+
         let response;
-        if(isUpdate == true){
+        if(isUpdate === true){
             response = await apiClient.post(endpoints.updateApi+'/'+formData.id, formData);
         }else{
+
+            
+
+            
             response = await apiClient.post(endpoints.createApi, formData);
+
+                alert(response);
+
         }
         try {
             if (response.status === 200 || response.status === 201) {
@@ -86,6 +97,16 @@ const Roles = () => {
                 setErrors({})
             }
         } catch (error: any) {
+
+            console.log('ddd');
+
+            console.log(error);
+
+            if (error.response?.status === 422) {
+                console.log("Validation Errors:", error.response?.data?.errors);
+            }
+
+            
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
             } else {
@@ -157,15 +178,15 @@ const Roles = () => {
                             <div className="form-group">
                                 <label htmlFor="name">Name</label>
                                 <input name="name" type="text" placeholder="Name" className="form-input" value={formData.name} onChange={handleChange} />
-                                {errors.name && ( <span className="text-red-500 text-sm">{errors.name}</span> )}
+                                {errors.name && ( <span className="text-red-500 text-sm">{errors.name[0]}</span> )}
                             </div>
                             <div className="sm:col-span-2 flex justify-end mt-3">
-                                <button type="submit" className="btn btn-primary"> Submit </button>
+                                <button type="submit" className="btn btn-primary w-full sm:w-auto"> Submit </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="w-full lg:w-2/3 px-2">
+                <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
                     <div className="datatables">
                         <Table title="Role List"
                             columns={[

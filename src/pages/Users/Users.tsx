@@ -183,7 +183,6 @@ const Users = () => {
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
-                        {/* <h2 className="font-semibold fs-3">Create User</h2> */}
                         <div className="panel-body">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="form-group">
@@ -237,7 +236,7 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full lg:w-2/3 px-2">
+                <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
                     <div className="datatables">
                         <Table
                             title="User List"

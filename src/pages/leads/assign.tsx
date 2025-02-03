@@ -130,6 +130,7 @@ const Assign = () => {
                 <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-default btn-sm" style={{ background: "#d33", color : '#fff' }}><IconTrash/></button>
             </div>
         </div>
+        
         <div className="datatables mt-6">
         {loading ? ( loader  )   :  tableData.length > 0 ?  (
          <Table title="New leads"

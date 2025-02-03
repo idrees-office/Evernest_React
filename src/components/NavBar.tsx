@@ -36,54 +36,32 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('view dashboard') ) && (
+                    {(permissions.includes('view dashboard') || role === 'super admin') && (
                         <li>
                             <NavLink to="/">{t('Lead-Dashboard')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('assign leads')) && (
+                    {(permissions.includes('assign leads')   || role === 'super admin') && (
                         <>
                             <NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink>
                             <NavLink to="/pages/leads/reassign">{t('Re-Assign')}</NavLink>
                         </>
                     )}
-                    {(permissions.includes('won leads')) && (
+                    {(permissions.includes('won leads') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/leads/won">{t('Won-Leads')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('all leads')) && (
+                    {(permissions.includes('all leads') || role === 'super admin') && (
                         <li>
                            <NavLink to="/pages/leads/exportpdf">{t('Export Pdf')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('roadshow leads')) && (
+                    {(permissions.includes('roadshow leads') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/leads/roadshow">{t('Road-Show Leads')}</NavLink>
                         </li>
                     )}
-                    {/* {permissions.includes('view dashboard') ? (
-                        <li>
-                            <NavLink to="/">{t('Lead-Dashboard')}</NavLink>
-                        </li>
-                    ) : permissions.includes('assign leads') ? (
-                        <>
-                            <li><NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink></li>
-                            <li><NavLink to="/pages/leads/reassign">{t('Re-Assign')}</NavLink></li>
-                        </>
-                    ) : permissions.includes('won leads') ? (
-                        <li>
-                            <NavLink to="/pages/leads/won">{t('Won-Leads')}</NavLink>
-                        </li>
-                    ) : permissions.includes('all leads') ? (
-                        <li>
-                            <NavLink to="/pages/leads/exportpdf">{t('Export Pdf')}</NavLink>
-                        </li>
-                    ) : permissions.includes('roadshow leads') ? (
-                        <li>
-                            <NavLink to="/pages/leads/roadshow">{t('Road-Show Leads')}</NavLink>
-                        </li>
-                    ) : null} */}
                 </ul>
             </li>
             {permissions.includes('create userprofile') && (
@@ -117,17 +95,17 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('create user')) && (
+                    {(permissions.includes('create user') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/users/create">{t('Add-User')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('create role')) && (
+                    {(permissions.includes('create role') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/roles/create">{t('Add-Role')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('view permission')) && (
+                    {(permissions.includes('view permission') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/permissions/assign">{t('Assign-Permission')}</NavLink>
                         </li>

@@ -64,12 +64,6 @@
                             <label htmlFor="lead_title">Lead Title </label>
                             <input id="lead_title" type="text" placeholder="Lead Title #XXXXXX" name="lead_title" className="form-input" />
                             {errors?.lead_title && <p className="text-danger error">{errors.lead_title[0]}</p>}
-
-                            {/* {( role === 'agent' ) &&   (
-                                <input id="lead_id" type="text" name="agent_id" className="form-input"   />
-                            )} */}
-
-
                         </div>
                         <div className="mb-3">
                             <label htmlFor="customer_name">Client Name</label>

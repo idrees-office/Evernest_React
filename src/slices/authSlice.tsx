@@ -45,6 +45,7 @@ const initialState = {
     message : '',
     status : 0,
     token: localStorage.getItem('authToken') || null,
+    
 
 };
 

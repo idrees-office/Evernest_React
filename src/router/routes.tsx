@@ -32,7 +32,6 @@ const routes = [
     {
         path: '/',
         type: 'protected',
-        // element: <Index />,
         element: <DashboardBox />,
     },
     {
