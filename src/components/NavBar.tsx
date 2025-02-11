@@ -112,7 +112,7 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
-            {/* <li className="menu nav-item relative">
+            <li className="menu nav-item relative">
                     <button type="button" className="nav-link">
                         <div className="flex items-center">
                             <IconMenuDatatables className="shrink-0" />
@@ -150,7 +150,7 @@ const NavBar = () => {
                         </li>
                     
                 </ul>
-            </li> */}
+            </li>
         </>
     );
 };
