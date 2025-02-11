@@ -64,7 +64,6 @@ const DashboardBox = () => {
     const [IsDisable, setIsDisable] = useState(true);
     const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
 
-
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
@@ -72,7 +71,7 @@ const DashboardBox = () => {
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
-
+    
     useEffect(() => {
         if (loginuser?.client_user_id) {
             const delayDebounceFn = setTimeout(() => {
