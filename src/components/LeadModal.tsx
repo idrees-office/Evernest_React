@@ -28,7 +28,7 @@
         setRoles(userrole);
         
     }, [isOpen]);
-    
+
     const saveLead = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.addleadform) {
@@ -36,7 +36,6 @@
             const currentstatus = formData.get('lead_status');
             try {
                 const response = await dispatch(createLeads({ formData }) as any);
-
                 if (response.payload.status === 200 || response.payload.status === 201){
                     toast.success('Lead Create Successfully');
                     onClose();
