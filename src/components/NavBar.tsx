@@ -112,8 +112,7 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
-            <li className="menu nav-item relative">
-                {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+            {/* <li className="menu nav-item relative">
                     <button type="button" className="nav-link">
                         <div className="flex items-center">
                             <IconMenuDatatables className="shrink-0" />
@@ -123,18 +122,16 @@ const NavBar = () => {
                             <IconCaretDown />
                         </div>
                     </button>
-                {/* )} */}
+               
                 <ul className="sub-menu">
-                    {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
                         <li>
                             <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink>
                         </li>
-                    {/* )} */}
                 </ul>
             </li>
             
             <li className="menu nav-item relative">
-                {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+            
                     <button type="button" className="nav-link">
                         <div className="flex items-center">
                             <IconMenuDatatables className="shrink-0" />
@@ -144,16 +141,16 @@ const NavBar = () => {
                             <IconCaretDown />
                         </div>
                     </button>
-                {/* )} */}
+              
                 <ul className="sub-menu">
-                    {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+                  
                         <li>
                             <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
                             <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
                         </li>
-                    {/* )} */}
+                    
                 </ul>
-            </li>
+            </li> */}
         </>
     );
 };
