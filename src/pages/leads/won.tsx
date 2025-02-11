@@ -16,7 +16,7 @@ import LeadModal from '../../components/LeadModal';
 import { createLeads } from '../../slices/dashboardSlice';
 import '../dashboard/dashboard.css'; 
 
-const ReAssign = () => {
+const WonLeads = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast    = Toast();
@@ -62,10 +62,10 @@ const ReAssign = () => {
                       { accessor: 'phone',  title: 'Phone', sortable: true },
                       { accessor: 'status', title: 'Status', sortable: true,
                           render: (record) => (
-                              record.status === '16' ? ( 
-                                  <span className="badge bg-success">Close Deel</span>
+                              record.status === 16 ? ( 
+                                  <span className="badge bg-secondary">Close Deel</span>
                               ):  (
-                                  <span className="badge bg-secondary">Unknown</span>
+                                  <span className="badge bg-warning">Unknown</span>
                               )
                           ),
                         },
@@ -82,4 +82,4 @@ const ReAssign = () => {
     </div>
     )
 }
-export default ReAssign;
+export default WonLeads;

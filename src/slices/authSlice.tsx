@@ -1,6 +1,5 @@
 import apiClient from '../utils/apiClient';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import Swal from 'sweetalert2';
 
 const endpoints = {
     loginApi: '/auth/login',
@@ -11,8 +10,6 @@ const endpoints = {
 export const loginUser = createAsyncThunk('auth/cover-login', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
     try {
         const response = await apiClient.post(endpoints.loginApi, formData);
-        console.log(response);
-
         return {data: response.data.data, status: response.status, message:response.data.message, permissions : response.data.data.permission, role : response.data.data.role};
     } catch (error: any) {
         return rejectWithValue({data: error.response.data, status: error.status, message:error.response.data.message});
@@ -29,9 +26,7 @@ const savedUser = localStorage.getItem('authUser');
 let parsedUser = null;
 if (savedUser) {
     try {
-        parsedUser = JSON.parse(savedUser); 
-      
-
+        parsedUser = JSON.parse(savedUser);
     } catch (e) {
         localStorage.removeItem('authUser');
     }

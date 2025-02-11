@@ -132,9 +132,7 @@ const Header = () => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
-
     const { t } = useTranslation();
-
     const handleLogout = () => {
         dispatch(logout()); // Dispatch the logout action
         navigate('/auth/cover-login'); // Redirect to login page

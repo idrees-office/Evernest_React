@@ -112,6 +112,48 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
+            <li className="menu nav-item relative">
+                {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+                    <button type="button" className="nav-link">
+                        <div className="flex items-center">
+                            <IconMenuDatatables className="shrink-0" />
+                            <span className="px-1">{t('Activities')}</span>
+                        </div>
+                        <div className="right_arrow">
+                            <IconCaretDown />
+                        </div>
+                    </button>
+                {/* )} */}
+                <ul className="sub-menu">
+                    {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+                        <li>
+                            <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink>
+                        </li>
+                    {/* )} */}
+                </ul>
+            </li>
+            
+            <li className="menu nav-item relative">
+                {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+                    <button type="button" className="nav-link">
+                        <div className="flex items-center">
+                            <IconMenuDatatables className="shrink-0" />
+                            <span className="px-1">{t('Email Marketing')}</span>
+                        </div>
+                        <div className="right_arrow">
+                            <IconCaretDown />
+                        </div>
+                    </button>
+                {/* )} */}
+                <ul className="sub-menu">
+                    {/* {(permissions.includes('create user') || role === 'super admin') && ( */}
+                        <li>
+                            <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
+                            <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
+                        </li>
+                    {/* )} */}
+                </ul>
+            </li>
         </>
     );
 };

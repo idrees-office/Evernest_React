@@ -26,11 +26,13 @@ const Accordians = () => {
     };
 
     const [active, setActive] = useState<string>('1');
+
     const togglePara = (value: string) => {
         setActive((oldValue) => {
             return oldValue === value ? '' : value;
         });
     };
+    
     const [active1, setActive1] = useState<string>('1');
     const togglePara1 = (value: string) => {
         setActive1((oldValue) => {
@@ -71,6 +73,7 @@ const Accordians = () => {
                         https://www.npmjs.com/package/react-animate-height
                     </a>
                 </div>
+
                 <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
                     {/* basic */}
                     <div className="panel" id="basic">

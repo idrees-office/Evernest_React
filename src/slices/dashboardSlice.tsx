@@ -87,6 +87,11 @@ import { co } from '@fullcalendar/core/internal-common';
         reducers: {
             setLeads() {},
             deleteLeadsById() {},
+
+            setLoading: (state, action) => {
+                state.loading = action.payload;
+            },
+
         },
         extraReducers: (builder) => {
             builder
@@ -114,8 +119,12 @@ import { co } from '@fullcalendar/core/internal-common';
                 .addCase(DashboardLeadslist.rejected, (state) => {
                     state.success = false;
                 })
+
+                .addCase(updateSingleLead.pending, (state) => {
+                    state.loading = true;  
+                })
                 .addCase(updateSingleLead.fulfilled, (state, action) => {
-                    state.success = true;
+                    state.success = false;
                     state.status = action.payload.status;
                     state.lead_status = action.payload?.data?.[0].lead_status;
                     const updatedLead = action.payload?.data?.[0];
@@ -133,5 +142,5 @@ import { co } from '@fullcalendar/core/internal-common';
         }
     });
 
-export const { setLeads, deleteLeadsById } = DashboardSlice.actions;
+export const { setLeads, deleteLeadsById, setLoading } = DashboardSlice.actions;
 export default DashboardSlice.reducer;

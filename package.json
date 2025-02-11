@@ -9,6 +9,8 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@codemirror/lang-css": "^6.3.1",
+        "@codemirror/lang-html": "^6.4.9",
         "@emotion/react": "^11.10.6",
         "@fullcalendar/core": "^6.1.4",
         "@fullcalendar/daygrid": "^6.1.4",
@@ -28,6 +30,7 @@
         "@types/react": "^18.0.21",
         "@types/react-dom": "^18.0.6",
         "@types/react-text-mask": "^5.4.11",
+        "@uiw/react-codemirror": "^4.23.8",
         "@x1mrdonut1x/nouislider-react": "^3.4.3",
         "apexcharts": "^3.37.1",
         "axios": "^1.7.7",

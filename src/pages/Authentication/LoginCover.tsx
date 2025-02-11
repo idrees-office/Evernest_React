@@ -22,7 +22,6 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const toast = Toast();
-
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
         if (isAuthenticatedd) {
@@ -39,25 +38,37 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
+
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!formRef.current) return; 
         const formData = new FormData(formRef.current);
         try {
             const response = await dispatch(loginUser({ formData }) as any);
-
-            console.log(response);
-
             if ([200, 201].includes(response.payload.status)) {
                 toast.success(response.payload.message);
                 if (formRef.current) formRef.current.reset();
                 navigate('/'); 
                 return
             }else if([401, 400].includes(response.payload.status)){
-                toast.error(response.payload.message);
+                toast.error(response.payload.message.message);
+                if (formRef.current) {
+                    const emailInput = formRef.current.querySelector('input[name="client_user_email"]') as HTMLInputElement;
+                    const passwordInput = formRef.current.querySelector('input[name="password"]') as HTMLInputElement;
+                    if (response.payload.message.status === "Incorrect-Password" && passwordInput) {
+                        passwordInput.value = "";
+                        return
+                    }
+                    if (response.payload.message.client_user_email === "Incorrect-Email" && emailInput) {
+                        emailInput.value = "";
+                        return
+                    }
+                }
                 if (formRef.current) formRef.current.reset();
                 return
             } else {
+
+                console.log(response.payload);
                 setErrors(response.payload.data);
                 if (formRef.current) formRef.current.reset();
             }

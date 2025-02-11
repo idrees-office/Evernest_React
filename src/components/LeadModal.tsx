@@ -22,8 +22,7 @@
         const userrole = localStorage.getItem('role') || '';
         setPermissions(storedPermissions);
         setRoles(userrole);
-      
-
+        
     }, [isOpen]);
 
     const saveLead = async (e: React.FormEvent) => {

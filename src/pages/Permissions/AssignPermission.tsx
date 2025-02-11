@@ -79,7 +79,7 @@ const AssignPermission = () => {
             toast.error('Failed to fetch user permissions');
         }
     };
-
+    
     const toggleCheckbox = (item: PermissionData) => {
         setCheckedItems(prev => {
             if (prev.includes(item.id)) {
@@ -105,11 +105,10 @@ const AssignPermission = () => {
             toast.error('Failed to assign permissions');
         }
     };
-
     return (
         <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={onSubmit} className="p-6 bg-white shadow-md rounded-md">
             <div className="mb-4">
-                <h2 className="text-xl font-bold">Assign Permission</h2>
+                <h2 className="text-md font-bold">Detail of all Permission</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

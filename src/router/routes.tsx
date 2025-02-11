@@ -25,8 +25,10 @@ const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
 const RoadShow = lazy(() => import('../pages/leads/roadshow'));
 const Profile = lazy(() => import('../pages/users/profile'));
 const Error404 = lazy(() => import('../pages/errors/error404'));
-
-
+const Activities = lazy(() => import('../pages/activities/activities'));
+const EmailTemplate = lazy(() => import('../pages/emails/template'));
+const EmailPreview = lazy(() => import('../pages/emails/preview'));
+const EmailSubscriber = lazy(() => import('../pages/emails/subscriber'));
 
 const routes = [
     {
@@ -52,21 +54,46 @@ const routes = [
         element : <WonLeads/>,
         layout: 'default',
     },
-
     {
         path: 'pages/leads/exportpdf',
         type: 'protected',
         element : <ExportLeads/>,
         layout: 'default',
     },
-
     {
         path: 'pages/leads/roadshow',
         type: 'protected',
         element : <RoadShow/>,
         layout: 'default',
     },
+    {
+        path: 'pages/activities/activities',
+        type: 'protected',
+        element : <Activities/>,
+        layout: 'default',
+    },
+    // Email Template
+    {
+        path: 'pages/email/template',
+        type: 'protected',
+        element : <EmailTemplate/>,
+        layout: 'default',
+    },
+    {
+        path: 'pages/email/preview',
+        type: 'protected',
+        element: <EmailPreview />, 
+        layout: 'default',
+    },
 
+    {
+        path: 'pages/email/subscriber',
+        type: 'protected',
+        element: <EmailSubscriber />, 
+        layout: 'default',
+    },
+
+    
     {
         path: '/analytics',
         type: 'protected',

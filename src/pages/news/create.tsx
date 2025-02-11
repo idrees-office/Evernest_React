@@ -51,8 +51,7 @@ const Create = () => {
         }
         dispatch(setPageTitle('Create Blogs'));
     }, [dispatch, isEdit, id]);
-
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (formRef.current) {

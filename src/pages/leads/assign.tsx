@@ -34,11 +34,13 @@ const Assign = () => {
     }, [dispatch]); 
     
     const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
+    
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
     }));
+
     const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => ({
         id      : lead.lead_id || 'Unknown',
         title   : lead.lead_title || 'Unknown',

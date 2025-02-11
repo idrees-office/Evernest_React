@@ -19,7 +19,7 @@ import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
 import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues } from '../../services/status';
-import { DashboardLeadslist } from '../../slices/dashboardSlice';
+import { DashboardLeadslist, setLoading } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
 import { updateSingleLead, createLeads } from '../../slices/dashboardSlice';
@@ -30,6 +30,10 @@ import IconX from '../../components/Icon/IconX';
 import './dashboard.css';
 import LeadModal from '../../components/LeadModal';
 import Loader from '../../services/loader';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+import Loader2 from '../../services/loader2';
+
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -37,6 +41,7 @@ const DashboardBox = () => {
     const TopbarStatuses  = topBarStatus();
     const Statues         = statues();
     const loader          = Loader();
+    const loader2          = Loader2();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
@@ -55,6 +60,10 @@ const DashboardBox = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
+    const [date, setDate] = useState<any>(null);
+    const [IsDisable, setIsDisable] = useState(true);
+    const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
+
 
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
@@ -95,7 +104,7 @@ const DashboardBox = () => {
     const LeadsTabs = async (status: number) => {
         const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status,  }) as any);
         if(response.payload.status === 200 || response.payload.status === 201){
-         setSelectedTab(status);
+             setSelectedTab(status);
         }
     }
 
@@ -104,21 +113,26 @@ const DashboardBox = () => {
         if (combinedRef.current.form) {
             const formData = new FormData(combinedRef.current.form);
             const selectedStatus = formData.get('lead_status');
-
             formData.append('current_status', currentStatus.toString());
             try {
+                dispatch(setLoading(true));
                 const response = await dispatch(updateSingleLead({ formData }) as any);
                 if (response.payload.status === 200 || response.payload.status === 201){
                     toast.success('Lead Updated Successfully');
                     LeadsTabs(Number(selectedStatus));
-
                     setSelectedLead(null);
                 }else{
                     setErrors(response.payload.errors);
                     return
                 }
-            } catch (error: any) { console.error('Error creating/updating news:', error); }
+            } catch (error: any) { console.error('Error creating/updating news:', error); 
+
+            } finally{
+                dispatch(setLoading(false));
+            }
+
         }
+        
     }
 
     const getLeads = (status: number) => {
@@ -136,6 +150,17 @@ const DashboardBox = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     } 
+
+    const handleSelectChange = (e:any) => {
+        if(e.value == 7 || e.value === 7){
+            setIsDisable(false);
+            setsColor('');
+        }else{
+            setIsDisable(true);
+            setsColor('hsl(0, 0%, 95%)');
+        }
+    }
+    
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -298,9 +323,6 @@ const DashboardBox = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    // <div className="absolute inset-0 flex justify-center items-center z-10 bg-white bg-opacity-50">
-                                    //    <span className="animate-[spin_3s_linear_infinite] border-8 border-r-warning border-l-primary border-t-danger border-b-success rounded-full w-14 h-14 inline-block align-middle m-auto"></span>
-                                    // </div>
                                     <div className="grid place-content-center min-h-[300px] font-semibold text-lg h-full">No data available</div>
                                 )}
                         </div>
@@ -324,7 +346,9 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+
                             <div className="p-4 relative">
+                                {loading &&  loader2}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
                                     <div className="panel">
                                         <div className="flex items-center justify-between mb-5">
@@ -366,11 +390,15 @@ const DashboardBox = () => {
                                                 <div className="flex flex-col justify-between lg:flex-row">
                                                     <div className="w-full cursor-pointer">
                                                         <div className="mt-3 items-center">
-                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer"/>
-                                                        <input type="hidden" name="lead_id" className="form-input" value={selectedLead?.lead_id} />
-                                                        <input type="hidden" name="agent_id" className="form-input" value={selectedLead?.agent_id} />
-                                                        <input type="hidden" name="login_user_id" className="form-input" value={loginuser?.client_user_id}/>
+                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer" onChange={handleSelectChange} />
+                                                        <input type="hidden" name="lead_id" className="form-input" defaultValue={selectedLead?.lead_id} />
+                                                        <input type="hidden" name="agent_id" className="form-input" defaultValue={selectedLead?.agent_id} />
+                                                        <input type="hidden" name="login_user_id" className="form-input" defaultValue={loginuser?.client_user_id}/>
                                                         {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
+                                                        </div>
+                                                         <div className={`mt-4`}>
+                                                            <Flatpickr value={date} disabled={IsDisable} name="meeting_date" options={{ enableTime:true, dateFormat: 'Y-m-d H:i'}} className="form-input" placeholder='Confrimed Meeting Date'  style={{ background: IsColor }}/> 
+                                                            {errors?.meeting_date && <p className="text-danger error">{errors.meeting_date[0]}</p>}
                                                         </div>
                                                         <div className="mt-3 items-center cursor-pointer">
                                                         <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
@@ -393,7 +421,6 @@ const DashboardBox = () => {
                                                 <div className="max-w-[900px] mx-auto">
                                                     {selectedLead?.comments?.map((comment: any, i: any) => (
                                                         <div className="flex" key={i}>
-                                                            {/* Timestamp */}
                                                             <p className="text-[#3b3f5c] dark:text-white-light min-w-[120px] max-w-[150px] text-sm font-semibold py-2.5">
                                                                 {comment?.created_at || 'Invalid Time'}
                                                             </p>
@@ -465,6 +492,7 @@ const DashboardBox = () => {
                                     </div>
                                 </div> 
                             </div>
+
                         </div>
                     )}
                 </div>

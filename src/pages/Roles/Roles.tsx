@@ -71,23 +71,12 @@ const Roles = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         const isUpdate = !!formData.id;
-
-       
-
         let response;
         if(isUpdate === true){
             response = await apiClient.post(endpoints.updateApi+'/'+formData.id, formData);
         }else{
-
-            
-
-            
             response = await apiClient.post(endpoints.createApi, formData);
-
-                alert(response);
-
         }
         try {
             if (response.status === 200 || response.status === 201) {
@@ -188,7 +177,7 @@ const Roles = () => {
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
                     <div className="datatables">
-                        <Table title="Role List"
+                        <Table title="List of all Roles"
                             columns={[
                                 { accessor: 'id', title: '#', sortable: true },
                                 { accessor: 'name',  title: 'Name', sortable: true },
