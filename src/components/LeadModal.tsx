@@ -6,7 +6,6 @@
     import Toast from '../services/toast';
     import { useDispatch, useSelector } from 'react-redux';
     import { AppDispatch, IRootState } from '../store';
-
     import { DashboardLeadslist } from '../slices/dashboardSlice';
 
     interface LeadModalProps {  isOpen: boolean; onClose: () => void; }
@@ -21,7 +20,7 @@
 
     useEffect(() => {
         if (isOpen) { setErrors({}); }
-        
+
         const storedPermissions = JSON.parse(localStorage.getItem('permissions') || '[]');
         const userrole = localStorage.getItem('role') || '';
         setPermissions(storedPermissions);
@@ -118,6 +117,5 @@
     </Transition>
     );
     };
-
-
+    
     export default LeadModal;

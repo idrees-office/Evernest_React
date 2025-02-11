@@ -127,6 +127,9 @@ const Activities = () => {
     const handleEventClick = async (clickInfo: any) => {
         try {
             const event = clickInfo?.event
+
+            console.log(event);
+
             if(event.id){
                 const eventId = event.id;
                 setParams(eventId);
@@ -154,6 +157,7 @@ const Activities = () => {
                     if (combinedRef.current?.form) {
                         const form = combinedRef.current.form;
                         form.elements.namedItem('start_date')?.setAttribute("value", dateFormat(event.start) || '');
+                        form.elements.namedItem('end_date')?.setAttribute("value", dateFormat(event.end) || '');
                     }
                 }, 100);
             }
