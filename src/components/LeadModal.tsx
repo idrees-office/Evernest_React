@@ -6,6 +6,9 @@
     import Toast from '../services/toast';
     import { useDispatch, useSelector } from 'react-redux';
     import { AppDispatch, IRootState } from '../store';
+
+    import { DashboardLeadslist } from '../slices/dashboardSlice';
+
     interface LeadModalProps {  isOpen: boolean; onClose: () => void; }
     const LeadModal: React.FC<LeadModalProps> = ({ isOpen, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -14,6 +17,7 @@
     const toast           = Toast();
     const [permissions, setPermissions] = useState<any>([]);
     const [role, setRoles] = useState<string>();
+
 
     useEffect(() => {
         if (isOpen) { setErrors({}); }
@@ -24,18 +28,21 @@
         setRoles(userrole);
         
     }, [isOpen]);
-
+    
     const saveLead = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.addleadform) {
             const formData = new FormData(combinedRef.current.addleadform);
+            const currentstatus = formData.get('lead_status');
             try {
                 const response = await dispatch(createLeads({ formData }) as any);
+
                 if (response.payload.status === 200 || response.payload.status === 201){
                     toast.success('Lead Create Successfully');
                     onClose();
                     setErrors({}); 
                     combinedRef.current.addleadform.reset();
+                    dispatch(DashboardLeadslist({ page_number : response.payload.last_page , lead_status : Number(currentstatus),  }) as any);
                 }else{
                     setErrors(response.payload.errors);
                     return
