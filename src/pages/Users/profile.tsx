@@ -20,8 +20,6 @@ const endpoints = {
     updateApi  : `${getBaseUrl()}/users/update_user`,
     updateApi2 : `${getBaseUrl()}/users/update_status`,
     agentApi   : `${getBaseUrl()}/users/user_list`,
-    
-
 };
 
 const UserProfile    = () => {
@@ -58,7 +56,7 @@ const UserProfile    = () => {
         client_user_email: LoginUser?.client_user_email || '',
         client_user_phone: LoginUser?.client_user_phone || '',
     });
-    
+
     const toggleTabs = (name: string) => {
         setTabs(name);
     };
@@ -85,8 +83,18 @@ const UserProfile    = () => {
                 const userId = formData.get('client_user_id');
                 const response = await apiClient.post(endpoints.updateApi+'/'+userId, formData);              
                 if (response.status === 200 || response.status === 201) {
-                // const updatedUser = response.data.user; 
-                // localStorage.setItem('user', JSON.stringify(updatedUser));
+                const updatedUser = response.data.user;
+                if (updatedUser) {
+                    dispatch({ type: 'auth/updateUser', payload: updatedUser });
+                    localStorage.setItem('authUser', JSON.stringify(updatedUser));
+                    setFormData({
+                        client_user_name: updatedUser.client_user_name || '',
+                        client_user_id: updatedUser.client_user_id || '',
+                        client_user_designation: updatedUser.client_user_designation || '',
+                        client_user_email: updatedUser.client_user_email || '',
+                        client_user_phone: updatedUser.client_user_phone || '',
+                    });
+                }
                 navigate('/');
                 setErrors({});
                 toast.success('Profile updated successfully');
@@ -119,8 +127,7 @@ const UserProfile    = () => {
             console.error("Error updating status:", error);
         }
     };
-
-
+    
     return (
         <div>
             <ul className="flex space-x-2 rtl:space-x-reverse">
