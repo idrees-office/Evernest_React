@@ -231,7 +231,7 @@ const Header = () => {
                                         dispatch(toggleTheme('system'));
                                     }}
                                 >
-                                    <IconMoon />
+                                     <IconMoon />
                                 </button>
                             )}
                             {themeConfig.theme === 'system' && (

@@ -16,7 +16,7 @@ const Dropdown = (props : any, forwardedRef: any) => {
                     offset: props.offset || [(0)],
                 },
             },
-        ],
+        ], 
     });
 
     const handleDocumentClick = (event: any) => {
