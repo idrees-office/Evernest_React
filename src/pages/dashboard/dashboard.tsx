@@ -3,7 +3,6 @@ import { Disclosure } from '@headlessui/react';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'react-quill/dist/quill.snow.css';
-import Swal from 'sweetalert2';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from '../../store';
@@ -149,7 +148,6 @@ const DashboardBox = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     } 
-
     const handleSelectChange = (e:any) => {
         if(e.value == 7 || e.value === 7){
             setIsDisable(false);
@@ -159,7 +157,6 @@ const DashboardBox = () => {
             setsColor('hsl(0, 0%, 95%)');
         }
     }
-    
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
