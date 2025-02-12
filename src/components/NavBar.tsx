@@ -129,9 +129,9 @@ const NavBar = () => {
                         </li>
                 </ul>
             </li>
-            
+                    
+            {(permissions.includes('create subscriber') || role === 'super admin') && (
             <li className="menu nav-item relative">
-            
                     <button type="button" className="nav-link">
                         <div className="flex items-center">
                             <IconMenuDatatables className="shrink-0" />
@@ -143,14 +143,13 @@ const NavBar = () => {
                     </button>
               
                 <ul className="sub-menu">
-                  
                         <li>
                             <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
                             <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
                         </li>
-                    
                 </ul>
             </li>
+            )}
         </>
     );
 };
