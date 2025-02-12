@@ -36,6 +36,7 @@ const routes = [
         type: 'protected',
         element: <DashboardBox />,
     },
+
     {
         path: 'pages/leads/assign',
         type: 'protected',
