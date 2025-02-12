@@ -1,21 +1,5 @@
 // import { createBrowserRouter } from 'react-router-dom';
-// import BlankLayout from '../components/Layouts/BlankLayout';
-// import DefaultLayout from '../components/Layouts/DefaultLayout';
-// import { routes } from './routes';
-// import ProtectedRoute from '../components/ProtectedRoute';
-// import LoginCover from '../pages/Authentication/LoginCover';
-// const finalRoutes = routes.map((route) => {
-//     return {
-//         ...route,       
-//         element: route.layout === 'blank' ? <BlankLayout>{route.element}</BlankLayout> : <DefaultLayout>{route.element}</DefaultLayout>,
-//     };
-// });
-
-// const router = createBrowserRouter(finalRoutes);
-// export default router;
-
-
-import { createBrowserRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 import BlankLayout from '../components/Layouts/BlankLayout';
 import DefaultLayout from '../components/Layouts/DefaultLayout';
 import Header from '../components/Layouts/Header';
@@ -37,5 +21,5 @@ const finalRoutes = routes.map((route) => {
         element,
     };
 });
-const router = createBrowserRouter(finalRoutes);
+const router = createHashRouter(finalRoutes);
 export default router;
