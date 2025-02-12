@@ -333,10 +333,7 @@ const DashboardBox = () => {
                                     <button type="button" className="ltr:mr-2 rtl:ml-2 hover:text-primary" onClick={() => setSelectedLead(null)}>
                                         <IconArrowLeft className="w-5 h-5 rotate-180" />
                                     </button>
-                                    <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2">
-                                        {selectedLead?.lead_title}
-                                        </h4>
-                                    <div className="badge bg-info hover:top-0">{selectedLead?.lead_status}</div>
+                                    <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2"> {selectedLead?.lead_title} </h4>
                                 </div>
                                 <div>
                                     <Tippy content="Print">

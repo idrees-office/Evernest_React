@@ -60,7 +60,7 @@ const Setting = () => {
                             </button>
                         </div>
                     </div>
-                    <div className="border border-dashed border-white-light dark:border-[#1b2e4b] rounded-md mb-3 p-3">
+                    {/* <div className="border border-dashed border-white-light dark:border-[#1b2e4b] rounded-md mb-3 p-3">
                         <h5 className="mb-1 text-base dark:text-white leading-none">Navigation Position</h5>
                         <p className="text-white-dark text-xs">Select the primary navigation paradigm for your app.</p>
                         <div className="grid grid-cols-3 gap-2 mt-3">
@@ -91,7 +91,7 @@ const Setting = () => {
                                 <span>Semi Dark (Sidebar & Header)</span>
                             </label>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="border border-dashed border-white-light dark:border-[#1b2e4b] rounded-md mb-3 p-3">
                         <h5 className="mb-1 text-base dark:text-white leading-none">Layout Style</h5>
