@@ -1,5 +1,5 @@
-// import { createBrowserRouter } from 'react-router-dom';
-import { createHashRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
+// import { createHashRouter } from 'react-router-dom';
 import BlankLayout from '../components/Layouts/BlankLayout';
 import DefaultLayout from '../components/Layouts/DefaultLayout';
 import Header from '../components/Layouts/Header';
@@ -21,5 +21,5 @@ const finalRoutes = routes.map((route) => {
         element,
     };
 });
-const router = createHashRouter(finalRoutes);
+const router = createBrowserRouter(finalRoutes);
 export default router;
