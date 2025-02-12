@@ -157,6 +157,11 @@ const DashboardBox = () => {
             setsColor('hsl(0, 0%, 95%)');
         }
     }
+    const Refresh = () => {
+        navigate('/');
+    }
+   
+
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -199,7 +204,7 @@ const DashboardBox = () => {
                                 <div className="flex items-center w-full sm:w-auto">
                                     <div className="ltr:mr-4 rtl:ml-4">
                                         <Tippy content="Refresh">
-                                            <button type="button" className="hover:text-primary flex items-center">
+                                            <button type="button" onClick={Refresh} className="hover:text-primary flex items-center">
                                                 <IconRefresh />
                                             </button>
                                         </Tippy>
