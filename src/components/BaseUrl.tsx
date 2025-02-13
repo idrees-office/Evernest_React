@@ -9,4 +9,3 @@ export const getBaseUrl = () => {
         return 'https://backend.leadshub.ae/api';  
     }
 };
-

@@ -219,12 +219,43 @@ const DashboardBox = () => {
                                             <div className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                                                 <IconSearch />
                                             </div>
+                                        </div> &nbsp; &nbsp;
+                                        <div className="flex items-center">
+                                            <div className="text-sm ltr:mr-3 rtl:ml-3"> {meta.from + '-' + (meta.to) + ' of ' + meta.total} </div>
+                                            <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            > <IconCaretDown className="w-5 h-5 rtl:-rotate-90 rotate-90" /> </button>
+                                            <button onClick={() => handlePageChange(meta.current_page + 1)} type="button" disabled={meta.current_page === meta.total} className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            > <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" /> </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
+                                <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2 mt-4">
+                                    {TopbarStatuses.map((status) => { 
+                                        const counterKey = status.tab || '';
+                                        const topcounter = counters[counterKey] || 0;
+                                        return( 
+                                            <button key={status.value} onClick={() => LeadsTabs(status?.value)} type="button" className={`btn ${status.outlineColor} 
+                                                    ${selectedTab === status.value ? status.activeColor : status.outlineColor}
+                                                    flex items-center justify-center
+                                                    text-xs sm:text-sm
+                                                    py-2 px-2 sm:px-3
+                                                    min-w-[80px] sm:min-w-[100px]
+                                                    relative
+                                                    transition-all duration-300
+                                                    whitespace-nowrap
+                                                `}> 
+                                                <span className="flex items-center gap-1">{status.icon} <span className="sm:inline">{status.label}</span></span>
+                                                <span className={`badge absolute -top-2 -right-1 text-xs p-0.5 px-1.5 ${status.bgColor}  rounded-full`}> {topcounter} </span>
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                            {/* <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
                                         const counterKey = status.tab || '';
@@ -232,6 +263,7 @@ const DashboardBox = () => {
                                         return( 
                                         <button  key={status.value}  onClick={() => LeadsTabs(status?.value)} type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.value ? status.activeColor : status.outlineColor}`}> {status.icon} {status.label}
                                             <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>
+                                            
                                         </button>
                                         )
                                     })}
@@ -247,7 +279,7 @@ const DashboardBox = () => {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
