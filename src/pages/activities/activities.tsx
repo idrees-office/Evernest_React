@@ -306,7 +306,7 @@ const Activities = () => {
                                                 <div className="text-danger mt-2" id="startDateErr"></div>
                                             </div>
                                             <div>
-                                                <label htmlFor="dateend">To, <small className='text-secondary'>optional</small> </label>
+                                                <label htmlFor="dateend">To, <small className='text-primary'>optional</small> </label>
                                                 <input id="dateend" type="datetime-local" name="end_date" className="form-input" placeholder="Event End Date"/>
                                                 <div className="text-danger mt-2" id="startDateErr"></div>
                                             </div>
@@ -318,7 +318,7 @@ const Activities = () => {
                                                 <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setIsAddEventModal(false)}>
                                                     Cancel
                                                 </button>
-                                                <button type="submit" className="btn btn-secondary btn-sm ltr:ml-4 rtl:mr-4">
+                                                <button type="submit" className="btn btn-info btn-sm ltr:ml-4 rtl:mr-4">
                                                      {params ? 'Update' : 'Submit'}
                                                 </button>
                                             </div>
