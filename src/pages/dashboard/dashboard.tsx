@@ -158,10 +158,9 @@ const DashboardBox = () => {
         }
     }
     const Refresh = () => {
-        navigate('/');
+        window.location.reload();
     }
-   
-
+    
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -169,7 +168,7 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        <div className="pb-5"> <button className="btn btn-primary w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div>
+                        <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
                                 {SidebarStatuses.map((sidebarstatus) => { 
@@ -403,7 +402,7 @@ const DashboardBox = () => {
                                                         {errors?.lead_comment && <p className="text-danger error">{errors.lead_comment[0]}</p>}
                                                         </div>   
                                                         <div className="mt-4">
-                                                            <button className="btn btn-secondary w-full">Save</button>
+                                                            <button className="btn btn-success w-full">Save</button>
                                                         </div>
                                                     </div>
                                                 </div>

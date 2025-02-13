@@ -24,7 +24,7 @@ const Setting = () => {
             >
                 <button
                     type="button"
-                    className="bg-primary ltr:rounded-tl-full rtl:rounded-tr-full ltr:rounded-bl-full rtl:rounded-br-full absolute ltr:-left-12 rtl:-right-12 top-0 bottom-0 my-auto w-12 h-10 flex justify-center items-center text-white cursor-pointer"
+                    className="bg-success ltr:rounded-tl-full rtl:rounded-tr-full ltr:rounded-bl-full rtl:rounded-br-full absolute ltr:-left-12 rtl:-right-12 top-0 bottom-0 my-auto w-12 h-10 flex justify-center items-center text-white cursor-pointer"
                     onClick={() => setShowCustomizer(!showCustomizer)}
                 >
                     <IconSettings className="animate-[spin_3s_linear_infinite] w-5 h-5" />

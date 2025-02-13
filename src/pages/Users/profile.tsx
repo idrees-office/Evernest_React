@@ -193,7 +193,7 @@ const UserProfile    = () => {
                                         {errors.client_user_phone && <span className="text-red-500 text-sm">{errors.client_user_phone}</span>}
                                     </div>
                                     <div className="sm:col-span-2 mt-3">
-                                        <button type="submit" className="btn btn-primary"> Save </button> 
+                                        <button type="submit" className="btn btn-success"> Save </button> 
                                     </div>
                                 </div>
                             </div>

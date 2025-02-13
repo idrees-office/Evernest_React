@@ -239,7 +239,7 @@ const Users = () => {
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
                     <div className="datatables">
                         <Table
-                            title="List of all users:"
+                            title="Detail of the all users"
                             columns={[
                                 { accessor: 'id', title: '#', sortable: true },
                                 { accessor: 'client_user_name', title: 'Name', sortable: true },

@@ -105,7 +105,7 @@
                         </div>
                         <div className="ltr:text-right rtl:text-left flex justify-end items-center mt-8">
                           <button type="button" className="btn btn-outline-danger" onClick={onClose} > Cancel </button>
-                          <button type="submit" className="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
+                          <button type="submit" className="btn btn-success ltr:ml-4 rtl:mr-4">Save</button>
                         </div>
                     </form>
                     </div>

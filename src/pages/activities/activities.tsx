@@ -1,5 +1,4 @@
 import FullCalendar from '@fullcalendar/react';
-// import '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -30,9 +29,9 @@ const endpoints = {
 const Activities = () => {
     const dispatch = useDispatch<AppDispatch>();
     const toast = Toast();
-     const combinedRef = useRef<any>({ fetched: false, form: null});
-     const [transformedAgents, setTransformedAgents] = useState<any[]>([]);
-     const [selectedAgent, setSelectedAgent] = useState<any>({}); 
+    const combinedRef = useRef<any>({ fetched: false, form: null});
+    const [transformedAgents, setTransformedAgents] = useState<any[]>([]);
+    const [selectedAgent, setSelectedAgent] = useState<any>({}); 
 
     useEffect(() => {
         if (!combinedRef.current.fetched) {
@@ -71,14 +70,13 @@ const Activities = () => {
                 phone: agent?.client_user_phone,
             }));
             setTransformedAgents(filterAgents)
-
             let eventsList = data.map((activity:any) => ({
                 id: activity.id || 'undefine',
                 title: activity.title || 'undefine', 
                 start: activity.start_date || 'undefine',
                 end : activity.end_date || 'undefine',
                 description: activity.description || 'undefine',
-                className: 'danger', 
+                className: 'info', 
             }));
             setTimeout(() => {
                 setEvents((prevEvents:any) => [...new Set([...prevEvents, ...eventsList])]);
@@ -108,7 +106,7 @@ const Activities = () => {
                     start: data.start_date,
                     end: data.end_date,
                     description: data.description,
-                    className: 'primary',
+                    className: 'secondary',
                 };
                 setEvents((prevEvents:any) =>
                     isEditing ? prevEvents.map((event:any) => (event.id === data.id ? updatedEvent : event))  : [...prevEvents, updatedEvent] 
@@ -169,7 +167,8 @@ const Activities = () => {
     const SelectSingleAgent = async (agentId: number, agentName:string) => {
         const data = { agent_id : agentId, agent_name : agentName }
         setSelectedAgent(data);
-    }     
+    }  
+
     const exportPDF = async () => {
         let filteredEvents = events;
         let agentName = selectedAgent?.agent_name || "All Agents Report";
@@ -214,7 +213,6 @@ const Activities = () => {
         doc.save(`Agent_Activities_Report_${agentName || 'All'}.pdf`);
         setTimeout(() => setSelectedAgent(null), 0);
     };
-
     const editDate = (data: any) => {
         let obj = {
             event: {
@@ -224,16 +222,40 @@ const Activities = () => {
         };
         handleEventClick(obj);
     };
+
+    const formatDateForMySQL = (isoDate: string) => {
+        const date = new Date(isoDate);
+        return date.toISOString().slice(0, 19).replace("T", " ");
+    };
+    const handleEventDrag = async (dropInfo: any) => {
+        const { event } = dropInfo;
+        const updatedEvent = {
+            id: event.id,
+            start_date: formatDateForMySQL(event.startStr),
+            end_date: formatDateForMySQL(event.endStr), 
+        };
+        setEvents((prevEvents: any) => prevEvents.map((ev: any) => (ev.id === event.id ? { ...ev, start: event.startStr, end: event.endStr } : ev)));
+        try {
+            const response = await apiClient.post(`${endpoints.updateApi}/${event.id}`, updatedEvent);
+            if (response.status === 200 || response.status === 201) {
+                toast.success('Event updated successfully');
+            }
+        } catch (error) {
+            console.error("Error updating event:", error);
+            toast.error("Failed to update event. Please try again.");
+        }
+    };
+
     return (
         <div>
             <div className="panel mb-5">
                 <div className="mb-4 flex justify-between items-center">
                     <div className="text-lg font-semibold">
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleModal()}> Create Activities </button></div>
+                        <button type="button" className="btn btn-info btn-sm" onClick={() => handleModal()}> Create Activities </button></div>
                     <div className="flex gap-2">
                         <Select id="agentDropdown" value={transformedAgents.find(agent => agent.value === selectedAgent?.agent_id) || null} placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectSingleAgent(selectedOption.value, selectedOption.label); }}/>
                         
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={exportPDF}> Export PDF </button>
+                        <button type="button" className="btn btn-info btn-sm" onClick={exportPDF}> Export PDF </button>
                     </div>
                 </div>
                 <div className="calendar-wrapper">
@@ -251,6 +273,8 @@ const Activities = () => {
                         droppable={true}
                         eventClick={(event: any) => handleEventClick(event)}
                         select={(event: any) => editDate(event)}
+                        eventDrop={handleEventDrag}
+                        // eventResize={handleEventResize}
                         events={events}
                     />
                 </div>
@@ -258,15 +282,7 @@ const Activities = () => {
             {/* add event modal */}
             <Transition appear show={isAddEventModal} as={Fragment}>
                 <Dialog as="div" onClose={() => setIsAddEventModal(false)} open={isAddEventModal} className="relative z-[51]">
-                    <Transition.Child
-                        as={Fragment}
-                        enter="duration-300 ease-out"
-                        enter-from="opacity-0"
-                        enter-to="opacity-100"
-                        leave="duration-200 ease-in"
-                        leave-from="opacity-100"
-                        leave-to="opacity-0"
-                    >
+                    <Transition.Child as={Fragment} enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
                     <Dialog.Overlay className="fixed inset-0 bg-[black]/60" />
                     </Transition.Child>
                     <div className="fixed inset-0 overflow-y-auto">
@@ -276,30 +292,27 @@ const Activities = () => {
                                     <button type="button" className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none" onClick={() => setIsAddEventModal(false)} > <IconX /> </button>
                                     <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
                                         {params ? 'Edit Activities' : 'Add Activities'}
-
-                                        
-
                                     </div>
                                     <div className="p-5">
                                         <form className="space-y-5" ref={(el) => (combinedRef.current.form = el)} onSubmit={saveActivities}>
                                             <div>
-                                                <label htmlFor="title">Activities Title :</label>
-                                                <input id="title" type="text" name="title" className="form-input" placeholder="Enter Event Title" required />
+                                                <label htmlFor="title">Activities Title</label>
+                                                <input id="title" type="text" name="title" className="form-input" placeholder="Activities Title" required />
                                                 <div className="text-danger mt-2" id="titleErr"></div>
                                             </div>
                                             <div>
-                                                <label htmlFor="dateStart">From :</label>
+                                                <label htmlFor="dateStart">From</label>
                                                 <input id="start" type="datetime-local" name="start_date" className="form-input" placeholder="Event Start Date" required />
                                                 <div className="text-danger mt-2" id="startDateErr"></div>
                                             </div>
                                             <div>
-                                                <label htmlFor="dateend">To :</label>
-                                                <input id="dateend" type="datetime-local" name="end_date" className="form-input" placeholder="Event End Date" required />
+                                                <label htmlFor="dateend">To, <small className='text-secondary'>optional</small> </label>
+                                                <input id="dateend" type="datetime-local" name="end_date" className="form-input" placeholder="Event End Date"/>
                                                 <div className="text-danger mt-2" id="startDateErr"></div>
                                             </div>
                                             <div>
-                                                <label htmlFor="description1">Activities Description :</label>
-                                                <textarea id="description1" name="description" className="form-textarea min-h-[130px]" placeholder="Enter Event Description" ></textarea>
+                                                <label htmlFor="description1">Activities Description</label>
+                                                <textarea id="description1" name="description" className="form-textarea min-h-[130px]" placeholder="Activities Description" ></textarea>
                                             </div>
                                             <div className="flex justify-end items-center !mt-8">
                                                 <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setIsAddEventModal(false)}>
