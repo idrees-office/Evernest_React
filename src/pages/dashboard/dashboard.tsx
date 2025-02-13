@@ -231,25 +231,48 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-
-                            <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
-                                <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-2 mt-4">
+                            <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
+                                <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
                                     {TopbarStatuses.map((status) => { 
                                         const counterKey = status.tab || '';
                                         const topcounter = counters[counterKey] || 0;
                                         return( 
-                                            <button key={status.value} onClick={() => LeadsTabs(status?.value)} type="button" className={`btn ${status.outlineColor} 
+                                            <button 
+                                                key={status.value} 
+                                                onClick={() => LeadsTabs(status?.value)} 
+                                                type="button" 
+                                                className={`
+                                                    btn ${status.outlineColor} 
                                                     ${selectedTab === status.value ? status.activeColor : status.outlineColor}
                                                     flex items-center justify-center
-                                                    text-xs sm:text-sm
-                                                    py-2 px-2 sm:px-3
-                                                    min-w-[80px] sm:min-w-[100px]
+                                                    text-[10px] sm:text-xs lg:text-sm
+                                                    py-1 sm:py-2 
+                                                    px-1 sm:px-2 lg:px-3
+                                                    min-w-[60px] sm:min-w-[80px] lg:min-w-[100px]
+                                                    h-[32px] sm:h-[36px] lg:h-[40px]
                                                     relative
                                                     transition-all duration-300
                                                     whitespace-nowrap
-                                                `}> 
-                                                <span className="flex items-center gap-1">{status.icon} <span className="sm:inline">{status.label}</span></span>
-                                                <span className={`badge absolute -top-2 -right-1 text-xs p-0.5 px-1.5 ${status.bgColor}  rounded-full`}> {topcounter} </span>
+                                                    overflow-hidden
+                                                `}
+                                            > 
+                                                <span className="flex items-center gap-0.5 sm:gap-1">
+                                                    {status.icon}
+                                                    <span className="hidden sm:inline">{status.label}</span>
+                                                    <span className="sm:hidden">{status.label.substring(0,3)}</span>
+                                                </span>
+                                                <span className={`
+                                                    badge absolute 
+                                                    -top-1 sm:-top-2 
+                                                    -right-0.5 sm:-right-1
+                                                    text-[8px] sm:text-xs
+                                                    p-0.5 
+                                                    px-1 sm:px-1.5
+                                                    ${status.bgColor}
+                                                    rounded-full
+                                                `}>
+                                                    {topcounter}
+                                                </span>
                                             </button>
                                         )
                                     })}
