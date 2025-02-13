@@ -379,7 +379,7 @@ const DashboardBox = () => {
                             <div className="p-4 relative">
                                 {loading &&  loader2}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
-                                    <div className="panel">
+                                    <div className="panel xl:col-span-2 md:col-span-2">
                                         <div className="flex items-center justify-between mb-5">
                                             <h5 className="font-semibold text-lg dark:text-white-light">Client Detail </h5>
                                         </div>
@@ -441,7 +441,7 @@ const DashboardBox = () => {
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="panel lg:col-span-2 xl:col-span-4">
+                                    <div className="panel lg:col-span-2 xl:col-span-3 md:col-span-3">
                                         <div className="mb-5">
                                             <h5 className="font-semibold text-lg dark:text-white-light">History of the Leads </h5>
                                         </div>
@@ -453,7 +453,6 @@ const DashboardBox = () => {
                                                             <p className="text-[#3b3f5c] dark:text-white-light min-w-[120px] max-w-[150px] text-sm font-semibold py-2.5">
                                                                 {comment?.created_at || 'Invalid Time'}
                                                             </p>
-                                                            {/* Timeline dot and line */}
                                                             <div className={`
                                                                 relative
                                                                 before:absolute before:left-1/2 before:-translate-x-1/2 before:top-[15px] 
@@ -467,10 +466,7 @@ const DashboardBox = () => {
                                                                 i % 5 === 3 ? 'before:border-danger after:border-danger' :
                                                                                 'before:border-warning after:border-warning'}
                                                             `}></div>
-
-                                                            {/* Content */}
                                                             <div className="p-2.5 self-center ltr:ml-2.5 rtl:mr-2.5 w-full">
-                                                                {/* User and Status */}
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-[#3b3f5c] dark:text-white-light font-semibold text-[13px]">
                                                                         {comment?.user_id !== null 
@@ -493,7 +489,6 @@ const DashboardBox = () => {
                                                                             {comment?.agent_name}
                                                                         </span>
                                                                     )}
-                                                                {/* Previous Status Note */}
                                                                 {i > 0 && (
                                                                     <div 
                                                                         className="text-gray-500 dark:text-gray-400 text-[13px]"
@@ -503,8 +498,6 @@ const DashboardBox = () => {
                                                                     />
                                                                 )}
                                                                 </div>
-
-                                                                {/* Comment Content */}
                                                                 {comment.lead_comment && (
                                                                     <div className="bg-gray-50 dark:bg-gray-800 p-1 border-l-4 border">
                                                                         <p className="text-[#3b3f5c] dark:text-white-light text-sm italic">
