@@ -197,39 +197,40 @@ const DashboardBox = () => {
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
                     {!selectedLead && !isEdit && (
                         <div className="flex flex-col h-full">
-                            <div className="flex justify-between items-center flex-wrap-reverse gap-4 p-4">
+                            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-3 sm:p-4">
                                 <div className="flex items-center w-full sm:w-auto">
-                                    <div className="ltr:mr-4 rtl:ml-4">
+                                    <div className="mr-2 sm:mr-4">
                                         <Tippy content="Refresh">
-                                            <button type="button" onClick={Refresh} className="hover:text-primary flex items-center">
-                                                <IconRefresh />
+                                            <button type="button" onClick={Refresh} className="hover:text-primary flex items-center p-1">
+                                                <IconRefresh className="w-5 h-5"/>
                                             </button>
                                         </Tippy>
                                     </div>
                                 </div>
-                                <div className="flex justify-between items-center sm:w-auto w-full">
-                                    <div className="flex items-center ltr:mr-4 rtl:ml-4">
-                                        <button type="button" className="xl:hidden hover:text-primary block ltr:mr-3 rtl:ml-3" onClick={() => setIsShowMailMenu(!isShowMailMenu)}>
-                                            <IconMenu />
+                                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                                    <div className="flex items-center w-full sm:w-auto">
+                                        <button type="button" className="xl:hidden hover:text-primary mr-3 p-1" onClick={() => setIsShowMailMenu(!isShowMailMenu)}>
+                                            <IconMenu className="w-5 h-5"/>
                                         </button>
-                                        <div className="relative group">
-                                            <input type="text" className="form-input ltr:pr-8 rtl:pl-8 peer" placeholder="Search Lead" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
-                                            <div className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
-                                                <IconSearch />
-                                            </div>
-                                        </div> &nbsp; &nbsp;
-                                        <div className="flex items-center">
-                                            <div className="text-sm ltr:mr-3 rtl:ml-3"> {meta.from + '-' + (meta.to) + ' of ' + meta.total} </div>
-                                            <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed"
-                                            > <IconCaretDown className="w-5 h-5 rtl:-rotate-90 rotate-90" /> </button>
-                                            <button onClick={() => handlePageChange(meta.current_page + 1)} type="button" disabled={meta.current_page === meta.total} className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"
-                                            > <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" /> </button>
+                                        <div className="relative flex-1 sm:flex-none">
+                                            <input type="text" className="form-input w-full sm:w-[200px] pr-8" placeholder="Search Lead" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                                            <div className="absolute right-2 top-1/2 -translate-y-1/2 peer-focus:text-primary"> <IconSearch className="w-4 h-4"/> </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                                        <div className="text-sm whitespace-nowrap">
+                                            {meta.from + '-' + (meta.to) + ' of ' + meta.total}
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}className="bg-[#f4f4f4] rounded-md p-1.5 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                                            > <IconCaretDown className="w-4 h-4 rtl:-rotate-90 rotate-90" /> </button>
+                                            <button onClick={() => handlePageChange(meta.current_page + 1)} type="button" disabled={meta.current_page === meta.total} className="bg-[#f4f4f4] rounded-md p-1.5 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"> <IconCaretDown className="w-4 h-4 rtl:rotate-90 -rotate-90" /> </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
 
+                            <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
                                 <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
                                     {TopbarStatuses.map((status) => { 
@@ -262,7 +263,6 @@ const DashboardBox = () => {
                                     })}
                                 </div>
                             </div> 
-
                             {/* <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
