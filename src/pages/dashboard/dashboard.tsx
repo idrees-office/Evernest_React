@@ -249,7 +249,6 @@ const DashboardBox = () => {
                                                     relative
                                                     transition-all duration-300
                                                     whitespace-nowrap
-                                                    overflow-hidden
                                                 `}
                                             > 
                                                 <span className="flex items-center space-x-0">

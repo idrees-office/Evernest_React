@@ -125,7 +125,6 @@ export const STATUSES = [
         notes2   : ' From No Answer',
         tab   : 'noanswertab',
         activeColor: "bg-white-dark/10 text-secondary",
-
     },
     {
         value: 10,
@@ -138,7 +137,6 @@ export const STATUSES = [
         notes2   : ' From Low Buget',
         tab   : 'lowbudgettab',
         activeColor: "bg-white-dark/10 text-secondary",
-
     },
     {
         value: 11,
@@ -163,7 +161,6 @@ export const STATUSES = [
         notes2   : ' From Incorrect Detail',
         tab     : 'incorrecttab',
         activeColor: "bg-white-dark/10 text-secondary",
-
     },
     {
         value: 13,
