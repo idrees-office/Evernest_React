@@ -105,7 +105,7 @@ const DashboardBox = () => {
              setSelectedTab(status);
         }
     }
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.form) {
@@ -128,9 +128,7 @@ const DashboardBox = () => {
             } finally{
                 dispatch(setLoading(false));
             }
-
         }
-        
     }
 
     const getLeads = (status: number) => {
@@ -256,7 +254,7 @@ const DashboardBox = () => {
                                             > 
                                                 <span className="flex items-center">
                                                     {status.icon}
-                                                    <span className="hidden sm:inline text-sm">{status.label}</span>
+                                                    <span className="sm:inline text-sm" style={{ fontSize : '13px'}}>{status.label}</span>
                                                 </span>
                                                 <span className={`
                                                     badge absolute 
