@@ -256,13 +256,13 @@ const DashboardBox = () => {
                                                     {status.icon}
                                                     <span className="sm:inline text-sm" style={{ fontSize : '13px'}}>{status.label}</span>
                                                 </span>
-                                                <span className={`badge absolute -top-2 -right- text-x p-0.5 px-1.5  ${status.bgColor} rounded-full`}> {topcounter} </span>
+                                                <span className={`badge absolute -top-2 -right-1 text-x p-0.5 px-1.5  ${status.bgColor} rounded-full`}> {topcounter} </span>
                                             </button>
                                         )
                                     })}
                                 </div>
                             </div> 
-                            
+
                             {/* <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
