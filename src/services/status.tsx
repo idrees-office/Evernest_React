@@ -10,6 +10,7 @@ import IconCaretDown from '../components/Icon/IconCaretDown';
 import IconInfoHexagon from '../components/Icon/IconInfoHexagon';
 import IconBookmark from '../components/Icon/IconBookmark';
 import IconTrash from '../components/Icon/IconTrash';
+import IconCalendar from '../components/Icon/IconCalendar';
 
 export const options = [
     { value: 1, label: 'Active' },
@@ -94,7 +95,7 @@ export const STATUSES = [
         value: 7,
         label: 'Meeting Schedule',
         displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
-        icon: <IconUser className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
+        icon: <IconCalendar className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-primary',
         bgColor : 'bg-primary',
         notes  : ' Moved to: <span class="text-primary">Meeting Schedule </span>',
