@@ -231,8 +231,9 @@ const DashboardBox = () => {
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
-                                <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
+                                <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
                                     {TopbarStatuses.map((status) => { 
                                         const counterKey = status.tab || '';
                                         const topcounter = counters[counterKey] || 0;
@@ -244,22 +245,18 @@ const DashboardBox = () => {
                                                 className={`
                                                     btn ${status.outlineColor} 
                                                     ${selectedTab === status.value ? status.activeColor : status.outlineColor}
-                                                    flex items-center justify-center
-                                                    text-[10px] sm:text-xs lg:text-sm
-                                                    py-1 sm:py-2 
+                                                    flex items-start justify-start
+                                                    text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm 
                                                     px-1 sm:px-2 lg:px-3
-                                                    min-w-[60px] sm:min-w-[80px] lg:min-w-[100px]
-                                                    h-[32px] sm:h-[36px] lg:h-[40px]
                                                     relative
                                                     transition-all duration-300
                                                     whitespace-nowrap
                                                     overflow-hidden
                                                 `}
                                             > 
-                                                <span className="flex items-center gap-0.5 sm:gap-1">
+                                                <span className="flex items-center">
                                                     {status.icon}
-                                                    <span className="hidden sm:inline">{status.label}</span>
-                                                    <span className="sm:hidden">{status.label.substring(0,3)}</span>
+                                                    <span className="hidden sm:inline text-sm">{status.label}</span>
                                                 </span>
                                                 <span className={`
                                                     badge absolute 
@@ -277,7 +274,10 @@ const DashboardBox = () => {
                                         )
                                     })}
                                 </div>
-                            </div>
+                            </div> 
+
+
+                            
                             {/* <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
                                 <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
                                 {TopbarStatuses.map((status) => { 
