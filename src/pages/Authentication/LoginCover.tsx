@@ -100,7 +100,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 Evernest Real Estate
                             </Link>
                             <div className="mt-24 hidden w-full max-w-[430px] lg:block">
-                                <img src="/assets/images/auth/login.svg" alt="Cover Image" className="w-full" />
+                                <img src="/assets/images/auth/login.png" alt="Cover Image" className="w-full" />
                             </div>
                         </div>
                     </div>
