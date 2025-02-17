@@ -76,11 +76,10 @@ const LoginCover = ({ children }: PropsWithChildren) => {
             Swal.fire('Error:', error.message || error);
         }
     };  
-
+    
     const HandleSoicalLogin = () => {
         toast.error('Work is in progress for the social icon login.');
     }
-
 
     return (
         <div>

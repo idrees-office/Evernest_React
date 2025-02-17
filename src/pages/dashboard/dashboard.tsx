@@ -32,6 +32,7 @@ import Loader from '../../services/loader';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
+import RemarkModal from '../../components/RemarkModal';
 
 
 const DashboardBox = () => {
@@ -62,6 +63,8 @@ const DashboardBox = () => {
     const [date, setDate] = useState<any>(null);
     const [IsDisable, setIsDisable] = useState(true);
     const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
+    const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
+    const [isMemark, setIsMemark] = useState(false);
 
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
@@ -158,7 +161,14 @@ const DashboardBox = () => {
     const Refresh = () => {
         window.location.reload();
     }
-    
+
+    const RemarkHistory = (data:any) => {
+        const $data  =JSON.parse(data);
+        SetIsRemarkData($data)
+        setIsMemark(true);
+    }
+
+
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -263,31 +273,6 @@ const DashboardBox = () => {
                                     })}
                                 </div>
                             </div> 
-                            {/* <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4">
-                                <div className="w-full sm:w-auto grid grid-cols-4 sm:grid-cols-7 gap-1 mt-4">
-                                {TopbarStatuses.map((status) => { 
-                                        const counterKey = status.tab || '';
-                                        const topcounter = counters[counterKey] || 0;
-                                        return( 
-                                        <button  key={status.value}  onClick={() => LeadsTabs(status?.value)} type="button"  className={`btn ${status.outlineColor} flex ${selectedTab === status.value ? status.activeColor : status.outlineColor}`}> {status.icon} {status.label}
-                                            <span className={`badge absolute ltr:right-0 rtl:left-0 -top-4 p-0.5 px-1.5 ${status.bgColor} rounded-full`}>{topcounter}</span>
-                                            
-                                        </button>
-                                        )
-                                    })}
-                                </div>
-                                <div className="mt-4 md:flex-auto flex-1">
-                                    <div className="flex items-center md:justify-end justify-center">
-                                        <div className="ltr:mr-3 rtl:ml-3"> {meta.from + '-' + (meta.to) + ' of ' + meta.total} </div>
-                                        <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}
-                                            className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed">
-                                            <IconCaretDown className="w-5 h-5 rtl:-rotate-90 rotate-90" />
-                                        </button>
-                                        <button onClick={() => handlePageChange(meta.current_page + 1)} type="button" disabled={meta.current_page === meta.total} className="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"> <IconCaretDown className="w-5 h-5 rtl:rotate-90 -rotate-90" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div> */}
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
@@ -367,7 +352,7 @@ const DashboardBox = () => {
                                 )}
                         </div>
                     )}
-                    {selectedLead && !isEdit && (
+                    { selectedLead && !isEdit && (
                         <div>
                             <div className="flex items-center justify-between flex-wrap p-4">
                                 <div className="flex items-center">
@@ -377,13 +362,14 @@ const DashboardBox = () => {
                                     <h4 className="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2"> {selectedLead?.lead_title} </h4>
                                 </div>
                                 <div>
+                                    { selectedLead.lead_source == "Facebook"  ||  selectedLead.lead_source == "Instagram" && (
                                     <Tippy content="Print">
-                                            <button type="button"> <IconPrinter /> </button>
+                                        <button type="button" onClick={() => RemarkHistory(selectedLead?.field_data)} className='btn btn-success btn-sm'> Remarks </button>
                                     </Tippy>
+                                    )}
                                 </div>
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-
                             <div className="p-4 relative">
                                 {loading &&  loader2}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
@@ -522,12 +508,12 @@ const DashboardBox = () => {
                                     </div>
                                 </div> 
                             </div>
-
-                        </div>
+                        </div>                                                    
                     )}
                 </div>
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
+            <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
     </div>
     );
 }
