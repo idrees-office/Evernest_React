@@ -463,11 +463,7 @@ const DashboardBox = () => {
                                                             <div className="p-2.5 self-center ltr:ml-2.5 rtl:mr-2.5 w-full">
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <span className="text-[#3b3f5c] dark:text-white-light font-semibold text-[13px]">
-                                                                        {comment?.user_id !== null 
-                                                                            ? comment?.user_name 
-                                                                            : i > 0 
-                                                                                ? selectedLead.comments[i - 1]?.user_name 
-                                                                                : ''
+                                                                        {comment?.user_id !== null  ? comment?.user_name : i > 0  ? selectedLead.comments[i - 1]?.user_name  : ''
                                                                         }
                                                                     </span>
                                                                     

@@ -128,8 +128,7 @@ const NavBar = () => {
                             <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink>
                         </li>
                 </ul>
-            </li>
-                    
+            </li>   
             {(permissions.includes('create subscriber') || role === 'super admin') && (
             <li className="menu nav-item relative">
                     <button type="button" className="nav-link">
@@ -141,13 +140,12 @@ const NavBar = () => {
                             <IconCaretDown />
                         </div>
                     </button>
-              
-                <ul className="sub-menu">
+                    <ul className="sub-menu">
                         <li>
                             <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
                             <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
                         </li>
-                </ul>
+                    </ul>
             </li>
             )}
         </>

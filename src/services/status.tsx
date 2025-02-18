@@ -217,6 +217,20 @@ export const STATUSES = [
         notes   : ' New Lead Created By <span class="text-success">Meta Campaign </span> or System',
         notes2  : ' From Meta Campaign'
     },
+    
+    {
+        value: 18,
+        label: 'Confimations',
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist'],
+        icon: <IconThumbUp className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
+        outlineColor: 'bg-white text-secondary',
+        bgColor : 'bg-primary',
+        notes  : ' Moved to: <span class="text-primary">Junk </span>',
+        notes2   : ' From Junk',
+        tab     : 'junktab',
+        activeColor: "bg-white-dark/10 text-secondary",
+    },
+
 ];
 
 export const statues = () => STATUSES;
