@@ -34,7 +34,6 @@ import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
 import RemarkModal from '../../components/RemarkModal';
 
-
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
     const navigate        = useNavigate();
@@ -161,13 +160,12 @@ const DashboardBox = () => {
     const Refresh = () => {
         window.location.reload();
     }
-
     const RemarkHistory = (data:any) => {
         const $data  =JSON.parse(data);
         SetIsRemarkData($data)
         setIsMemark(true);
     }
-    
+
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
