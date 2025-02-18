@@ -200,7 +200,7 @@ export const STATUSES = [
     {
         value: 16,
         label: 'Close Deal',
-        displayIn: ['', '', ''],
+        displayIn: ['dropdown', '', ''],
         icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-primary',
@@ -217,7 +217,7 @@ export const STATUSES = [
         notes   : ' New Lead Created By <span class="text-success">Meta Campaign </span> or System',
         notes2  : ' From Meta Campaign'
     },
-    
+
     {
         value: 18,
         label: 'Confimations',
