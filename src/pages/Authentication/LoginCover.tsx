@@ -38,7 +38,6 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
-
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!formRef.current) return; 

@@ -106,7 +106,7 @@ const Activities = () => {
                     start: data.start_date,
                     end: data.end_date,
                     description: data.description,
-                    className: 'secondary',
+                    className: 'info',
                 };
                 setEvents((prevEvents:any) =>
                     isEditing ? prevEvents.map((event:any) => (event.id === data.id ? updatedEvent : event))  : [...prevEvents, updatedEvent] 
@@ -125,9 +125,6 @@ const Activities = () => {
     const handleEventClick = async (clickInfo: any) => {
         try {
             const event = clickInfo?.event
-
-            console.log(event);
-
             if(event.id){
                 const eventId = event.id;
                 setParams(eventId);
@@ -279,7 +276,6 @@ const Activities = () => {
                     />
                 </div>
             </div>
-            {/* add event modal */}
             <Transition appear show={isAddEventModal} as={Fragment}>
                 <Dialog as="div" onClose={() => setIsAddEventModal(false)} open={isAddEventModal} className="relative z-[51]">
                     <Transition.Child as={Fragment} enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
