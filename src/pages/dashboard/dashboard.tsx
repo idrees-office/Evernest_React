@@ -33,6 +33,7 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
 import RemarkModal from '../../components/RemarkModal';
+import { json } from 'stream/consumers';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -290,6 +291,13 @@ const DashboardBox = () => {
                                                                     </div>
                                                                     <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
                                                                     > {lead?.lead_title || 'Not Found'}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="flex items-center whitespace-nowrap">
+                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
+                                                                    > { lead.agents.client_user_name || 'Not Found'}
                                                                     </div>
                                                                 </div>
                                                             </td>
