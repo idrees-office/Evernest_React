@@ -25,38 +25,30 @@ const PreviewTemplate = () => {
             return oldValue === value ? '' : value;
         });
     };
-
+    
     const generatePreview = () => {
-        return `
-            <html>
-                <head>
-                    <style>${cssCode}</style>
-                </head>
-                <body>${htmlCode}</body>
-            </html>
-        `;
+        return htmlCode
     };
 
     const sendEmailCampaign = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const form = combinedRef.current.emailform 
-        if (!form) return;
-        const formData = new FormData(form);
-        formData.append('htmlContent',generatePreview());
-        formData.append('sendto[]', 'idreesoffice9012@gmail.com');
-        formData.append('sendto[]', 'farhanalidxb1@gmail.com');
-        try {
-            const response = await apiClient.post(endpoints.createApi, formData);
-           
-            console.log(response);
-            alert("Emails are being sent in the background!");
-        } catch (error) {
-            console.error(error);
-            alert("Error sending email campaign.");
+        if (combinedRef.current.emailform) {
+            const formData = new FormData(combinedRef.current.emailform);
+            formData.append('htmlContent',generatePreview());
+            formData.append('sendto[]', 'idreesoffice9012@gmail.com');
+            formData.append('sendto[]', 'farhanalidxb1@gmail.com');
+            try {
+                const response = await apiClient.post(endpoints.createApi, formData);
+
+                alert("Emails are being sent in the background!");
+            } catch (error) {
+                console.error(error);
+                alert("Error sending email campaign.");
+            }
+
         }
 
-      
     };
 
     return (
@@ -81,14 +73,10 @@ const PreviewTemplate = () => {
                                             <AnimateHeight duration={300} height={active === '1' ? 'auto' : 0}>
                                                 <div className="space-y-2 p-4 text-white-dark text-[13px] border-t border-[#d3d3d3] dark:border-[#1b2e4b]">
                                                     <div className="mb-3">
-                                                        {/* <label htmlFor="sendto">Send to </label> */}
-
                                                         <label className="inline-flex">
                                                             <input type="checkbox" className="form-checkbox text-secondary rounded-full peer" />
                                                             <span className="peer-checked:text-secondary">Send Email to All Subscribers</span>
-                                                        </label>
-
-                                                        {/* <input id="sendto" readOnly disabled type="text" name="sendto" placeholder="Send Emails " className="form-input" autoComplete="off" /> */}
+                                                        </label>                                                        
                                                     </div>
                                                 </div>
                                             </AnimateHeight>
@@ -144,9 +132,7 @@ const PreviewTemplate = () => {
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <button type="submit"  className="mt-3 btn btn-secondary text-white rounded">
-                                        Send
-                                    </button>
+                                    <button type="submit"  className="mt-3 btn btn-secondary text-white rounded"> Send </button>
                                 </div>
                             </form>
                         </div>

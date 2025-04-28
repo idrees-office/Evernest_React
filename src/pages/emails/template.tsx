@@ -21,9 +21,6 @@ const EmailTemplate = () => {
             </html>
         `;
     };
-
-
-    
     const handleSave = () => {
         navigate("/pages/email/preview", { 
             state: { htmlCode, cssCode } 
