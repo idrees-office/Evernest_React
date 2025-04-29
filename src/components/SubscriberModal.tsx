@@ -18,8 +18,8 @@ const endpoints = {
 };
 
 
-interface LeadModalProps {  isOpen: boolean; onClose: () => void; }
-const SubscriberModal: React.FC<LeadModalProps> = ({ isOpen, onClose }) => {
+interface SubscriberModalProps {  isOpen: boolean; onClose: () => void; onSuccess: () => void; }
+const SubscriberModal: React.FC<SubscriberModalProps> = ({ isOpen, onClose, onSuccess }) => {
 const dispatch = useDispatch<AppDispatch>();
 const [errors, setErrors] = useState<Record<string, string[]>>({});
 const combinedRef     = useRef<any>({ subscriberform : null });
@@ -28,7 +28,6 @@ const [permissions, setPermissions] = useState<any>([]);
 const [role, setRoles] = useState<string>();
 
 useEffect(() => {
-
     if (isOpen) { setErrors({}); }
     const storedPermissions = JSON.parse(localStorage.getItem('permissions') || '[]');
     const userrole = localStorage.getItem('role') || '';
@@ -42,13 +41,14 @@ const saveSubscriber = async (e: React.FormEvent) => {
         const formData = new FormData(combinedRef.current.subscriberform);
         try {
             const response = await apiClient.post(endpoints.createApi, formData);
-            if (response.status === 200 || response.status === 201){
+            if (response.status === 200 || response.status === 201){  
                 toast.success('Lead Create Successfully');
                 onClose();
                 setErrors({}); 
                 combinedRef.current.subscriberform.reset();
+                onSuccess();
             }else{
-                //   setErrors(response);
+                // setErrors(response);
                 return
             }
         } catch (error: any) { 

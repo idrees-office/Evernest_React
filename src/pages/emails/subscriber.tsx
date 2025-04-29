@@ -88,11 +88,11 @@ const SubscriberTemplate = () => {
                             sortable: true,
                             render: (record) => {
                                 switch (record.source) {
-                                    case 'active':
+                                    case 1:
                                         return <span className="badge bg-success">Subscriber</span>;
-                                    case 'inactive':
+                                    case 2:
                                         return <span className="badge bg-secondary">Inactive</span>;
-                                    case 'unsubscribed':
+                                    case 3:
                                         return <span className="badge bg-danger">Unsubscribed</span>;
                                     default:
                                         return <span className="badge bg-light">Unknown</span>;
@@ -105,7 +105,6 @@ const SubscriberTemplate = () => {
                             sortable: true,
                             render: (user) => (
                                 <div className="flex space-x-2">
-                                    {/* onClick={() => handleEdit(user.user)}  onClick={() => handleDelete(user.user)} */  }
                                     <button type="button"  className="btn px-1 py-0.5 rounded text-white bg-info">
                                         <IconPencil />
                                     </button>
@@ -119,7 +118,7 @@ const SubscriberTemplate = () => {
                     rows={tableData}
                 />
             </div>
-            <SubscriberModal isOpen={isSubscriberModal} onClose={() => setSubscriberModal(false)}  />
+            <SubscriberModal isOpen={isSubscriberModal} onClose={() => setSubscriberModal(false)}  onSuccess={getsubscriber} />
         </div>
     );
 };
