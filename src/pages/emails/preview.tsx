@@ -25,7 +25,7 @@ const PreviewTemplate = () => {
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [isSendNow, setIsSendNow] = useState(false);
     const [date, setDate] = useState<any>(null);
-    
+
     const togglePara = (value: string) => {
         setActive((oldValue) => {
             return oldValue === value ? '' : value;
@@ -51,6 +51,7 @@ const PreviewTemplate = () => {
                 setActive('1');
                 return
             }
+            
             try {
                 const response = await apiClient.post(endpoints.createApi, formData);
                 alert("Emails are being sent in the background!");
