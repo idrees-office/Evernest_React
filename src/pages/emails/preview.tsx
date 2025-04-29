@@ -24,7 +24,7 @@ const PreviewTemplate = () => {
     const combinedRef     = useRef<any>({ emailform : null });
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [isSendNow, setIsSendNow] = useState(false);
-    const [date, setDate] = useState<any>(null);
+    const [date, setDate] = useState<any>('');
 
     const togglePara = (value: string) => {
         setActive((oldValue) => {
@@ -41,8 +41,7 @@ const PreviewTemplate = () => {
         if (combinedRef.current.emailform) {
             const formData = new FormData(combinedRef.current.emailform);
             formData.append('htmlContent',generatePreview());
-            formData.append('sendto[]', 'idreesoffice9012@gmail.com');
-            formData.append('sendto[]', 'farhanalidxb1@gmail.com');
+            formData.append('schedule_at', date);
             if (formData.has('send_to_all')) {
                 // alert("✅ Sending to all subscribers");
             } else {
@@ -153,7 +152,9 @@ const PreviewTemplate = () => {
                                                         <hr />
                                                         <div className="mt-4">
                                                             <label htmlFor="slugmark" className="text-white-dark"> Date</label>
-                                                            <Flatpickr value={date}  name="date"  options={{ dateFormat: 'Y-m-d H:i', enableTime: true,}} className="form-input" onChange={(date) => setDate(date)}  disabled={isSendNow}  placeholder='Y-m-d H:i'/>
+                                                            <Flatpickr value={date}  name="date"  options={{ dateFormat: 'Y-m-d H:i', enableTime: true,}} className="form-input" 
+                                                            onChange={(date) => setDate(date)}  
+                                                            disabled={isSendNow}  placeholder='Y-m-d H:i'/>
                                                         </div>
                                                     </div>
                                                     <hr />
