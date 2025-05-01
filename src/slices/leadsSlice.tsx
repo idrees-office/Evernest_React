@@ -15,7 +15,7 @@ import apiClient from '../utils/apiClient';
     export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue }) => {
         try {
             const response = await apiClient.get(endpoints.listApi);
-            return {data: response.data.data, agents: response.data.agents};
+            return {data: response.data.data.data, agents: response.data.agents};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -42,7 +42,7 @@ import apiClient from '../utils/apiClient';
     export const reassigleads = createAsyncThunk('reassigleads', async (_, { rejectWithValue }) => {
         try {
             const response = await apiClient.get(endpoints.reAssignApi)
-            return {data: response.data.data, agents: response.data.agents};
+            return {data: response.data.data.data, agents: response.data.agents};
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
