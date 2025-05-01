@@ -74,10 +74,52 @@ const PreviewTemplate = () => {
         }
     };
 
-    const handleSendNowToggle = (e:any) => {
-        setIsSendNow(e.target.checked);
+    const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {  
+        const target = e.target;
+        const inputName = target.name;
+        if (errors[inputName]) {
+            setErrors((prevErrors: any) => ({
+                ...prevErrors,
+                [inputName]: ''
+            }));
+        }
     };
 
+    const handleSendNowToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+
+        if (isChecked) {
+            setDate('');
+        }
+
+        setErrors((prevErrors:any) => ({
+            ...prevErrors,
+            sendNow: '',
+            date: isChecked ? '' : prevErrors.date
+        }));
+        setIsSendNow(isChecked);
+        if (!isChecked && !date) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                date: ['Please select a date for scheduled sending']
+            }));
+            setActive('3'); 
+        }
+    };
+
+    const selectDate = (e: any) => {
+        const selectedDate = e[0]; 
+        setDate(selectedDate);
+        setErrors((prevErrors:any) => ({
+            ...prevErrors,
+            date: ''
+        }));
+
+        if (isSendNow) {
+            setIsSendNow(false);
+        }
+    }
+    
     return (
         <div>
             <div className="min-h-screen p-2 sm:p-4">
@@ -126,15 +168,19 @@ const PreviewTemplate = () => {
                                                         {errors.subject && <span className="text-red-500 text-sm">{errors.subject}</span>}
                                                     </div>
                                                     <div className="mb-3">
-                                                        <label htmlFor="email">Email </label>
-                                                        <input id="email" type="text" name="from_email" placeholder="evernestre@gmail.com" className="form-input" autoComplete="off" />
-                                                        {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+                                                        <label htmlFor="from_email">Email </label>
+                                                        <select id="from_email" name="from_email" className="form-select" defaultValue="" onChange={handleSelect}>
+                                                            <option value="" disabled>Select Email</option>
+                                                            <option value="evernestre@gmail.com">evernestre@gmail.com</option>
+                                                            <option value="info@evernestre.ae">info@evernestre.ae</option>
+                                                        </select>
+                                                        {errors.from_email && <span className="text-red-500 text-sm">{errors.from_email}</span>}
                                                     </div>
                                                 </div>
                                             </AnimateHeight>
                                         </div>
                                     </div>
-                                    <div className="border border-[#d3d3d3] dark:border-[#1b2e4b] rounded">
+                                    <div className={`border rounded ${errors.sendNow || errors.date ? 'border-red-400' : 'border-[#d3d3d3] dark:border-[#1b2e4b]'}`}>
                                         <button type="button" className={`p-4 w-full flex items-center text-white-dark dark:bg-[#1b2e4b] ${active === '3' ? '!text-primary' : ''}`}
                                             onClick={() => togglePara('3')}> Send Options
                                             <div className={`ltr:ml-auto rtl:mr-auto ${active === '3' ? 'rotate-180' : ''}`}>
@@ -149,12 +195,14 @@ const PreviewTemplate = () => {
                                                             <label htmlFor="sendNow" className="mr-2" style={{ cursor: 'pointer' }}><h1>Send Now</h1></label>
                                                             <input id="sendNow" type="checkbox" name="sendNow" className="form-checkbox" onChange={handleSendNowToggle} />
                                                         </div>
+                                                        {errors.sendNow && <span className="text-red-500 text-sm">{errors.sendNow}</span>}
                                                         <hr />
                                                         <div className="mt-4">
                                                             <label htmlFor="slugmark" className="text-white-dark"> Date</label>
                                                             <Flatpickr value={date}  name="date"  options={{ dateFormat: 'Y-m-d H:i', enableTime: true,}} className="form-input" 
-                                                            onChange={(date) => setDate(date)}  
-                                                            disabled={isSendNow}  placeholder='Y-m-d H:i'/>
+                                                            onChange={selectDate}  
+                                                            disabled={isSendNow}  placeholder='Y-m-d H:i' />
+                                                            {errors.date && <span className="text-red-500 text-sm">{errors.date}</span>}
                                                         </div>
                                                     </div>
                                                     <hr />
