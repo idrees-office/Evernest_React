@@ -12,14 +12,49 @@ import apiClient from '../utils/apiClient';
         assignLeadsApi   : 'leads/assign-multiple-lead'
     };
 
-    export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue }) => {
-        try {
-            const response = await apiClient.get(endpoints.listApi);
-            return {data: response.data.data.data, agents: response.data.agents};
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || error.message);
+    // export const newleads = createAsyncThunk('newleads', async (_, { rejectWithValue }) => {
+    //     try {
+    //         const response = await apiClient.get(endpoints.listApi);
+    //         return {
+    //             data: response.data.data.data, 
+    //             agents: response.data.agents, 
+    //             total: response.data.data.total,
+    //             last_page: response.data.data.last_page,
+    //             current_page: response.data.data.current_page
+    //         };
+    //     } catch (error: any) {
+    //         return rejectWithValue(error.response?.data || error.message);
+    //     }
+    // });
+
+    interface FetchLeadsParams {
+        page?: number;
+        perPage?: number;
+        sortField?: string;
+        sortOrder?: string;
+    }
+
+
+    export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
+            try {
+                const { page = 1, perPage = 10, sortField, sortOrder } = params;
+                const response = await apiClient.get(endpoints.listApi, {
+                    params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder }
+                });
+                return {
+                    data: response.data.data.data,
+                    agents: response.data.agents,
+                    total: response.data.data.total,
+                    last_page: response.data.data.last_page,
+                    current_page: response.data.data.current_page,
+                    per_page: response.data.data.per_page,
+                    
+                };
+            } catch (error: any) {
+                return rejectWithValue(error.response?.data || error.message);
+            }
         }
-    });
+    );
 
     export const assignleads = createAsyncThunk('assignleads', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
         try {
@@ -92,7 +127,12 @@ import apiClient from '../utils/apiClient';
         loading: false,
         message : '',
         status : 0,
-        agent_name : ''
+        agent_name : '',
+
+        total: 0,
+        last_page: 1,
+        current_page: 1,
+        per_page: null
     };
 
 const LeadsSlice = createSlice({
@@ -110,6 +150,11 @@ const LeadsSlice = createSlice({
             state.loading = false;
             state.leads   = action.payload.data;
             state.agents  = action.payload.agents;
+            state.total = action.payload.total;
+            state.last_page = action.payload.last_page;
+            state.current_page = action.payload.current_page;
+            state.per_page = action.payload.per_page;
+
         })
         .addCase(newleads.rejected, (state, action) => {
             state.loading = false;
