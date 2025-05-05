@@ -20,88 +20,55 @@ const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast = Toast();
-    
     const combinedRef = useRef<any>({ 
         fetched: false, 
         form: null,
         prevPage: 1,
         prevPerPage: 10,
-        prevSortStatus: { columnAccessor: 'id', direction: 'desc' },
-        searchTimeout: null
+        prevSortStatus: { columnAccessor: 'id', direction: 'desc' }
     });
-
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [effectiveSearchTerm, setEffectiveSearchTerm] = useState(''); 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
         direction: 'desc',
     });
-
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
-
+    
     const { leads, loading, agents, total, last_page } = useSelector((state: IRootState) => state.leadslices);
 
     useEffect(() => {
-        const shouldFetchInitial = !combinedRef.current.fetched;
-        const pageChanged = combinedRef.current.prevPage !== currentPage;
-        const perPageChanged = combinedRef.current.prevPerPage !== perPage;
-        const sortChanged = combinedRef.current.prevSortStatus.columnAccessor !== sortStatus.columnAccessor || 
-                            combinedRef.current.prevSortStatus.direction !== sortStatus.direction;
-    
-        if (shouldFetchInitial) {
-            dispatch(setPageTitle('New Leads'));
-            combinedRef.current.fetched = true;
-        }
-    
-        if (shouldFetchInitial || pageChanged || perPageChanged || sortChanged) {
-
-            if(searchTerm.length > 4) {
-
-            }
+        dispatch(setPageTitle('New Leads'));
+        const fetchData = () => {
             dispatch(newleads({ 
                 page: currentPage, 
                 perPage,
                 sortField: sortStatus.columnAccessor,
                 sortOrder: sortStatus.direction,
-                search: searchTerm 
+                search: effectiveSearchTerm  
             }));
-    
-            // Update refs with current values
-            combinedRef.current.prevPage = currentPage;
-            combinedRef.current.prevPerPage = perPage;
-            combinedRef.current.prevSortStatus = sortStatus;
-        }
-    }, [dispatch, currentPage, perPage, sortStatus]);
-
-    // Separate useEffect for search with debounce
-    useEffect(() => {
-        if (combinedRef.current.fetched) {
-            // Clear previous timeout
-            if (combinedRef.current.searchTimeout) {
-                clearTimeout(combinedRef.current.searchTimeout);
-            }
-            // Set new timeout
-            combinedRef.current.searchTimeout = setTimeout(() => {
-                dispatch(newleads({ 
-                    page: 1, 
-                    perPage,
-                    sortField: sortStatus.columnAccessor,
-                    sortOrder: sortStatus.direction,
-                    search: searchTerm 
-                }));
-                setCurrentPage(1);
-            }, 500);
-        }
-
-        return () => {
-            if (combinedRef.current.searchTimeout) {
-                clearTimeout(combinedRef.current.searchTimeout);
-            }
         };
+        if (!combinedRef.current.fetched) {
+            combinedRef.current.fetched = true;
+            fetchData();
+            return;
+        }
+        fetchData();
+
+        combinedRef.current.prevPage = currentPage;
+        combinedRef.current.prevPerPage = perPage;
+        combinedRef.current.prevSortStatus = sortStatus;
+    }, [dispatch, currentPage, perPage, sortStatus, effectiveSearchTerm]);
+
+    useEffect(() => {
+        if (searchTerm.length >= 3 || searchTerm.length === 0) {
+            setEffectiveSearchTerm(searchTerm);
+            setCurrentPage(1); 
+        }
     }, [searchTerm]);
 
     const transformedAgents = agents?.map(agent => ({
@@ -143,7 +110,6 @@ const Assign = () => {
         leadIds.forEach((id) => formData.append('lead_id[]', id));
         formData.append('agent_id', agentId.toString());
         formData.append('agent_phone', phone.toString());
-        
         try {
             const response = await dispatch(assignleads({ formData }) as any);
             if (response.payload.status === 200 || response.payload.status === 201){
@@ -162,7 +128,6 @@ const Assign = () => {
             toast.error('Please select at least one lead to remove');
             return;
         }
-        
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: `You are about to remove ${selectedRecords.length} selected lead(s). This action cannot be undone.`,
@@ -173,13 +138,11 @@ const Assign = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel',
         });
-
         if (result.isConfirmed) {
             try {
                 const leadIds = selectedRecords.map((record) => record.id);
                 const formData = new FormData();
                 leadIds.forEach((id) => formData.append('lead_id[]', id));
-                
                 const response = await dispatch(destoryLeads({ formData }) as any);
                 if (response.payload.status === 200 || response.payload.status === 201) {
                     toast.success('Lead removed successfully');
@@ -215,7 +178,7 @@ const Assign = () => {
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
-        
+        setCurrentPage(1); // Reset to first page when searching
     };
 
     const columns = [
@@ -224,12 +187,7 @@ const Assign = () => {
             title: 'Select', 
             sortable: false, 
             render: (record: any) => (
-                <input 
-                    type="checkbox"  
-                    className="form-checkbox" 
-                    checked={selectedRecords.some((selected) => selected.id === record.id)}
-                    onChange={(e) => handleCheckboxChange(record, e.target.checked)} 
-                />
+                <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.id === record.id)} onChange={(e) => handleCheckboxChange(record, e.target.checked)} />
             ),
         },
         { accessor: 'title', title: 'Title', sortable: true },
@@ -254,50 +212,26 @@ const Assign = () => {
         },
         { accessor: 'date', title: 'Date', sortable: true },
     ];
-
     return (
         <div>
             <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
                 <div className="flex items-center">
-                    <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
-                        <IconBell />
-                    </div>
+                    <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
                     <span className="ltr:mr-3 rtl:ml-3">Details of Your New Leads: </span>
-                    <button onClick={openLeadModal} className="btn btn-success btn-sm"> 
-                        <IconPlus /> Add Lead
-                    </button>
+                    <button onClick={openLeadModal} className="btn btn-success btn-sm"> <IconPlus /> Add Lead </button>
                 </div> 
                 <div className="flex items-center space-x-2">
-                    <Select 
-                        placeholder="Select an option" 
-                        options={transformedAgents} 
-                        isDisabled={disable} 
-                        className="cursor-pointer custom-multiselect z-10 w-[300px]" 
-                        onChange={(selectedOption) => { 
-                            if (selectedOption?.value !== undefined) {
-                                AssignLead(selectedOption.value, selectedOption.phone);
-                            }
-                        }}
-                    />
-                    <button 
-                        onClick={RemoveLead}  
-                        type="button" 
-                        className="btn btn-default btn-sm" 
-                        style={{ background: "#d33", color: '#fff' }} 
-                    > 
-                        <IconTrash/> 
-                    </button>
+                    <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" 
+                        onChange={(selectedOption) => {  if (selectedOption?.value !== undefined) { AssignLead(selectedOption.value, selectedOption.phone); } }} />
+                    <button onClick={RemoveLead} type="button" className="btn btn-default btn-sm" style={{ background: "#d33", color: '#fff' }}> <IconTrash/> </button>
                 </div>
             </div>
             <div className="datatables mt-6">
-                {loading ? ( 
-                    <Loader /> 
-                ) : tableData.length > 0 ? (
-                    <Table 
-                        title="New Leads" 
-                        columns={columns} 
-                        rows={tableData} 
-                        totalRecords={total || 0} 
+                {loading ?  (  <Loader />  ) : (
+                    <Table title="New Leads"  
+                        columns={columns}  
+                        rows={tableData}  
+                        totalRecords={total || 0}  
                         currentPage={currentPage} 
                         recordsPerPage={perPage} 
                         onPageChange={handlePageChange} 
@@ -307,11 +241,8 @@ const Assign = () => {
                         isLoading={loading}
                         onSearchChange={onSearchChange}
                         searchValue={searchTerm}
+                        noRecordsText="No records found matching your search criteria"
                     />
-                ) : (
-                    <div className="panel text-center text-primary-500 mt-4">
-                        <span className='badge bg-secondary'> Sorry, I am unable to retrieve data. Please check your API . </span>
-                    </div>
                 )}
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

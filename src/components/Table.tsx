@@ -132,6 +132,7 @@ interface TableProps {
   height?: string | number;
   minHeight?: string | number;
   searchValue?: string;
+  noRecordsText :string
 }
 
 const Table: React.FC<TableProps> = ({ 
@@ -149,6 +150,7 @@ const Table: React.FC<TableProps> = ({
   isLoading = false,
   height,
   minHeight = 200,
+  noRecordsText = 'No records found',
   searchValue = ''
 }) => {
   const PAGE_SIZES = [10, 20, 30, 50, 100];
@@ -190,6 +192,7 @@ const Table: React.FC<TableProps> = ({
           paginationText={({ from, to, totalRecords }) => `Showing ${from} to ${to} of ${totalRecords} entries`}
           fetching={isLoading}
           loaderVariant="dots"
+          noRecordsText={noRecordsText}
         />
       </div>
     </div>
