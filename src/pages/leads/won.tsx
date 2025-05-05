@@ -53,7 +53,7 @@ const WonLeads = () => {
           {/* use select input here if you want */}
         </div>
     </div>
-        <div className="datatables mt-6">
+        {/* <div className="datatables mt-6">
         { loading ? ( loader  )   :  tableData.length > 0 ? (
           <Table title="Re-Assign leads"
               columns={[
@@ -78,7 +78,7 @@ const WonLeads = () => {
                         <span className='badge bg-secondary'> Sorry, You don't have any closed deals yet. </span>
                 </div>
           )}
-        </div>
+        </div> */}
     </div>
     )
 }

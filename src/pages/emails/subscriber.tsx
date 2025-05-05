@@ -74,7 +74,7 @@ const SubscriberTemplate = () => {
                     <button className="btn btn-primary btn-sm" type="button" onClick={addContact}> Create Single </button>
                 </div>
             </div>
-            <div className="datatables mt-6">
+            {/* <div className="datatables mt-6">
                 <Table
                     title="List of all users:"
                     columns={[
@@ -117,7 +117,7 @@ const SubscriberTemplate = () => {
                     ]}
                     rows={tableData}
                 />
-            </div>
+            </div> */}
             <SubscriberModal isOpen={isSubscriberModal} onClose={() => setSubscriberModal(false)}  onSuccess={getsubscriber} />
         </div>
     );

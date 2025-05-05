@@ -237,7 +237,7 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                    <div className="datatables">
+                    {/* <div className="datatables">
                         <Table
                             title="Detail of the all users"
                             columns={[
@@ -263,7 +263,7 @@ const Users = () => {
                             ]}
                             rows={tableData}
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </form>

@@ -28,7 +28,7 @@ const Assign = () => {
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('New Leads'));
-            dispatch(newleads());
+            // dispatch(newleads());
             combinedRef.current.fetched = true;
         }
     }, [dispatch]); 
@@ -76,7 +76,7 @@ const Assign = () => {
         const response = await dispatch(assignleads({ formData }) as any);
         if (response.payload.status === 200 || response.payload.status === 201){
              toast.success('Leads Have Been Assigned Successfully');
-             dispatch(newleads());
+            //  dispatch(newleads());
              setSelectedRecords([]);
              setDisable(true);
         }
@@ -106,7 +106,7 @@ const Assign = () => {
                 if (response.payload.status === 200 || response.payload.status === 201) {
                     toast.success('Lead removed successfully');
                     setSelectedRecords([]);
-                    dispatch(newleads());
+                    // dispatch(newleads());
                     setDisable(true);
                 } else {
                     toast.error('Failed to remove leads. Please try again.');
@@ -132,7 +132,7 @@ const Assign = () => {
                 <button  onClick={() => { RemoveLead(); }} type="button"  className="btn btn-default btn-sm" style={{ background: "#d33", color : '#fff' }}><IconTrash/></button>
             </div>
         </div>
-        <div className="datatables mt-6">
+        {/* <div className="datatables mt-6">
         {loading ? ( loader  )   : (
          <Table title="New leads"
             columns={[
@@ -173,7 +173,7 @@ const Assign = () => {
               rows={tableData}
             />
             )}
-        </div>
+        </div> */}
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
     </div>
     )
