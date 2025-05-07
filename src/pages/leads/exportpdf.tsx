@@ -18,6 +18,7 @@ import '../dashboard/dashboard.css';
 import { DropdownOption } from '../../services/status';
 import { jsPDF } from 'jspdf';
 import "jspdf-autotable";
+import { DataTableSortStatus } from 'mantine-datatable';
 
 const ExportPdf = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -25,29 +26,44 @@ const ExportPdf = () => {
     const toast    = Toast();
     const loader   = Loader();
     const dropdownOption  = DropdownOption();
-    const combinedRef = useRef<any>({ fetched: false, form: null});
+    const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'id', direction: 'desc' } });
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'desc', });
+    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
-    useEffect(() => {
-        if (!combinedRef.current.fetched) {
-            dispatch(setPageTitle('Re-Assign Leads'));
-            dispatch(allLeads());
-            combinedRef.current.fetched = true;
-        }
-    }, [dispatch]); 
-    const { leads, loading, agents }  =  useSelector((state: IRootState) => state.leadslices);
-
+      useEffect(() => {
+          dispatch(setPageTitle('All Leads'));
+          const fetchData = () => {
+              dispatch(allLeads({ 
+                  page: current_page, 
+                  perPage: per_page,
+                  sortField: sortStatus.columnAccessor,
+                  sortOrder: sortStatus.direction,
+                  search: searchTerm
+              }));
+          };
+          if (!combinedRef.current.fetched) {
+              combinedRef.current.fetched = true;
+              fetchData();
+              return;
+          }
+          fetchData();
+  
+          combinedRef.current.prevPage = current_page;
+          combinedRef.current.prevPerPage = per_page;
+          combinedRef.current.prevSortStatus = sortStatus;
+      }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
+  
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
+        phone: agent?.client_user_phone,
     }));
-
-    
 
     const openLeadModal = () => {
         setIsModalOpen(true);
@@ -82,7 +98,13 @@ const ExportPdf = () => {
         formData.append('agent_id', selectedAgent.toString());
         const response = await dispatch(download({ formData }) as any);
         if (response.payload.status === 200 || response.payload.status === 201){
-            dispatch(allLeads());
+            dispatch(allLeads({ 
+              page: current_page, 
+              perPage: per_page,
+              sortField: sortStatus.columnAccessor,
+              sortOrder: sortStatus.direction,
+              search: searchTerm  
+          }));
             const doc = new jsPDF();
             doc.setFontSize(16);
             const leadStatusLabel = getLeadStatusLabel(selectedStatus);
@@ -130,30 +152,81 @@ const ExportPdf = () => {
         const status = dropdownOption.find(option => option.value === leadStatus);
         return status ? status.label : 'Unknown Status';
       }
+      
+    const tableData = (Array.isArray(leads) ? leads : []).map((lead: any) => ({
+      id: lead.lead_id || 'Unknown',
+      title: lead.lead_title || 'Unknown',
+      name: lead.customer_name || 'Unknown',
+      phone: lead.customer_phone || 'Unknown',
+      source: lead.lead_source || 'Unknown',
+      date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
+   }));
 
-    const tableData = (Array.isArray(leads) ? leads : []).map((lead: any, index: number) => {
-        const createdAt = lead?.created_at;
-        const formattedDate = createdAt && !isNaN(new Date(createdAt).getTime())
-            ? new Intl.DateTimeFormat('en-US', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-              }).format(new Date(createdAt))
-            : 'Invalid Date'; // Default if invalid date
-        
-        return {
-            id      : lead.lead_id || 'Unknown',
-            title   : lead?.lead_title || 'Unknown',
-            name    : lead?.customer_name || 'Unknown',
-            phone   : lead?.customer_phone || 'Unknown',
-            source  : lead?.lead_source || 'Unknown',
-            date    : formattedDate,
-        };
-    });
-    
+    const handlePageChange = (page: number) => {
+           dispatch(allLeads({ 
+               page,
+               sortField: sortStatus.columnAccessor,
+               sortOrder: sortStatus.direction,
+               search: searchTerm  
+           }));
+           setSelectedRecords([]);
+           setDisable(true);
+      };
+      const handlePerPageChange = (pageSize: number) => {
+           dispatch(allLeads({ 
+               perPage: pageSize,
+               sortField: sortStatus.columnAccessor,
+               sortOrder: sortStatus.direction,
+               search: searchTerm  
+           }));
+           setSelectedRecords([]);
+           setDisable(true);
+       };
+   
+       const handleSortChange = (status: DataTableSortStatus) => {
+           setSortStatus(status);
+           dispatch(allLeads({ 
+               sortField: status.columnAccessor,
+               sortOrder: status.direction,
+               search: searchTerm  
+           }));
+       };
+   
+       const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+           setSearchTerm(e.target.value);
+       };
+       
+     const columns = [
+        { 
+            accessor: 'id', 
+            title: 'Select', 
+            sortable: false, 
+            render: (record: any) => (
+                <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.id === record.id)} onChange={(e) => handleCheckboxChange(record, e.target.checked)} />
+            ),
+        },
+        { accessor: 'title', title: 'Title', sortable: true },
+        { accessor: 'name', title: 'Name', sortable: true },
+        { accessor: 'phone', title: 'Phone', sortable: true },
+        { 
+            accessor: 'source', 
+            title: 'Source', 
+            sortable: true,
+            render: (record: any) => {
+                switch (record.source) {
+                    case 'Facebook': return <span className="badge bg-info">Facebook</span>;
+                    case 'Instagram': return <span className="badge bg-secondary">Instagram</span>;
+                    case 'created own': return <span className="badge bg-success">Created own</span>;
+                    case 'Website': return <span className="badge bg-warning">Website</span>;
+                    case 'Reshuffle': return <span className="badge bg-primary">Reshuffle</span>;
+                    case 'Walk-in': return <span className="badge bg-danger">Walk-in</span>;
+                    case 'Other': return <span className="badge bg-secondary">Other</span>;
+                    default: return <span className="badge bg-secondary">Unknown</span>;
+                }
+            },
+        },
+        { accessor: 'date', title: 'Date', sortable: true },
+    ];
 
     return (
     <div>
@@ -161,8 +234,6 @@ const ExportPdf = () => {
         <div className="flex items-center">
             <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
             <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Pdf Reports. </span>
-            {/* <span className="ltr:mr-3 rtl:ml-3">Export-pdf Agents-wise:</span> <button onClick={openLeadModal} className="btn btn-primary btn-sm"> <IconPlus /> Add Lead
-            </button> */}
         </div> 
         <div className="flex items-center space-x-2">
         <div className="w-[300px]">
@@ -170,47 +241,26 @@ const ExportPdf = () => {
             onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
         </div>
         <Select placeholder="Move Lead...." options={dropdownOption} onChange={(selectedOption) => SelectStatus(selectedOption)} name="lead_status"  className="cursor-pointer custom-multiselect z-10 w-[300px]"/>        
-        <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus />Download </button>
+        <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus /> Download </button>
     </div>
     </div>
-        <div className="datatables mt-6">
-        {loading ? ( loader  )   :  tableData.length > 0 ?  (
-         <Table title="Export-pdf Agents-wise"
-            columns={[
-                    { accessor: 'title', title: 'Title', sortable: true },
-                    { accessor: 'name',  title: 'Name', sortable: true },
-                    { accessor: 'phone',  title: 'Phone', sortable: true },
-                    { accessor: 'source', title: 'Source', sortable: true,
-                        render: (record) => (
-                            record.source === 'Facebook' ? ( 
-                                <span className="badge bg-info">Facebook</span>
-                            ): record.source === 'Instagram' ? (
-                                <span className="badge bg-secondary">Instagram</span>
-                            ) : record.source === 'created own' ? (
-                                <span className="badge bg-success">Created own</span>
-                            ) : record.source === 'Website' ? (
-                                <span className="badge bg-warning">Website</span>
-                            ) : record.source === 'Reshuffle' ? (
-                                <span className="badge bg-primary">Reshuffle</span>
-                            ) : record.source === 'Walk-in' ? (
-                                <span className="badge bg-danger">Walk-in</span>
-                            ) : record.source === 'Other' ? (
-                                <span className="badge bg-secondary">Other</span>
-                            ) : (
-                                <span className="badge bg-secondary">Unknown</span>
-                            )
-                        ),
-                      },
-                      { accessor: 'date',  title: 'Date', sortable: true },
-                ]} 
-              rows={tableData}
-            />
-            ) : (
-              <div className="panel text-center text-primary-500 mt-4">
-                <span className='badge bg-secondary'> Sorry, I am unable to retrieve data. Please check your API . </span>
-              </div>
-          )}
-        </div>
+       <div className="datatables mt-6"> 
+              <Table title="All Leads"  
+                  columns={columns}  
+                  rows={tableData}  
+                  totalRecords={total || 0}  
+                  currentPage={current_page} 
+                  recordsPerPage={per_page} 
+                  onPageChange={handlePageChange} 
+                  onRecordsPerPageChange={handlePerPageChange} 
+                  onSortChange={handleSortChange} 
+                  sortStatus={sortStatus} 
+                  isLoading={loading}
+                  onSearchChange={onSearchChange}
+                  searchValue={searchTerm}
+                  noRecordsText="No records found matching your search criteria"
+              />
+            </div>
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
     </div>
     )

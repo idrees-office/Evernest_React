@@ -4,13 +4,13 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import Swal from 'sweetalert2';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
-import Table from '../../components/Table';
+import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import Loader from '../../services/loader';
 import { options } from '../../services/status';
 import Select from 'react-select';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
-import Error404 from '../errors/error404';
+import Table from '../../components/Table';
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
@@ -18,36 +18,34 @@ const endpoints = {
     listApi: `${getBaseUrl()}/users/user_list`,
     destoryApi: `${getBaseUrl()}/users/delete_user`,
     updateApi: `${getBaseUrl()}/users/update_user`,
-
 };
 
 const Users = () => {
     const dispatch = useDispatch();
     const loader = Loader();
     const combinedRef = useRef<any>({ userformRef: null });
-    const [users, usersList] = useState([]);
+    const [users, setUsers] = useState([]);
     const [status, setStatus] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [urole, setRoles] = useState<any | null>(null); 
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
     const requestMade = useRef(false);
 
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'client_user_id', direction: 'asc' });
+    const [searchQuery, setSearchQuery] = useState('');
+
     useEffect(() => {
         if (!requestMade.current) {
             dispatch(setPageTitle('Create User'));
             fetchRoles();
-            fetchUserLists();
             requestMade.current = true;
         }
-    }, [dispatch]);
-
-    const tableData = (Array.isArray(users) ? users : []).map((user: any, index: number) => ({
-        id : user.client_user_id,
-        client_user_name: user.client_user_name,
-        client_user_email: user.client_user_email,
-        client_role: user.roles[0]?.name,
-        user: user,
-    }));
+        fetchUserLists();
+    }, [dispatch, page, pageSize, sortStatus, searchQuery]);
 
     const fetchRoles = async () => {
         try {
@@ -63,15 +61,23 @@ const Users = () => {
             if (error.response?.status === 403) {
                 window.location.href = '/error';
             }
-            showServerError();
+            // showServerError();
         }
     };
 
     const fetchUserLists = async () => {
         try {
-            const response = await apiClient.get(endpoints.listApi);
+            const params = {
+                page,
+                per_page: pageSize,
+                sort_field: sortStatus.columnAccessor,
+                sort_order: sortStatus.direction,
+                search: searchQuery
+            };
+            const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                usersList(response.data);
+                setUsers(response.data.data || []); 
+                setTotalRecords(response.data.total || 0); 
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -87,12 +93,17 @@ const Users = () => {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
                 const userId = formData.get('client_user_id');
-                const response = userId ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)  : await apiClient.post(endpoints.createApi, formData);
+                const response = userId 
+                    ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)  
+                    : await apiClient.post(endpoints.createApi, formData);
+                
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
                     setErrors({});
                     combinedRef.current.userformRef.reset();
+                    setSelectedRole(null);
+                    setStatus(null);
                 }
             }
         } catch (error: any) {
@@ -137,6 +148,7 @@ const Users = () => {
             form.client_user_designation.value = user.client_user_designation || '';
             form.client_sort_order.value = user.client_sort_order || '';
             setStatus(user.client_user_status || '');
+            
             const userrole = user.roles && user.roles[0];
             if (userrole) {
                 const selectedRole = {
@@ -147,9 +159,9 @@ const Users = () => {
             } else {
                 setSelectedRole(null); 
             }
-
         }
     };
+
     const handleDelete = async (user: any) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -159,6 +171,7 @@ const Users = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
+        
         if (result.isConfirmed) {
             try {
                 const response = await apiClient.delete(endpoints.destoryApi + `/${user.client_user_id}`);
@@ -174,9 +187,84 @@ const Users = () => {
             }
         }
     };
+
     const handleRoleChange = (selectedOption: any) => {
         setSelectedRole(selectedOption); 
     };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setPage(1); // Reset to first page when searching
+    };
+
+    const columns = [
+        // { 
+        //     accessor: 'id', 
+        //     title: '#', 
+        //     sortable: true,
+        //     width: 80,
+        //      key: 'id'
+        // },
+
+        {
+            accessor: 'id',
+            title: '#',
+            sortable: false,
+            width: 80,
+            key: 'id',
+            render: (_: any, index: number) => (
+                <span>{(page - 1) * pageSize + index + 1}</span>
+            ),
+        },
+
+        { 
+            accessor: 'client_user_name', 
+            title: 'Name', 
+            sortable: true, 
+            key : 'name'
+        },
+        { 
+            accessor: 'client_user_email', 
+            title: 'Email', 
+            sortable: true,
+            key : 'email' 
+        },
+        { 
+            accessor: 'roles', 
+            title: 'Role', 
+            sortable: true,
+            key: 'role',
+            render: (item: any) => (
+                <span>{item.roles[0]?.name || 'N/A'}</span>
+            )
+        },
+        {
+            accessor: 'actions',
+            title: 'Actions',
+            width: 120,
+            key: 'actions', 
+            render: (item: any) => (
+                <div className="flex space-x-2">
+                    <button 
+                        type="button" 
+                        onClick={() => handleEdit(item)} 
+                        className="btn px-1 py-0.5 rounded text-white bg-info"
+                        key="edit"
+                    >
+                        <IconPencil />
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => handleDelete(item)} 
+                        className="btn px-1 py-0.5 rounded text-white bg-red-600"
+                        key="delete"
+                    >
+                        <IconTrashLines />
+                    </button>
+                </div>
+            ),
+        },
+    ];
 
     return (
         <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={handleSubmit} className="space-y-5">
@@ -187,46 +275,89 @@ const Users = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
-                                    <input name="client_user_name" type="text" placeholder="Username" className="form-input" />
+                                    <input 
+                                        name="client_user_name" 
+                                        type="text" 
+                                        placeholder="Username" 
+                                        className="form-input" 
+                                    />
                                     <input type="hidden" name="client_user_id" id="client_user_id" />
-                                    {errors.client_user_name && <span className="text-red-500 text-sm">{errors.client_user_name}</span>}
+                                    {errors.client_user_name && ( <span key="name-error" className="text-red-500 text-sm"> {errors.client_user_name} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_phone">Phone</label>
-                                    <input name="client_user_phone" type="tel" placeholder="Phone" className="form-input" />
-                                    {errors.client_user_phone && <span className="text-red-500 text-sm">{errors.client_user_phone}</span>}
+                                    <input 
+                                        name="client_user_phone" 
+                                        type="tel" 
+                                        placeholder="Phone" 
+                                        className="form-input" 
+                                    />
+
+                                    {errors.client_user_phone && ( <span key="phone-error" className="text-red-500 text-sm"> {errors.client_user_phone} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_designation">Designation</label>
-                                    <input name="client_user_designation" type="text" placeholder="Designation" className="form-input" />
-                                    {errors.client_user_designation && <span className="text-red-500 text-sm">{errors.client_user_designation}</span>}
+                                    <input 
+                                        name="client_user_designation" 
+                                        type="text" 
+                                        placeholder="Designation" 
+                                        className="form-input" 
+                                    />
+                                    {errors.client_user_designation && ( <span key="designation-error" className="text-red-500 text-sm"> {errors.client_user_designation} </span> )}
+                                   
                                 </div>
-
                                 <div className="form-group">
                                     <label htmlFor="client_user_email">Email</label>
-                                    <input name="client_user_email" type="email" placeholder="Email" className="form-input" />
-                                    {errors.client_user_email && <span className="text-red-500 text-sm">{errors.client_user_email}</span>}
+                                    <input 
+                                        name="client_user_email" 
+                                        type="email" 
+                                        placeholder="Email" 
+                                        className="form-input" 
+                                    />
+                                     {errors.client_user_email && ( <span key="email-error" className="text-red-500 text-sm"> {errors.client_user_email} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="password">Password</label>
-                                    <input name="password" type="password" placeholder="Password" className="form-input" />
-                                    {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
+                                    <input 
+                                        name="password" 
+                                        type="password" 
+                                        placeholder="Password" 
+                                        className="form-input" 
+                                    />
+                                    {errors.password && ( <span key="password-error" className="text-red-500 text-sm"> {errors.password} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_status">Status</label>
-                                    <Select name="client_user_status" placeholder="Select an option" options={options} value={options.find((option) => option.value === status)} />
-                                    {errors.client_user_status && <span className="text-red-500 text-sm">{errors.client_user_status}</span>}
+                                    <Select 
+                                        name="client_user_status" 
+                                        placeholder="Select an option" 
+                                        options={options} 
+                                        value={options.find((option) => option.value === status)} 
+                                        onChange={(selected) => setStatus(selected?.value || null)}
+                                    />
+                                     {errors.client_user_status && ( <span key="status-error" className="text-red-500 text-sm"> {errors.client_user_status} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_sort_order">Sort Order</label>
-                                    <input name="client_sort_order" type="text" placeholder="Sort Order" className="form-input" />
-                                    {errors.client_sort_order && <span className="text-red-500 text-sm">{errors.client_sort_order}</span>}
+                                    <input 
+                                        name="client_sort_order" 
+                                        type="text" 
+                                        placeholder="Sort Order" 
+                                        className="form-input" 
+                                    />
+                                    {errors.client_sort_order && ( <span key="sortorder-error" className="text-red-500 text-sm"> {errors.client_sort_order} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
-                                    <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole} onChange={handleRoleChange}/>
+                                    <Select 
+                                        name="role_id" 
+                                        placeholder="Select an option" 
+                                        options={urole || []} 
+                                        value={selectedRole} 
+                                        onChange={handleRoleChange}
+                                    />
+                                    {errors.role_id && ( <span key="roleId-error" className="text-red-500 text-sm"> {errors.role_id} </span> )}
                                 </div>
-                                {errors.role_id && <span className="text-red-500 text-sm">{errors.role_id}</span>}
                                 <div className="sm:col-span-2 flex justify-end">
                                     <button type="submit" className="btn btn-primary">
                                         Submit
@@ -237,33 +368,30 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                    <div className="datatables">
-                        <Table
-                            title="Detail of the all users"
-                            columns={[
-                                { accessor: 'id', title: '#', sortable: true },
-                                { accessor: 'client_user_name', title: 'Name', sortable: true },
-                                { accessor: 'client_user_email', title: 'Email', sortable: true },
-                                { accessor: 'client_role', title: 'Role', sortable: true },
-                                {
-                                    accessor: 'action',
-                                    title: 'Action',
-                                    sortable: true,
-                                    render: (user) => (
-                                        <div className="flex space-x-2">
-                                            <button type="button" onClick={() => handleEdit(user.user)} className="btn px-1 py-0.5 rounded text-white bg-info">
-                                                <IconPencil />
-                                            </button>
-                                            <button type="button" onClick={() => handleDelete(user.user)} className="btn px-1 py-0.5 rounded text-white" style={{ background: '#d33', color: '#fff' }}>
-                                                <IconTrashLines />
-                                            </button>
-                                        </div>
-                                    ),
-                                },
-                            ]}
-                            rows={tableData}
-                        />
-                    </div>
+                    {/* <div className="panel"> */}
+                        <div className="datatables">
+                            <Table
+                                columns={columns}
+                                rows={users}
+                                title="Detail of the all users"
+                                totalRecords={totalRecords}
+                                currentPage={page}
+                                recordsPerPage={pageSize}
+                                onPageChange={(p) => setPage(p)}
+                                onRecordsPerPageChange={(size) => {
+                                    setPageSize(size);
+                                    setPage(1); // Reset page when changing size
+                                }}
+                                onSortChange={setSortStatus}
+                                onSearchChange={handleSearchChange}
+                                sortStatus={sortStatus}
+                                isLoading={false} // or true if you're adding loading state
+                                minHeight={200}
+                                noRecordsText="No users found"
+                                searchValue={searchQuery}
+                            />
+                        </div>
+                    {/* </div> */}
                 </div>
             </div>
         </form>
