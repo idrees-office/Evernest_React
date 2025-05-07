@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
     amenitiesdata: AmenitiesSlice,
     dashboardslice :  DashboardSlice,
     leadslices :  LeadSlice,
-    teamlices :  TeamSlice,
+    teamslices :  TeamSlice,
     
 });
 

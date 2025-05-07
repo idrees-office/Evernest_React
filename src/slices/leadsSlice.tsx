@@ -18,7 +18,6 @@ import apiClient from '../utils/apiClient';
         sortField?: string;
         sortOrder?: string;
         search? : string;
-        cityname?: string;
     }
 
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
@@ -79,10 +78,20 @@ import apiClient from '../utils/apiClient';
         }
     });
 
-    export const closeleads = createAsyncThunk('closeleads', async (_, { rejectWithValue }) => {
+    export const closeleads = createAsyncThunk('closeleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
-            const response = await apiClient.get(endpoints.closeLeadsApi)
-            return {data: response.data.data, agents: response.data.agents};
+            const { page = 1, perPage = 10, sortField, sortOrder, search } = params;
+            const response = await apiClient.get(endpoints.closeLeadsApi, {
+                params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+            });
+            return {
+                data: response.data.data,
+                agents: response.data.agents || [],
+                total: response.data.total,
+                last_page: response.data.last_page,
+                current_page: response.data.current_page,
+                per_page: response.data.per_page, 
+            };
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -116,36 +125,24 @@ import apiClient from '../utils/apiClient';
         }
     });
 
-
-    
     export const roadshowleads = createAsyncThunk('roadshowleads', async (params: FetchLeadsParams & { cityname?: string }, { rejectWithValue }) => {
-            try {
-                const { page = 1, perPage = 10, sortField, sortOrder, search, cityname } = params;
-                const response = await apiClient.get(`${endpoints.roadshowLeadApi}/${cityname}`, {
-                    params: { 
-                        page, 
-                        per_page: perPage, 
-                        sort_field: sortField, 
-                        sort_order: sortOrder, 
-                        search: search 
-                    },
-                });
-                return {
-                    data: response.data.data,
-                    agents: response.data.agents,
-                    total: response.data.data.total,
-                    last_page: response.data.data.last_page,
-                    current_page: response.data.data.current_page,
-                    per_page: response.data.data.per_page,
-                };
-            } catch (error: any) {
-                return rejectWithValue(error.response?.data || error.message);
-            }
+        try {
+            const { page = 1, perPage = 10, sortField, sortOrder, search, cityname } = params;
+            const endpoint = cityname ? `${endpoints.roadshowLeadApi}/${cityname}` : endpoints.roadshowLeadApi;
+            const response = await apiClient.get(endpoint, {
+                params: {  page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search  },
+            });
+            return {
+                data: response.data.data,
+                total: response.data.data.total,
+                last_page: response.data.data.last_page,
+                current_page: response.data.data.current_page,
+                per_page: response.data.data.per_page,
+            };
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
         }
-    );
-
-
-   
+    });
 
     const initialState = {
         leads: [] as { lead_id: number }[],
@@ -174,10 +171,10 @@ const LeadsSlice = createSlice({
             state.loading = true;
         })
         .addCase(newleads.fulfilled, (state, action) => {
-            state.loading = false;
-            state.leads   = action.payload.data;
-            state.agents  = action.payload.agents;
-            state.total   = action.payload.total;
+            state.loading   = false;
+            state.leads        = action.payload.data;
+            state.agents       = action.payload.agents;
+            state.total        = action.payload.total;
             state.last_page    = action.payload.last_page;
             state.current_page = action.payload.current_page;
             state.per_page     = action.payload.per_page;
@@ -200,7 +197,6 @@ const LeadsSlice = createSlice({
             state.loading = false;
             state.leads   = action.payload.data;
             state.agents  = action.payload.agents;
-
             state.total   = action.payload.total;
             state.last_page    = action.payload.last_page;
             state.current_page = action.payload.current_page;
@@ -210,9 +206,13 @@ const LeadsSlice = createSlice({
         }).addCase(closeleads.pending, (state) => {
             state.loading = true;
         }).addCase(closeleads.fulfilled, (state, action) => {
+
             state.loading = false;
             state.leads   = action.payload.data;
-
+            state.total   = action.payload.total;
+            state.last_page    = action.payload.last_page;
+            state.current_page = action.payload.current_page;
+            state.per_page     = action.payload.per_page;
         }).addCase(allLeads.pending, (state, action) => {
             state.loading = true;
         })
@@ -238,7 +238,11 @@ const LeadsSlice = createSlice({
         })
         .addCase(roadshowleads.fulfilled, (state, action) => {
             state.loading = false;
-            state.leads   = action.payload.data;
+            state.leads = action.payload.data;
+            state.total = action.payload.total;
+            state.last_page = action.payload.last_page;
+            state.current_page = action.payload.current_page; // Make sure this is set
+            state.per_page = action.payload.per_page;
         })
         .addCase(assignleads.pending, (state) => {
             state.loading = true;

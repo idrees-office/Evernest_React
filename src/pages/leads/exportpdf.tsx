@@ -33,21 +33,18 @@ const ExportPdf = () => {
     const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [effectiveSearchTerm, setEffectiveSearchTerm] = useState(''); 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'id', direction: 'desc', });
-    const { leads, loading, agents, total, last_page } = useSelector((state: IRootState) => state.leadslices);
+    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
       useEffect(() => {
           dispatch(setPageTitle('All Leads'));
           const fetchData = () => {
               dispatch(allLeads({ 
-                  page: currentPage, 
-                  perPage,
+                  page: current_page, 
+                  perPage: per_page,
                   sortField: sortStatus.columnAccessor,
                   sortOrder: sortStatus.direction,
-                  search: effectiveSearchTerm  
+                  search: searchTerm
               }));
           };
           if (!combinedRef.current.fetched) {
@@ -57,18 +54,11 @@ const ExportPdf = () => {
           }
           fetchData();
   
-          combinedRef.current.prevPage = currentPage;
-          combinedRef.current.prevPerPage = perPage;
+          combinedRef.current.prevPage = current_page;
+          combinedRef.current.prevPerPage = per_page;
           combinedRef.current.prevSortStatus = sortStatus;
-      }, [dispatch, currentPage, perPage, sortStatus, effectiveSearchTerm]);
-
-      useEffect(() => {
-          if (searchTerm.length >= 3 || searchTerm.length === 0) {
-              setEffectiveSearchTerm(searchTerm);
-              setCurrentPage(1); 
-          }
-      }, [searchTerm]);
-        
+      }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
+  
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
@@ -109,11 +99,11 @@ const ExportPdf = () => {
         const response = await dispatch(download({ formData }) as any);
         if (response.payload.status === 200 || response.payload.status === 201){
             dispatch(allLeads({ 
-              page: currentPage, 
-              perPage,
+              page: current_page, 
+              perPage: per_page,
               sortField: sortStatus.columnAccessor,
               sortOrder: sortStatus.direction,
-              search: effectiveSearchTerm  
+              search: searchTerm  
           }));
             const doc = new jsPDF();
             doc.setFontSize(16);
@@ -172,30 +162,41 @@ const ExportPdf = () => {
       date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
    }));
 
-   const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        setSelectedRecords([]);
-        setDisable(true);
-    };
-
-    const handlePerPageChange = (pageSize: number) => {
-        setPerPage(pageSize);
-        setCurrentPage(1);
-        setSelectedRecords([]);
-        setDisable(true);
-    };
-
-    const handleSortChange = (status: DataTableSortStatus) => {
-        setSortStatus(status);
-        setCurrentPage(1);
-    };
-
-    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-        setCurrentPage(1); 
-    };
-
-   const columns = [
+    const handlePageChange = (page: number) => {
+           dispatch(allLeads({ 
+               page,
+               sortField: sortStatus.columnAccessor,
+               sortOrder: sortStatus.direction,
+               search: searchTerm  
+           }));
+           setSelectedRecords([]);
+           setDisable(true);
+      };
+      const handlePerPageChange = (pageSize: number) => {
+           dispatch(allLeads({ 
+               perPage: pageSize,
+               sortField: sortStatus.columnAccessor,
+               sortOrder: sortStatus.direction,
+               search: searchTerm  
+           }));
+           setSelectedRecords([]);
+           setDisable(true);
+       };
+   
+       const handleSortChange = (status: DataTableSortStatus) => {
+           setSortStatus(status);
+           dispatch(allLeads({ 
+               sortField: status.columnAccessor,
+               sortOrder: status.direction,
+               search: searchTerm  
+           }));
+       };
+   
+       const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+           setSearchTerm(e.target.value);
+       };
+       
+     const columns = [
         { 
             accessor: 'id', 
             title: 'Select', 
@@ -233,8 +234,6 @@ const ExportPdf = () => {
         <div className="flex items-center">
             <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
             <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Pdf Reports. </span>
-            {/* <span className="ltr:mr-3 rtl:ml-3">Export-pdf Agents-wise:</span> <button onClick={openLeadModal} className="btn btn-primary btn-sm"> <IconPlus /> Add Lead
-            </button> */}
         </div> 
         <div className="flex items-center space-x-2">
         <div className="w-[300px]">
@@ -245,24 +244,22 @@ const ExportPdf = () => {
         <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus /> Download </button>
     </div>
     </div>
-       <div className="datatables mt-6">
-                {loading ?  (  <Loader />  ) : (
-                    <Table title="All Leads"  
-                        columns={columns}  
-                        rows={tableData}  
-                        totalRecords={total || 0}  
-                        currentPage={currentPage} 
-                        recordsPerPage={perPage} 
-                        onPageChange={handlePageChange} 
-                        onRecordsPerPageChange={handlePerPageChange} 
-                        onSortChange={handleSortChange} 
-                        sortStatus={sortStatus} 
-                        isLoading={loading}
-                        onSearchChange={onSearchChange}
-                        searchValue={searchTerm}
-                        noRecordsText="No records found matching your search criteria"
-                    />
-                )}
+       <div className="datatables mt-6"> 
+              <Table title="All Leads"  
+                  columns={columns}  
+                  rows={tableData}  
+                  totalRecords={total || 0}  
+                  currentPage={current_page} 
+                  recordsPerPage={per_page} 
+                  onPageChange={handlePageChange} 
+                  onRecordsPerPageChange={handlePerPageChange} 
+                  onSortChange={handleSortChange} 
+                  sortStatus={sortStatus} 
+                  isLoading={loading}
+                  onSearchChange={onSearchChange}
+                  searchValue={searchTerm}
+                  noRecordsText="No records found matching your search criteria"
+              />
             </div>
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
     </div>

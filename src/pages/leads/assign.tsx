@@ -5,9 +5,7 @@ import Table from '../../components/Table';
 import IconBell from '../../components/Icon/IconBell';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconTrash from '../../components/Icon/IconTrash';
-import { useNavigate } from 'react-router-dom';
 import Toast from '../../services/toast';
-import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import { newleads, destoryLeads, assignleads } from '../../slices/leadsSlice';
 import Select from 'react-select';
@@ -18,58 +16,26 @@ import { DataTableSortStatus } from 'mantine-datatable';
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
     const toast = Toast();
-    const combinedRef = useRef<any>({ 
-        fetched: false, 
-        form: null,
-        prevPage: 1,
-        prevPerPage: 10,
-        prevSortStatus: { columnAccessor: 'id', direction: 'desc' }
-    });
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [effectiveSearchTerm, setEffectiveSearchTerm] = useState(''); 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
         direction: 'desc',
     });
     
-    const { leads, loading, agents, total, last_page } = useSelector((state: IRootState) => state.leadslices);
+    const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
     useEffect(() => {
         dispatch(setPageTitle('New Leads'));
-        const fetchData = () => {
-            dispatch(newleads({ 
-                page: currentPage, 
-                perPage,
-                sortField: sortStatus.columnAccessor,
-                sortOrder: sortStatus.direction,
-                search: effectiveSearchTerm  
-            }));
-        };
-        if (!combinedRef.current.fetched) {
-            combinedRef.current.fetched = true;
-            fetchData();
-            return;
-        }
-        fetchData();
-
-        combinedRef.current.prevPage = currentPage;
-        combinedRef.current.prevPerPage = perPage;
-        combinedRef.current.prevSortStatus = sortStatus;
-    }, [dispatch, currentPage, perPage, sortStatus, effectiveSearchTerm]);
-
-    useEffect(() => {
-        if (searchTerm.length >= 3 || searchTerm.length === 0) {
-            setEffectiveSearchTerm(searchTerm);
-            setCurrentPage(1); 
-        }
-    }, [searchTerm]);
+        dispatch(newleads({ 
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm  
+        }));
+    }, [dispatch, sortStatus, searchTerm]);
 
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
@@ -114,7 +80,6 @@ const Assign = () => {
             const response = await dispatch(assignleads({ formData }) as any);
             if (response.payload.status === 200 || response.payload.status === 201){
                 toast.success('Leads Have Been Assigned Successfully');
-                setCurrentPage(1);
                 setSelectedRecords([]);
                 setDisable(true);
             }
@@ -147,7 +112,6 @@ const Assign = () => {
                 if (response.payload.status === 200 || response.payload.status === 201) {
                     toast.success('Lead removed successfully');
                     setSelectedRecords([]);
-                    setCurrentPage(1);
                     setDisable(true);
                 } else {
                     toast.error('Failed to remove leads. Please try again.');
@@ -159,26 +123,38 @@ const Assign = () => {
     };
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        dispatch(newleads({ 
+            page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm  
+        }));
         setSelectedRecords([]);
         setDisable(true);
     };
 
     const handlePerPageChange = (pageSize: number) => {
-        setPerPage(pageSize);
-        setCurrentPage(1);
+        dispatch(newleads({ 
+            perPage: pageSize,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm  
+        }));
         setSelectedRecords([]);
         setDisable(true);
     };
 
     const handleSortChange = (status: DataTableSortStatus) => {
         setSortStatus(status);
-        setCurrentPage(1);
+        dispatch(newleads({ 
+            sortField: status.columnAccessor,
+            sortOrder: status.direction,
+            search: searchTerm  
+        }));
     };
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
-        setCurrentPage(1); // Reset to first page when searching
     };
 
     const columns = [
@@ -187,7 +163,12 @@ const Assign = () => {
             title: 'Select', 
             sortable: false, 
             render: (record: any) => (
-                <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.id === record.id)} onChange={(e) => handleCheckboxChange(record, e.target.checked)} />
+                <input 
+                    type="checkbox" 
+                    className="form-checkbox" 
+                    checked={selectedRecords.some((selected) => selected.id === record.id)} 
+                    onChange={(e) => handleCheckboxChange(record, e.target.checked)} 
+                />
             ),
         },
         { accessor: 'title', title: 'Title', sortable: true },
@@ -212,38 +193,58 @@ const Assign = () => {
         },
         { accessor: 'date', title: 'Date', sortable: true },
     ];
+
     return (
         <div>
             <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
                 <div className="flex items-center">
-                    <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
+                    <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> 
+                        <IconBell /> 
+                    </div>
                     <span className="ltr:mr-3 rtl:ml-3">Details of Your New Leads: </span>
-                    <button onClick={openLeadModal} className="btn btn-success btn-sm"> <IconPlus /> Add Lead </button>
+                    <button onClick={openLeadModal} className="btn btn-success btn-sm"> 
+                        <IconPlus /> Add Lead 
+                    </button>
                 </div> 
                 <div className="flex items-center space-x-2">
-                    <Select placeholder="Select an option" options={transformedAgents} isDisabled={disable} className="cursor-pointer custom-multiselect z-10 w-[300px]" 
-                        onChange={(selectedOption) => {  if (selectedOption?.value !== undefined) { AssignLead(selectedOption.value, selectedOption.phone); } }} />
-                    <button onClick={RemoveLead} type="button" className="btn btn-default btn-sm" style={{ background: "#d33", color: '#fff' }}> <IconTrash/> </button>
+                    <Select 
+                        placeholder="Select an option" 
+                        options={transformedAgents} 
+                        isDisabled={disable} 
+                        className="cursor-pointer custom-multiselect z-10 w-[300px]" 
+                        onChange={(selectedOption) => {  
+                            if (selectedOption?.value !== undefined) { 
+                                AssignLead(selectedOption.value, selectedOption.phone); 
+                            } 
+                        }} 
+                    />
+                    <button 
+                        onClick={RemoveLead} 
+                        type="button" 
+                        className="btn btn-default btn-sm" 
+                        style={{ background: "#d33", color: '#fff' }} 
+                    > 
+                        <IconTrash/> 
+                    </button>
                 </div>
             </div>
             <div className="datatables mt-6">
-                {loading ?  (  <Loader />  ) : (
-                    <Table title="New Leads"  
-                        columns={columns}  
-                        rows={tableData}  
-                        totalRecords={total || 0}  
-                        currentPage={currentPage} 
-                        recordsPerPage={perPage} 
-                        onPageChange={handlePageChange} 
-                        onRecordsPerPageChange={handlePerPageChange} 
-                        onSortChange={handleSortChange} 
-                        sortStatus={sortStatus} 
-                        isLoading={loading}
-                        onSearchChange={onSearchChange}
-                        searchValue={searchTerm}
-                        noRecordsText="No records found matching your search criteria"
-                    />
-                )}
+                <Table 
+                    title="New Leads"  
+                    columns={columns}  
+                    rows={tableData}  
+                    totalRecords={total || 0}  
+                    currentPage={current_page} 
+                    recordsPerPage={per_page}
+                    onPageChange={handlePageChange} 
+                    onRecordsPerPageChange={handlePerPageChange} 
+                    onSortChange={handleSortChange} 
+                    sortStatus={sortStatus} 
+                    isLoading={loading}
+                    onSearchChange={onSearchChange}
+                    searchValue={searchTerm}
+                    noRecordsText="No records found matching your search criteria"
+                />
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>

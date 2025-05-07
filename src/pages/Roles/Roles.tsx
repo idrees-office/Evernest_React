@@ -4,21 +4,22 @@ import { setPageTitle } from '../../slices/themeConfigSlice';
 import Swal from 'sweetalert2';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
-import Table from "../../components/Table";
+import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import Loader from '../../services/loader';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
+import Table from '../../components/Table';
 
 const endpoints = {
-    listApi    : `${getBaseUrl()}/users/get_user_role`,
-    createApi  : `${getBaseUrl()}/users/create_role`,
-    destoryApi : `${getBaseUrl()}/users/delete_role`,
-    updateApi  : `${getBaseUrl()}/users/update_role`,
+    listApi: `${getBaseUrl()}/users/get_user_role`,
+    createApi: `${getBaseUrl()}/users/create_role`,
+    destoryApi: `${getBaseUrl()}/users/delete_role`,
+    updateApi: `${getBaseUrl()}/users/update_role`,
 };
 
 const Roles = () => {
     const dispatch = useDispatch();
-    const loader   = Loader();
+    const loader = Loader();
 
     const [options] = useState([
         { value: '1', name: 'Active' },
@@ -29,7 +30,18 @@ const Roles = () => {
         id: number;
         name: string;
     }
-    const [roles, rolesList] = useState([]);
+
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ 
+        columnAccessor: 'id', 
+        direction: 'asc' 
+    });
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const [roles, setRoles] = useState([]);
     const [formData, setFormData] = useState({
         id: '',
         name: '',
@@ -38,20 +50,22 @@ const Roles = () => {
     useEffect(() => {
         dispatch(setPageTitle('Create Role'));
         fetchRoleLists();
-    }, []);
-
-    const tableData = (Array.isArray(roles) ? roles : []).map((role: any, index: number) => ({
-        id: role.id || 'Unknown',
-        name: role.name || 'Unknown',
-        role: role || 'Unknown'
-        
-    }));
+    }, [page, pageSize, sortStatus, searchQuery]);
 
     const fetchRoleLists = async () => {
         try {
-            const response = await apiClient.get(endpoints.listApi);
+            const params = {
+                page,
+                per_page: pageSize,
+                sort_field: sortStatus.columnAccessor,
+                sort_order: sortStatus.direction,
+                search: searchQuery
+            };
+            
+            const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                rolesList(response.data);
+                setRoles(response.data.data || []);
+                setTotalRecords(response.data.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -72,39 +86,28 @@ const Roles = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const isUpdate = !!formData.id;
-        let response;
-        if(isUpdate === true){
-            response = await apiClient.post(endpoints.updateApi+'/'+formData.id, formData);
-        }else{
-            response = await apiClient.post(endpoints.createApi, formData);
-        }
         try {
+            let response;
+            if (isUpdate) {
+                response = await apiClient.post(`${endpoints.updateApi}/${formData.id}`, formData);
+            } else {
+                response = await apiClient.post(endpoints.createApi, formData);
+            }
+
             if (response.status === 200 || response.status === 201) {
                 showSuccessToast(response.data.message);
                 setFormData({ id: '', name: '' });
                 fetchRoleLists();
-                setErrors({})
+                setErrors({});
             }
         } catch (error: any) {
-
-            console.log('ddd');
-
-            console.log(error);
-
             if (error.response?.status === 422) {
-                console.log("Validation Errors:", error.response?.data?.errors);
-            }
-
-            
-            if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
             } else {
                 showServerError(error.response?.data?.message || 'An error occurred');
             }
         }
     };
-
-
 
     const showSuccessToast = (message: string) => {
         Swal.fire({
@@ -118,18 +121,18 @@ const Roles = () => {
         });
     };
 
-    const showServerError = (response:any) => {
+    const showServerError = (message: string) => {
         Swal.fire({
-            text: response,
+            text: message,
             icon: 'error',
             title: 'Server Error',
         });
     };
 
-    const handleEdit = async (user: any) => {
+    const handleEdit = (role: any) => {
         setFormData({
-            id: user.id,
-            name: user.name,
+            id: role.id,
+            name: role.name,
         });
     };
 
@@ -142,12 +145,13 @@ const Roles = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
+        
         if (result.isConfirmed) {
             try {
-                const response = await apiClient.delete(endpoints.destoryApi+'/'+id);
-                if (response.status == 200 || response.status === 200) {
-                    showSuccessToast('Roles deleted successfully');
-                    fetchRoleLists(); 
+                const response = await apiClient.delete(`${endpoints.destoryApi}/${id}`);
+                if (response.status === 200) {
+                    showSuccessToast('Role deleted successfully');
+                    fetchRoleLists();
                 }
             } catch (error: any) {
                 if (error.response?.status === 403) {
@@ -158,6 +162,51 @@ const Roles = () => {
         }
     };
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setPage(1);
+    };
+
+    const columns = [
+        { 
+            accessor: 'id', 
+            title: '#', 
+            sortable: true,
+            width: 80,
+            key: 'id'
+        },
+        { 
+            accessor: 'name', 
+            title: 'Name', 
+            sortable: true,
+            key: 'name'
+        },
+        {
+            accessor: 'actions',
+            title: 'Actions',
+            width: 120,
+            key: 'actions',
+            render: (item: any) => (
+                <div key={`actions-${item.id}`} className="flex space-x-2">
+                    <button 
+                        type="button" 
+                        onClick={() => handleEdit(item)} 
+                        className="btn px-1 py-0.5 rounded text-white bg-info"
+                    >
+                        <IconPencil />
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => handleDelete(item.id)} 
+                        className="btn px-1 py-0.5 rounded text-white bg-red-600"
+                    >
+                        <IconTrashLines />
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
             <div className="flex flex-wrap -mx-4">
@@ -166,37 +215,47 @@ const Roles = () => {
                         <div className="panel-body">
                             <div className="form-group">
                                 <label htmlFor="name">Name</label>
-                                <input name="name" type="text" placeholder="Name" className="form-input" value={formData.name} onChange={handleChange} />
-                                {errors.name && ( <span className="text-red-500 text-sm">{errors.name[0]}</span> )}
+                                <input 
+                                    name="name" 
+                                    type="text" 
+                                    placeholder="Name" 
+                                    className="form-input" 
+                                    value={formData.name} 
+                                    onChange={handleChange} 
+                                />
+                                {errors.name && <span className="text-red-500 text-sm">{errors.name[0]}</span>}
                             </div>
                             <div className="sm:col-span-2 flex justify-end mt-3">
-                                <button type="submit" className="btn btn-primary w-full sm:w-auto"> Submit </button>
+                                <button type="submit" className="btn btn-primary w-full sm:w-auto">
+                                    Submit
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                    {/* <div className="datatables">
-                        <Table title="List of all Roles"
-                            columns={[
-                                { accessor: 'id', title: '#', sortable: true },
-                                { accessor: 'name',  title: 'Name', sortable: true },
-                                { accessor: 'action',  title: 'Action', sortable: true,
-                                    render: (role) => (
-                                        <div className="flex space-x-2">
-                                            <button type="button" onClick={() => handleEdit(role)} className="btn px-1 py-0.5 rounded text-white bg-info">
-                                                <IconPencil />
-                                            </button>
-                                            <button type="button" onClick={() => handleDelete(role.id)} className="btn px-1 py-0.5 rounded text-white" style={{ background: '#d33', color: '#fff' }}>
-                                                <IconTrashLines />
-                                            </button>
-                                        </div>
-                                    ),
-                                },
-                            ]} 
-                            rows={tableData}
-                        />
-                    </div> */}
+                        <div className="datatables">
+                            <Table
+                                columns={columns}
+                                rows={roles}
+                                title="List of all Roles"
+                                totalRecords={totalRecords}
+                                currentPage={page}
+                                recordsPerPage={pageSize}
+                                onPageChange={(p) => setPage(p)}
+                                onRecordsPerPageChange={(size) => {
+                                    setPageSize(size);
+                                    setPage(1); // Reset page when changing size
+                                }}
+                                onSortChange={setSortStatus}
+                                onSearchChange={handleSearchChange}
+                                sortStatus={sortStatus}
+                                isLoading={false} // or true if you're adding loading state
+                                minHeight={200}
+                                noRecordsText="No users found"
+                                searchValue={searchQuery}
+                            />
+                        </div>
                 </div>
             </div>
         </form>
