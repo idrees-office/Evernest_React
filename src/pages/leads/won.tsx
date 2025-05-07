@@ -9,6 +9,7 @@ import { closeleads } from '../../slices/leadsSlice';
 import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import '../dashboard/dashboard.css';
+import { DataTableSortStatus } from 'mantine-datatable';
 
 interface Lead {
   lead_id: string;
@@ -28,28 +29,25 @@ const WonLeads = () => {
     const dispatch = useDispatch<AppDispatch>();
     const toast = Toast();
     const loader = Loader();
-    const combinedRef = useRef<{ fetched: boolean }>({ fetched: false });
-    
-    // State with proper typing
+    const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'id', direction: 'desc' } });
+    const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
+    const [disable, setDisable] = useState(true);
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
-    const [searchValue, setSearchValue] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<SortStatus>({
         columnAccessor: 'date',
         direction: 'desc'
     });
-
-    // Redux state with proper typing
     const { leads, loading, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
-    
-    // Fetch closed leads with pagination
+
     const fetchClosedLeads = () => {
         dispatch(closeleads({
-            page,
+            page: searchTerm ? 1 : current_page, 
             perPage: pageSize,
             sortField: sortStatus.columnAccessor === 'date' ? 'updated_at' : sortStatus.columnAccessor,
             sortOrder: sortStatus.direction,
-            search: searchValue
+            search: searchTerm
         }));
     };
 
@@ -59,30 +57,50 @@ const WonLeads = () => {
             combinedRef.current.fetched = true;
         }
         fetchClosedLeads();
-    }, [page, pageSize, sortStatus, searchValue]);
+    }, [page, pageSize, sortStatus, searchTerm]);
 
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
+    const handlePageChange = (page: number) => {
+        dispatch(closeleads({ 
+            page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm  
+        }));
+        setSelectedRecords([]);
+        setDisable(true);
     };
 
-    const handlePageSizeChange = (newPageSize: number) => {
-        setPageSize(newPageSize);
-        setPage(1);
+    const handlePerPageChange = (pageSize: number) => {
+        dispatch(closeleads({ 
+            perPage: pageSize,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm  
+        }));
+        setSelectedRecords([]);
+        setDisable(true);
     };
 
-    const handleSortChange = (newSortStatus: SortStatus) => {
-        setSortStatus(newSortStatus);
-        setPage(1);
+    const handleSortChange = (status: DataTableSortStatus) => {
+        setSortStatus(status);
+        dispatch(closeleads({ 
+            sortField: status.columnAccessor,
+            sortOrder: status.direction,
+            search: searchTerm  
+        }));
     };
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value);
-        setPage(1);
-    };
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        dispatch(closeleads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: newSearchTerm  
+        }));
 
-    const handleRefresh = () => {
-        fetchClosedLeads();
-        toast.success('Closed deals refreshed successfully!');
     };
 
     const tableData = leads?.map((lead: any) => ({
@@ -102,24 +120,13 @@ const WonLeads = () => {
     })) || [];
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="">
             <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
                 <div className="flex items-center">
                     <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
                     <span className="ltr:mr-3 rtl:ml-3">Closed Deals ({total || 0})</span>
                 </div>
-                {/* <div className="flex items-center space-x-2">
-                    <button 
-                        onClick={handleRefresh}
-                        className="btn btn-primary btn-sm flex items-center"
-                        disabled={loading}
-                    >
-                        <IconRefresh className="w-4 h-4 mr-1" />
-                        Refresh
-                    </button>
-                </div> */}
             </div>
-            
             <div className="datatables mt-6">
                     <Table 
                         title={`Closed Deals (${total})` || 'Closed Deals (0)'}
@@ -163,11 +170,11 @@ const WonLeads = () => {
                         currentPage={current_page}
                         recordsPerPage={per_page}
                         onPageChange={handlePageChange}
-                        onRecordsPerPageChange={handlePageSizeChange}
+                        onRecordsPerPageChange={handlePerPageChange}
                         onSortChange={handleSortChange}
                         sortStatus={sortStatus}
-                        onSearchChange={handleSearchChange}
-                        searchValue={searchValue}
+                        onSearchChange={onSearchChange}
+                        searchValue={searchTerm}
                         noRecordsText="No closed deals found"
                     />
                

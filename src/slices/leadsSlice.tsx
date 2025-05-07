@@ -19,12 +19,14 @@ import apiClient from '../utils/apiClient';
         sortOrder?: string;
         search? : string;
     }
-
+    
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
             try {
                 const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
+                // Reset to page 1 if there's a search term
+                const effectivePage = search ? 1 : page;
                 const response = await apiClient.get(endpoints.listApi, {
-                    params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                    params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
                 });
                 return {
                     data: response.data.data.data,
@@ -62,8 +64,10 @@ import apiClient from '../utils/apiClient';
     export const reassigleads = createAsyncThunk('leads/reassigleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
+            // Reset to page 1 if there's a search term
+            const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.reAssignApi, {
-                params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
             });
             return {
                 data: response.data.data.data,
@@ -81,8 +85,10 @@ import apiClient from '../utils/apiClient';
     export const closeleads = createAsyncThunk('closeleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search } = params;
+            // Reset to page 1 if there's a search term
+            const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.closeLeadsApi, {
-                params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
             });
             return {
                 data: response.data.data,
@@ -99,9 +105,17 @@ import apiClient from '../utils/apiClient';
 
     export const allLeads = createAsyncThunk('allLeads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
-            const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
+            const { page = 1, perPage = 10, sortField, sortOrder, search } = params;
+            // Reset to page 1 if there's a search term
+            const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.allLeadsApi, 
-                { params: { page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                { params: { 
+                    page: effectivePage, 
+                    per_page: perPage, 
+                    sort_field: sortField, 
+                    sort_order: sortOrder, 
+                    search: search 
+                },
             });
             return {
                 data: response.data.leads.data, 
@@ -128,9 +142,11 @@ import apiClient from '../utils/apiClient';
     export const roadshowleads = createAsyncThunk('roadshowleads', async (params: FetchLeadsParams & { cityname?: string }, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search, cityname } = params;
+            // Reset to page 1 if there's a search term
+            const effectivePage = search ? 1 : page;
             const endpoint = cityname ? `${endpoints.roadshowLeadApi}/${cityname}` : endpoints.roadshowLeadApi;
             const response = await apiClient.get(endpoint, {
-                params: {  page, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search  },
+                params: { page: effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search  },
             });
             return {
                 data: response.data.data,

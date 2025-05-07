@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from '../../store';
 import Table from '../../components/Table';
@@ -37,28 +37,30 @@ const ExportPdf = () => {
     const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
       useEffect(() => {
-          dispatch(setPageTitle('All Leads'));
-          const fetchData = () => {
-              dispatch(allLeads({ 
-                  page: current_page, 
-                  perPage: per_page,
-                  sortField: sortStatus.columnAccessor,
-                  sortOrder: sortStatus.direction,
-                  search: searchTerm
-              }));
-          };
-          if (!combinedRef.current.fetched) {
-              combinedRef.current.fetched = true;
-              fetchData();
-              return;
-          }
-          fetchData();
-  
-          combinedRef.current.prevPage = current_page;
-          combinedRef.current.prevPerPage = per_page;
-          combinedRef.current.prevSortStatus = sortStatus;
-      }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
-  
+        dispatch(setPageTitle('All Leads'));
+        const fetchData = () => {
+            dispatch(allLeads({ 
+                page: searchTerm ? 1 : current_page, // Use page 1 if searching
+                perPage: per_page,
+                sortField: sortStatus.columnAccessor,
+                sortOrder: sortStatus.direction,
+                search: searchTerm
+            }));
+        };
+        
+        if (!combinedRef.current.fetched) {
+            combinedRef.current.fetched = true;
+            fetchData();
+            return;
+        }
+        
+        fetchData();
+    
+        combinedRef.current.prevPage = current_page;
+        combinedRef.current.prevPerPage = per_page;
+        combinedRef.current.prevSortStatus = sortStatus;
+    }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
+
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
@@ -152,15 +154,17 @@ const ExportPdf = () => {
         const status = dropdownOption.find(option => option.value === leadStatus);
         return status ? status.label : 'Unknown Status';
       }
-      
-    const tableData = (Array.isArray(leads) ? leads : []).map((lead: any) => ({
-      id: lead.lead_id || 'Unknown',
-      title: lead.lead_title || 'Unknown',
-      name: lead.customer_name || 'Unknown',
-      phone: lead.customer_phone || 'Unknown',
-      source: lead.lead_source || 'Unknown',
-      date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
-   }));
+
+    const tableData = useMemo(() => {
+      return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
+          id: lead.lead_id || 'Unknown',
+          title: lead.lead_title || 'Unknown',
+          name: lead.customer_name || 'Unknown',
+          phone: lead.customer_phone || 'Unknown',
+          source: lead.lead_source || 'Unknown',
+          date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
+      }));
+    }, [leads]);  
 
     const handlePageChange = (page: number) => {
            dispatch(allLeads({ 
@@ -182,29 +186,29 @@ const ExportPdf = () => {
            setSelectedRecords([]);
            setDisable(true);
        };
-   
        const handleSortChange = (status: DataTableSortStatus) => {
-           setSortStatus(status);
-           dispatch(allLeads({ 
-               sortField: status.columnAccessor,
-               sortOrder: status.direction,
-               search: searchTerm  
-           }));
-       };
-   
-       const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-           setSearchTerm(e.target.value);
-       };
-       
+          setSortStatus(status);
+          dispatch(allLeads({ 
+              page: 1, 
+              perPage: per_page,
+              sortField: sortStatus.columnAccessor,
+              sortOrder: sortStatus.direction,
+              search: searchTerm  
+          }));
+      };
+      const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: newSearchTerm  
+        }));
+    };
+
      const columns = [
-        { 
-            accessor: 'id', 
-            title: 'Select', 
-            sortable: false, 
-            render: (record: any) => (
-                <input type="checkbox" className="form-checkbox" checked={selectedRecords.some((selected) => selected.id === record.id)} onChange={(e) => handleCheckboxChange(record, e.target.checked)} />
-            ),
-        },
         { accessor: 'title', title: 'Title', sortable: true },
         { accessor: 'name', title: 'Name', sortable: true },
         { accessor: 'phone', title: 'Phone', sortable: true },

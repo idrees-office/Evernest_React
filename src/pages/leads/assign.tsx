@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from '../../store';
 import Table from '../../components/Table';
@@ -21,6 +21,7 @@ const Assign = () => {
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'id', direction: 'desc' } });
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'id',
         direction: 'desc',
@@ -31,26 +32,31 @@ const Assign = () => {
     useEffect(() => {
         dispatch(setPageTitle('New Leads'));
         dispatch(newleads({ 
+            page: searchTerm ? 1 : current_page,
+            perPage: per_page,
             sortField: sortStatus.columnAccessor,
             sortOrder: sortStatus.direction,
             search: searchTerm  
         }));
-    }, [dispatch, sortStatus, searchTerm]);
+    }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
-    }));
+    })) || [];
 
-    const tableData = (Array.isArray(leads) ? leads : []).map((lead: any) => ({
-        id: lead.lead_id || 'Unknown',
-        title: lead.lead_title || 'Unknown',
-        name: lead.customer_name || 'Unknown',
-        phone: lead.customer_phone || 'Unknown',
-        source: lead.lead_source || 'Unknown',
-        date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
-    }));
+
+    const tableData = useMemo(() => {
+        return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
+            id: lead.lead_id || 'Unknown',
+            title: lead.lead_title || 'Unknown',
+            name: lead.customer_name || 'Unknown',
+            phone: lead.customer_phone || 'Unknown',
+            source: lead.lead_source || 'Unknown',
+            date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
+        }));
+    }, [leads])
 
     const openLeadModal = () => {
         setIsModalOpen(true);
@@ -146,17 +152,29 @@ const Assign = () => {
 
     const handleSortChange = (status: DataTableSortStatus) => {
         setSortStatus(status);
-        dispatch(newleads({ 
-            sortField: status.columnAccessor,
-            sortOrder: status.direction,
+         dispatch(newleads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
             search: searchTerm  
         }));
     };
 
-    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
-    };
+     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newSearchTerm = e.target.value;
+            setSearchTerm(newSearchTerm);
+            dispatch(newleads({ 
+                page: 1, 
+                perPage: per_page,
+                sortField: sortStatus.columnAccessor,
+                sortOrder: sortStatus.direction,
+                search: newSearchTerm  
+            }));
+    
+        };
 
+        
     const columns = [
         { 
             accessor: 'id', 
