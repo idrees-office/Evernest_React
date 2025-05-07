@@ -113,7 +113,7 @@ const ReAssign = () => {
             toast.error('Please select at least one lead to remove');
             return;
         }
-        
+
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: `You are about to remove ${selectedRecords.length} selected lead(s). This action cannot be undone.`,
@@ -124,7 +124,6 @@ const ReAssign = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel',
         });
-
         if (result.isConfirmed) {
             try {
                 const leadIds = selectedRecords.map((record) => record.id);
