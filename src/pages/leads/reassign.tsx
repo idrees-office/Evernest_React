@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState, AppDispatch } from '../../store';
 import Table from '../../components/Table';
@@ -20,7 +20,6 @@ const ReAssign = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast = Toast();
-    
     const combinedRef = useRef<any>({ 
         fetched: false, 
         form: null,
@@ -40,20 +39,26 @@ const ReAssign = () => {
     const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
     useEffect(() => {
         dispatch(setPageTitle('Re-Assign Leads'));
+
         const fetchData = () => {
-            dispatch(reassigleads({page: current_page,  perPage : per_page, sortField: sortStatus.columnAccessor, sortOrder: sortStatus.direction, search: searchTerm }));
+            dispatch(reassigleads({
+                page: searchTerm ? 1 : current_page,
+                perPage : per_page, 
+                sortField: sortStatus.columnAccessor, 
+                sortOrder: sortStatus.direction, 
+                search: searchTerm 
+            }));
         };
         // Initial fetch
         if (!combinedRef.current.fetched) {
-            combinedRef.current.fetched = true;
             fetchData();
+            combinedRef.current.fetched = true;
             return;
         }
-        fetchData();
-
-        combinedRef.current.prevPage = current_page;
-        combinedRef.current.prevPerPage = per_page;
-        combinedRef.current.prevSortStatus = sortStatus;
+        // fetchData();
+        // combinedRef.current.prevPage = current_page;
+        // combinedRef.current.prevPerPage = per_page;
+        // combinedRef.current.prevSortStatus = sortStatus;
     }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
 
@@ -61,16 +66,18 @@ const ReAssign = () => {
         value: agent?.client_user_id,
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
-    }));
+    })) || [];
 
-    const tableData = (Array.isArray(leads) ? leads : []).map((lead: any) => ({
-        id: lead.lead_id || 'Unknown',
-        title: lead.lead_title || 'Unknown',
-        name: lead.customer_name || 'Unknown',
-        phone: lead.customer_phone || 'Unknown',
-        source: lead.lead_source || 'Unknown',
-        date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
-    }));
+    const tableData = useMemo(() => {
+        return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
+            id: lead.lead_id || 'Unknown',
+            title: lead.lead_title || 'Unknown',
+            name: lead.customer_name || 'Unknown',
+            phone: lead.customer_phone || 'Unknown',
+            source: lead.lead_source || 'Unknown',
+            date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
+        }));
+    }, [leads]);
 
     const openLeadModal = () => {
         setIsModalOpen(true);
@@ -113,7 +120,7 @@ const ReAssign = () => {
             toast.error('Please select at least one lead to remove');
             return;
         }
-        
+
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: `You are about to remove ${selectedRecords.length} selected lead(s). This action cannot be undone.`,
@@ -124,7 +131,6 @@ const ReAssign = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'Cancel',
         });
-
         if (result.isConfirmed) {
             try {
                 const leadIds = selectedRecords.map((record) => record.id);
@@ -176,7 +182,15 @@ const ReAssign = () => {
     };
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value);
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+         dispatch(reassigleads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: newSearchTerm  
+        }));
     };
 
     const columns = [
