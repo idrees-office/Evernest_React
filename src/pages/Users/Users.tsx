@@ -198,24 +198,24 @@ const Users = () => {
     };
 
     const columns = [
-        // { 
-        //     accessor: 'id', 
-        //     title: '#', 
-        //     sortable: true,
-        //     width: 80,
-        //      key: 'id'
-        // },
-
-        {
-            accessor: 'id',
-            title: '#',
-            sortable: false,
+        { 
+            accessor: 'id', 
+            title: '#', 
+            sortable: true,
             width: 80,
-            key: 'id',
-            render: (_: any, index: number) => (
-                <span>{(page - 1) * pageSize + index + 1}</span>
-            ),
+             key: 'id'
         },
+
+        // {
+        //     accessor: 'id',
+        //     title: '#',
+        //     sortable: false,
+        //     width: 80,
+        //     key: 'id',
+        //     render: (_: any, index: number) => (
+        //         <span>{(page - 1) * pageSize + index + 1}</span>
+        //     ),
+        // },
 
         { 
             accessor: 'client_user_name', 

@@ -20,7 +20,7 @@ import apiClient from '../utils/apiClient';
         search? : string;
         cityname?: string;
     }
-    
+
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
             try {
                 const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
@@ -246,7 +246,6 @@ import apiClient from '../utils/apiClient';
                 state.loading      = true;
             })
             .addCase(roadshowleads.fulfilled, (state, action) => {
-
                 state.loading      = false;
                 state.leads        = action.payload.data.data;
                 state.total        = action.payload.total;
