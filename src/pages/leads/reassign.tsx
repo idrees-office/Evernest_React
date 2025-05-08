@@ -39,6 +39,7 @@ const ReAssign = () => {
     const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
     useEffect(() => {
         dispatch(setPageTitle('Re-Assign Leads'));
+
         const fetchData = () => {
             dispatch(reassigleads({
                 page: searchTerm ? 1 : current_page,
@@ -50,15 +51,14 @@ const ReAssign = () => {
         };
         // Initial fetch
         if (!combinedRef.current.fetched) {
-            combinedRef.current.fetched = true;
             fetchData();
+            combinedRef.current.fetched = true;
             return;
         }
-        fetchData();
-
-        combinedRef.current.prevPage = current_page;
-        combinedRef.current.prevPerPage = per_page;
-        combinedRef.current.prevSortStatus = sortStatus;
+        // fetchData();
+        // combinedRef.current.prevPage = current_page;
+        // combinedRef.current.prevPerPage = per_page;
+        // combinedRef.current.prevSortStatus = sortStatus;
     }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
 

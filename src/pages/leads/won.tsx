@@ -11,14 +11,7 @@ import Loader from '../../services/loader';
 import '../dashboard/dashboard.css';
 import { DataTableSortStatus } from 'mantine-datatable';
 
-interface Lead {
-  lead_id: string;
-  lead_title: string;
-  customer_name: string;
-  customer_phone: string;
-  lead_status: string;
-  updated_at: string;
-}
+
 
 interface SortStatus {
   columnAccessor: string;
@@ -54,10 +47,14 @@ const WonLeads = () => {
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('Closed Deals'));
+            fetchClosedLeads();
             combinedRef.current.fetched = true;
         }
-        fetchClosedLeads();
+        // combinedRef.current.prevPage = current_page;
+        // combinedRef.current.prevPerPage = per_page;
+        // combinedRef.current.prevSortStatus = sortStatus;
     }, [page, pageSize, sortStatus, searchTerm]);
+
 
     const handlePageChange = (page: number) => {
         dispatch(closeleads({ 
@@ -100,7 +97,6 @@ const WonLeads = () => {
             sortOrder: sortStatus.direction,
             search: newSearchTerm  
         }));
-
     };
 
     const tableData = leads?.map((lead: any) => ({
@@ -124,7 +120,7 @@ const WonLeads = () => {
             <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
                 <div className="flex items-center">
                     <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
-                    <span className="ltr:mr-3 rtl:ml-3">Closed Deals ({total || 0})</span>
+                    <span className="ltr:mr-3 rtl:ml-3">Closed Deals</span>
                 </div>
             </div>
             <div className="datatables mt-6">
@@ -177,7 +173,6 @@ const WonLeads = () => {
                         searchValue={searchTerm}
                         noRecordsText="No closed deals found"
                     />
-               
             </div> 
         </div>
     );

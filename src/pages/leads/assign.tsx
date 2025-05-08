@@ -26,20 +26,32 @@ const Assign = () => {
         columnAccessor: 'id',
         direction: 'desc',
     });
-    
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
-    useEffect(() => {
-        dispatch(setPageTitle('New Leads'));
-        dispatch(newleads({ 
-            page: searchTerm ? 1 : current_page,
-            perPage: per_page,
-            sortField: sortStatus.columnAccessor,
-            sortOrder: sortStatus.direction,
-            search: searchTerm  
-        }));
-    }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
+
+     useEffect(() => {
+        dispatch(setPageTitle('New Leads'));
+            const fetchData = () => {
+                dispatch(newleads({
+                    page: searchTerm ? 1 : current_page,
+                    perPage : per_page, 
+                    sortField: sortStatus.columnAccessor, 
+                    sortOrder: sortStatus.direction, 
+                    search: searchTerm 
+                }));
+            };
+            if (!combinedRef.current.fetched) {
+                fetchData();
+                combinedRef.current.fetched = true;
+                return;
+            }
+            // combinedRef.current.prevPage = current_page;
+            // combinedRef.current.prevPerPage = per_page;
+            // combinedRef.current.prevSortStatus = sortStatus;
+        }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
+
+        
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,

@@ -38,27 +38,24 @@ const ExportPdf = () => {
 
       useEffect(() => {
         dispatch(setPageTitle('All Leads'));
+
         const fetchData = () => {
             dispatch(allLeads({ 
-                page: searchTerm ? 1 : current_page, // Use page 1 if searching
+                page: searchTerm ? 1 : current_page, 
                 perPage: per_page,
                 sortField: sortStatus.columnAccessor,
                 sortOrder: sortStatus.direction,
                 search: searchTerm
             }));
         };
-        
         if (!combinedRef.current.fetched) {
-            combinedRef.current.fetched = true;
             fetchData();
+            combinedRef.current.fetched = true;
             return;
-        }
-        
-        fetchData();
-    
-        combinedRef.current.prevPage = current_page;
-        combinedRef.current.prevPerPage = per_page;
-        combinedRef.current.prevSortStatus = sortStatus;
+        } 
+        // combinedRef.current.prevPage = current_page;
+        // combinedRef.current.prevPerPage = per_page;
+        // combinedRef.current.prevSortStatus = sortStatus;
     }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
     const transformedAgents = agents?.map(agent => ({

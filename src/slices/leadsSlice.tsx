@@ -18,15 +18,15 @@ import apiClient from '../utils/apiClient';
         sortField?: string;
         sortOrder?: string;
         search? : string;
+        cityname?: string;
     }
     
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
             try {
                 const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
-                // Reset to page 1 if there's a search term
                 const effectivePage = search ? 1 : page;
                 const response = await apiClient.get(endpoints.listApi, {
-                    params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                    params: { page : effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
                 });
                 return {
                     data: response.data.data.data,
@@ -64,7 +64,6 @@ import apiClient from '../utils/apiClient';
     export const reassigleads = createAsyncThunk('leads/reassigleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
-            // Reset to page 1 if there's a search term
             const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.reAssignApi, {
                 params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
@@ -85,7 +84,6 @@ import apiClient from '../utils/apiClient';
     export const closeleads = createAsyncThunk('closeleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search } = params;
-            // Reset to page 1 if there's a search term
             const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.closeLeadsApi, {
                 params: { page:effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
@@ -106,7 +104,6 @@ import apiClient from '../utils/apiClient';
     export const allLeads = createAsyncThunk('allLeads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search } = params;
-            // Reset to page 1 if there's a search term
             const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.allLeadsApi, 
                 { params: { 
@@ -142,11 +139,10 @@ import apiClient from '../utils/apiClient';
     export const roadshowleads = createAsyncThunk('roadshowleads', async (params: FetchLeadsParams & { cityname?: string }, { rejectWithValue }) => {
         try {
             const { page = 1, perPage = 10, sortField, sortOrder, search, cityname } = params;
-            // Reset to page 1 if there's a search term
             const effectivePage = search ? 1 : page;
             const endpoint = cityname ? `${endpoints.roadshowLeadApi}/${cityname}` : endpoints.roadshowLeadApi;
             const response = await apiClient.get(endpoint, {
-                params: { page: effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search  },
+                params: { page: effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search, cityname: cityname },
             });
             return {
                 data: response.data.data,
@@ -161,115 +157,111 @@ import apiClient from '../utils/apiClient';
     });
 
     const initialState = {
-        leads: [] as { lead_id: number }[],
-        agents: [] as { client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
-        lead_status: 0,
-        success: false,
-        loading: false,
-        message : '',
-        status : 0,
-        agent_name : '',
-        total: 0,
-        last_page: 1,
-        current_page: 1,
-        per_page: 10
+        leads        : [] as { lead_id: number }[],
+        agents       : [] as { client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
+        lead_status  : 0,
+        success      : false,
+        loading      : false,
+        message      : '',
+        status       : 0,
+        agent_name   : '',
+        total        : 0,
+        last_page    : 1,
+        current_page : 1,
+        per_page     : 10
     };
 
-const LeadsSlice = createSlice({
-    name: 'Leads',
-    initialState,
-    reducers: {
-        setLeads() {},
-    },
-    extraReducers: (builder) => {
-    builder
-        .addCase(newleads.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(newleads.fulfilled, (state, action) => {
-            state.loading   = false;
-            state.leads        = action.payload.data;
-            state.agents       = action.payload.agents;
-            state.total        = action.payload.total;
-            state.last_page    = action.payload.last_page;
-            state.current_page = action.payload.current_page;
-            state.per_page     = action.payload.per_page;
-        })
-        .addCase(newleads.rejected, (state, action) => {
-            state.loading = false;
-            state.message = action.payload as string;
-        })
-        .addCase(destoryLeads.pending, (state, action) => {
-            state.loading = true;
-        })
-        .addCase(destoryLeads.fulfilled, (state, action) => {
-            state.loading = false;
-            state.status = action.payload.status;  
-        })
-        .addCase(reassigleads.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(reassigleads.fulfilled, (state, action) => {
-            state.loading = false;
-            state.leads   = action.payload.data;
-            state.agents  = action.payload.agents;
-            state.total   = action.payload.total;
-            state.last_page    = action.payload.last_page;
-            state.current_page = action.payload.current_page;
-            state.per_page     = action.payload.per_page;
+    const LeadsSlice = createSlice({
+        name: 'Leads',
+        initialState,
+        reducers: {
+            setLeads() {},
+        },
+        extraReducers: (builder) => {
+        builder
+            .addCase(newleads.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(newleads.fulfilled, (state, action) => {
+                state.loading      = false;
+                state.leads        = action.payload.data;
+                state.agents       = action.payload.agents;
+                state.total        = action.payload.total;
+                state.last_page    = action.payload.last_page;
+                state.current_page = action.payload.current_page;
+                state.per_page     = action.payload.per_page;
+            })
+            .addCase(newleads.rejected, (state, action) => {
+                state.loading = false;
+                state.message = action.payload as string;
+            })
+            .addCase(destoryLeads.pending, (state, action) => {
+                state.loading = true;
+            })
+            .addCase(destoryLeads.fulfilled, (state, action) => {
+                state.loading = false;
+                state.status  = action.payload.status;  
+            })
+            .addCase(reassigleads.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(reassigleads.fulfilled, (state, action) => {
+                state.loading      = false;
+                state.leads        = action.payload.data;
+                state.agents       = action.payload.agents;
+                state.total        = action.payload.total;
+                state.last_page    = action.payload.last_page;
+                state.current_page = action.payload.current_page;
+                state.per_page     = action.payload.per_page;
+            }).addCase(closeleads.pending, (state) => {
+                state.loading = true;
+            }).addCase(closeleads.fulfilled, (state, action) => {
+                state.loading      = false;
+                state.leads        = action.payload.data;
+                state.total        = action.payload.total;
+                state.last_page    = action.payload.last_page;
+                state.current_page = action.payload.current_page;
+                state.per_page     = action.payload.per_page;
+            }).addCase(allLeads.pending, (state, action) => {
+                state.loading = true;
+            })
+            .addCase(allLeads.fulfilled, (state, action) => {
+                state.loading      = false;
+                state.leads        = action.payload.data;
+                state.agents       = action.payload.agents;
+                state.total        = action.payload.total;
+                state.last_page    = action.payload.last_page;
+                state.current_page = action.payload.current_page;
+                state.per_page     = action.payload.per_page;
+            })
+            .addCase(download.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(download.fulfilled, (state, action) => {
+                state.loading      = false;
+                state.leads        = action.payload.data;
+                state.agent_name   = action.payload.agent_name;
+            })
+            .addCase(roadshowleads.pending, (state) => {
+                state.loading      = true;
+            })
+            .addCase(roadshowleads.fulfilled, (state, action) => {
 
-
-        }).addCase(closeleads.pending, (state) => {
-            state.loading = true;
-        }).addCase(closeleads.fulfilled, (state, action) => {
-
-            state.loading = false;
-            state.leads   = action.payload.data;
-            state.total   = action.payload.total;
-            state.last_page    = action.payload.last_page;
-            state.current_page = action.payload.current_page;
-            state.per_page     = action.payload.per_page;
-        }).addCase(allLeads.pending, (state, action) => {
-            state.loading = true;
-        })
-        .addCase(allLeads.fulfilled, (state, action) => {
-            state.loading  = false;
-            state.leads    = action.payload.data;
-            state.agents   = action.payload.agents;
-            state.total    = action.payload.total;
-            state.last_page    = action.payload.last_page;
-            state.current_page = action.payload.current_page;
-            state.per_page     = action.payload.per_page;
-        })
-        .addCase(download.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(download.fulfilled, (state, action) => {
-            state.loading = false;
-            state.leads   = action.payload.data;
-            state.agent_name   = action.payload.agent_name;
-        })
-        .addCase(roadshowleads.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(roadshowleads.fulfilled, (state, action) => {
-            state.loading = false;
-            state.leads = action.payload.data;
-            state.total = action.payload.total;
-            state.last_page = action.payload.last_page;
-            state.current_page = action.payload.current_page; // Make sure this is set
-            state.per_page = action.payload.per_page;
-        })
-        .addCase(assignleads.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(assignleads.fulfilled, (state, action) => {
-            state.loading = false;
-
-            state.leads   = action.payload.data;
-        })
-
-    },
-})
+                state.loading      = false;
+                state.leads        = action.payload.data.data;
+                state.total        = action.payload.total;
+                state.last_page    = action.payload.last_page;
+                state.current_page = action.payload.current_page; 
+                state.per_page     = action.payload.per_page;
+            })
+            .addCase(assignleads.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(assignleads.fulfilled, (state, action) => {
+                state.loading = false;
+                state.leads   = action.payload.data;
+            })
+        },
+    })
 export const { setLeads } = LeadsSlice.actions;
 export default LeadsSlice.reducer;
