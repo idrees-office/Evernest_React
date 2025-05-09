@@ -26,6 +26,7 @@ interface TableProps {
   minHeight?: string | number;
   searchValue?: string;
   noRecordsText :string
+  idAccessor?: string;
 }
 
 const Table: React.FC<TableProps> = ({ 
@@ -44,7 +45,8 @@ const Table: React.FC<TableProps> = ({
   height,
   minHeight = 200,
   noRecordsText = 'No records found',
-  searchValue = ''
+  searchValue = '',
+  idAccessor
 }) => {
   const PAGE_SIZES = [10, 20, 30, 50, 100];
 
@@ -86,6 +88,7 @@ const Table: React.FC<TableProps> = ({
           fetching={isLoading}
           loaderVariant="dots"
           noRecordsText={noRecordsText}
+          idAccessor={idAccessor}
         />
       </div>
     </div>

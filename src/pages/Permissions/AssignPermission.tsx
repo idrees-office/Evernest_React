@@ -18,7 +18,6 @@ const AssignPermission = () => {
     const toast = Toast();
     const requestMade = useRef(false);
 
-
     useEffect(() => {
         if (!requestMade.current) {
             getRoles();
@@ -31,7 +30,7 @@ const AssignPermission = () => {
     const getRoles = async () => {
         try {
             const response = await apiClient.get('/users/get_user_role');
-            setRoles(response.data);
+            setRoles(response.data.data);
         } catch (error) {
             toast.error('Failed to fetch roles');
         }
@@ -40,7 +39,7 @@ const AssignPermission = () => {
     const getAgents = async () => {
         try {
             const response = await apiClient.get('/users/user_list');
-            setAllAgents(response.data);
+            setAllAgents(response.data.data.data);
         } catch (error) {
             toast.error('Failed to fetch agents');
         }
@@ -126,8 +125,7 @@ const AssignPermission = () => {
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Users</label>
-                    <select name="client_user_id" onChange={(e) => handleAgentChange(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md"
-                    >
+                    <select name="client_user_id" onChange={(e) => handleAgentChange(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md">
                         <option value="">Select Agent</option>
                         {allAgents.map((agent) => (
                             <option key={agent.client_user_id} value={agent.client_user_id}>{agent.client_user_name}</option>
@@ -152,13 +150,7 @@ const AssignPermission = () => {
                                 const item = dataSource[index + offset];
                                 return item ? (
                                     <td key={item.id} className="px-6 py-4 whitespace-nowrap">
-                                        <input
-                                            type="checkbox" 
-                                            checked={checkedItems.includes(item.id)}
-                                            onChange={() => toggleCheckbox(item)}
-                                            className="mr-2 form-checkbox"
-                                        />
-                                        {item.name}
+                                        <input type="checkbox"  checked={checkedItems.includes(item.id)} onChange={() => toggleCheckbox(item)} className="mr-2 form-checkbox"/> {item.name}
                                     </td>
                                 ) : <td key={offset} className="px-6 py-4 whitespace-nowrap"></td>;
                                 })}

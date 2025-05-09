@@ -28,8 +28,6 @@ const Assign = () => {
     });
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
 
-
-
      useEffect(() => {
         dispatch(setPageTitle('New Leads'));
             const fetchData = () => {
@@ -50,7 +48,6 @@ const Assign = () => {
             // combinedRef.current.prevPerPage = per_page;
             // combinedRef.current.prevSortStatus = sortStatus;
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
-
         
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
@@ -83,7 +80,6 @@ const Assign = () => {
             if(selectedRecords.length === 1) { setDisable(true); } 
         }
     };
-
     const AssignLead = async (agentId: number, phone: number) => {
         if (selectedRecords.length === 0) { 
             toast.error('Please select at least one lead to assign');

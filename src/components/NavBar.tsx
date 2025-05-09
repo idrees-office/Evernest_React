@@ -144,6 +144,8 @@ const NavBar = () => {
                         <li>
                             <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
                             <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
+                            <NavLink to="/pages/email/analyticsDashboard">{t('Tracking Dashboard')}</NavLink>
+
                         </li>
                     </ul>
             </li>
