@@ -1,32 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import IconBell from '../../components/Icon/IconBell';
-import IconTrash from '../../components/Icon/IconTrash';
-import IconPlus from '../../components/Icon/IconPlus';
-import SubscriberModal from '../../components/SubscriberModal';
 import '../dashboard/dashboard.css';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
 import Table from '../../components/Table';
-import IconPencil from '../../components/Icon/IconPencil';
-import IconTrashLines from '../../components/Icon/IconTrashLines';
 import Swal from 'sweetalert2';
 import { DataTableSortStatus } from 'mantine-datatable';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 
 const endpoints = {
-    listApi: `${getBaseUrl()}/subscriber/show`,
+    listApi: `${getBaseUrl()}/subscriber/show-email-report`,
 };
 
-const SubscriberTemplate = () => {
+const EmailReportTemplate = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { htmlCode, cssCode } = location.state || { htmlCode: '', cssCode: '' };
-    const [isSubscriberModal, setSubscriberModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    
     // Pagination state
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -36,14 +24,17 @@ const SubscriberTemplate = () => {
         direction: 'asc' 
     });
     const [searchQuery, setSearchQuery] = useState('');
-
-    const [subscriber, setSubscriber] = useState([]);
+    const [emailreports, setEmailReports] = useState([]);
+    const combinedRef = useRef<any>({  fetched: false,});
 
     useEffect(() => {
-        getSubscriber();
+         if (!combinedRef.current.fetched) {
+            getEmailReportData();
+         }
+         combinedRef.current.fetched = true;
     }, [page, pageSize, sortStatus, searchQuery]);
 
-    const getSubscriber = async () => {
+    const getEmailReportData = async () => {
         try {
             setLoading(true);
             const params = {
@@ -53,11 +44,10 @@ const SubscriberTemplate = () => {
                 sort_order: sortStatus.direction,
                 search: searchQuery
             };
-            
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                setSubscriber(response.data.data || []);
-                setTotalRecords(response.data.total || 0);
+                setEmailReports(response.data.data || []);
+                setTotalRecords(response.data.meta.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -89,26 +79,21 @@ const SubscriberTemplate = () => {
         });
     };
 
-    const addContact = () => {
-        setSubscriberModal(true);
-    };
+   
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         setPage(1);
     };
 
-    const tableData = (Array.isArray(subscriber) ? subscriber : []).map((subscriberuser: any, index: number) => ({
-        id: subscriberuser.id,
-        name: subscriberuser.name,
-        email: subscriberuser.email,
-        phone: subscriberuser.phone,
-        source: subscriberuser.status,
+    const tableData = (Array.isArray(emailreports) ? emailreports : []).map((emailreport: any, index: number) => ({
+        id: emailreport.id,
+        campaign_name: emailreport.campaign_name,
+        subscriber_name: emailreport.subscriber_name,
+        last_opened_at: emailreport.last_opened_at,
+        status: emailreport.status,
     }));
-
-    const Import = async () => {
-        window.open('http://127.0.0.1:8000/add-subscriber', '_blank');
-    };
+    
 
     const handleDelete = async (id: number) => {
         const result = await Swal.fire({
@@ -125,7 +110,7 @@ const SubscriberTemplate = () => {
                 const response = await apiClient.delete(`${getBaseUrl()}/subscriber/delete/${id}`);
                 if (response.status === 200) {
                     showSuccessToast('Subscriber deleted successfully');
-                    getSubscriber();
+                    // getEmailReportData();
                 }
             } catch (error: any) {
                 if (error.response?.status === 403) {
@@ -138,39 +123,22 @@ const SubscriberTemplate = () => {
 
     return (
         <div>
-            <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
-                <div className="flex items-center">
-                    <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
-                        <IconBell />
-                    </div>
-                    <span className="ltr:mr-3 rtl:ml-3">Details of Your Email Subscriber: </span>
-                    <button onClick={Import} className="btn btn-primary btn-sm">
-                        {' '}
-                        <IconPlus /> Import Contact{' '}
-                    </button>
-                </div>
-                <div className="">
-                    <button className="btn btn-primary btn-sm" type="button" onClick={addContact}>
-                        Create Single
-                    </button>
-                </div>
-            </div>
             <div className="datatables mt-6">
                 <Table
-                    title="List of all users:"
+                    title="Email Reports:"
                     columns={[
                         { accessor: 'id', title: '#', sortable: true },
-                        { accessor: 'name', title: 'Name', sortable: true },
-                        { accessor: 'email', title: 'Email', sortable: true },
-                        { accessor: 'phone', title: 'Phone', sortable: true },
+                        { accessor: 'campaign_name', title: 'Campaign Name', sortable: true },
+                        { accessor: 'subscriber_name', title: 'Subscriber Name', sortable: true },
+                        { accessor: 'last_opened_at', title: 'Last Open', sortable: true },
                         {
-                            accessor: 'source',
-                            title: 'Source',
+                            accessor: 'status',
+                            title: 'Status',
                             sortable: true,
                             render: (record: any) => {
-                                switch (record.source) {
+                                switch (record.status) {
                                     case 1:
-                                        return <span className="badge bg-success">Subscriber</span>;
+                                        return <span className="badge bg-success">Opend</span>;
                                     case 2:
                                         return <span className="badge bg-secondary">Inactive</span>;
                                     case 3:
@@ -179,28 +147,6 @@ const SubscriberTemplate = () => {
                                         return <span className="badge bg-light">Unknown</span>;
                                 }
                             },
-                        },
-                        {
-                            accessor: 'action',
-                            title: 'Action',
-                            sortable: false,
-                            render: (user: any) => (
-                                <div className="flex space-x-2">
-                                    <button
-                                        type="button"
-                                        className="btn px-1 py-0.5 rounded text-white bg-info"
-                                    >
-                                        <IconPencil />
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDelete(user.id)}
-                                        className="btn px-1 py-0.5 rounded text-white bg-red-600"
-                                    >
-                                        <IconTrashLines />
-                                    </button>
-                                </div>
-                            ),
                         },
                     ]}
                     rows={tableData}
@@ -221,13 +167,8 @@ const SubscriberTemplate = () => {
                     searchValue={searchQuery}
                 />
             </div>
-            <SubscriberModal
-                isOpen={isSubscriberModal}
-                onClose={() => setSubscriberModal(false)}
-                onSuccess={getSubscriber}
-            />
         </div>
     );
 };
 
-export default SubscriberTemplate;
+export default EmailReportTemplate;
