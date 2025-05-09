@@ -40,7 +40,7 @@ const PreviewTemplate = () => {
         e.preventDefault();
         if (combinedRef.current.emailform) {
             const formData = new FormData(combinedRef.current.emailform);
-            formData.append('htmlContent',generatePreview());
+            formData.append('body', generatePreview());
             formData.append('schedule_at', date);
             if (formData.has('send_to_all')) {
                 
@@ -199,7 +199,7 @@ const PreviewTemplate = () => {
                                                         <hr />
                                                         <div className="mt-4">
                                                             <label htmlFor="slugmark" className="text-white-dark"> Date</label>
-                                                            <Flatpickr value={date}  name="date"  options={{ dateFormat: 'Y-m-d H:i', enableTime: true,}} className="form-input" 
+                                                            <Flatpickr value={date}  name="scheduled_at"  options={{ dateFormat: 'Y-m-d H:i', enableTime: true,}} className="form-input" 
                                                             onChange={selectDate}  
                                                             disabled={isSendNow}  placeholder='Y-m-d H:i' />
                                                             {errors.date && <span className="text-red-500 text-sm">{errors.date}</span>}

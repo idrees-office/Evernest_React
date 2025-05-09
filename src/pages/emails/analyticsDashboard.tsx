@@ -359,7 +359,7 @@ const AnalyticsDashboard = () => {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div className="panel h-full sm:col-span-2 lg:col-span-1">
                         <div className="flex justify-between dark:text-white-light mb-5">
-                            <h5 className="font-semibold text-lg ">User Click Rate Performance</h5>
+                            <h5 className="font-semibold text-lg ">Campaign Summary</h5>
                             <div className="dropdown">
                                 <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="hover:text-primary" button={<IconHorizontalDots className="text-black/70 dark:text-white/70 hover:!text-primary" />} >
                                     <ul>
@@ -382,23 +382,22 @@ const AnalyticsDashboard = () => {
                         <div className="grid sm:grid-cols-2 gap-8 text-sm text-[#515365] font-bold">
                             <div>
                                 <div>
-                                    <div>Click rate</div>
+                                    <div>Total Emails</div>
                                     <div className="text-[#f8538d] text-md">19 % </div>
                                 </div>
                             </div>
                             <div>
                                 <div>
-                                    <div>Open rate</div>
+                                    <div>Total Campaigns</div>
                                     <div className="text-[#f8538d] text-md">5 %</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-
-                     <div className="panel h-full sm:col-span-2 lg:col-span-1">
+                    <div className="panel h-full sm:col-span-2 lg:col-span-1">
                         <div className="flex justify-between dark:text-white-light mb-5">
-                            <h5 className="font-semibold text-lg ">Email performance</h5>
+                            <h5 className="font-semibold text-lg ">Campaign Performance</h5>
                             <div className="dropdown">
                                 <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="hover:text-primary" button={<IconHorizontalDots className="text-black/70 dark:text-white/70 hover:!text-primary" />} >
                                     <ul>
@@ -421,13 +420,51 @@ const AnalyticsDashboard = () => {
                         <div className="grid sm:grid-cols-2 gap-8 text-sm text-[#515365] font-bold">
                             <div>
                                 <div>
-                                    <div>Click rate</div>
+                                    <div>Pending Campaigns</div>
                                     <div className="text-[#f8538d] text-sm">423,964</div>
                                 </div>
                             </div>
                             <div>
                                 <div>
-                                    <div>Open rate</div>
+                                    <div>Sent Campaigns</div>
+                                    <div className="text-[#f8538d] text-sm">7,929</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="panel h-full sm:col-span-2 lg:col-span-1">
+                        <div className="flex justify-between dark:text-white-light mb-5">
+                            <h5 className="font-semibold text-lg ">Email Performance</h5>
+                            <div className="dropdown">
+                                <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="hover:text-primary" button={<IconHorizontalDots className="text-black/70 dark:text-white/70 hover:!text-primary" />} >
+                                    <ul>
+                                        <li>
+                                            <button type="button">This Week</button>
+                                        </li>
+                                        <li>
+                                            <button type="button">Last Week</button>
+                                        </li>
+                                        <li>
+                                            <button type="button">This Month</button>
+                                        </li>
+                                        <li>
+                                            <button type="button">Last Month</button>
+                                        </li>
+                                    </ul>
+                                </Dropdown>
+                            </div>
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-8 text-sm text-[#515365] font-bold">
+                            <div>
+                                <div>
+                                    <div>Open Rate</div>
+                                    <div className="text-[#f8538d] text-sm">423,964</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <div>Hot Leads</div>
                                     <div className="text-[#f8538d] text-sm">7,929</div>
                                 </div>
                             </div>
@@ -441,10 +478,10 @@ const AnalyticsDashboard = () => {
                                 <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="hover:text-primary" button={<IconHorizontalDots className="text-black/70 dark:text-white/70 hover:!text-primary" />} >
                                     <ul>
                                         <li>
-                                            <button type="button">Add Subscriber</button>
+                                            <button type="button">Add</button>
                                         </li>
                                         <li>
-                                            <button type="button">Subscriber List</button>
+                                            <button type="button">List</button>
                                         </li>
                                     </ul>
                                 </Dropdown>
@@ -466,32 +503,7 @@ const AnalyticsDashboard = () => {
                         </div> */}
                     </div>
 
-                    <div
-                        className="panel h-full overflow-hidden before:bg-[#1937cc] before:absolute before:-right-44 before:top-0 before:bottom-0 before:m-auto before:rounded-full before:w-96 before:h-96 grid grid-cols-1 content-between"
-                        style={{ background: 'linear-gradient(0deg,#00c6fb -227%,#005bea)' }}
-                       >
-                        <div className="flex items-start justify-between text-white-light mb-16 z-[7]">
-                            <h5 className="font-semibold text-lg">Total Balance</h5>
 
-                            <div className="relative text-xl whitespace-nowrap">
-                                $ 41,741.42
-                                <span className="table text-[#d3d3d3] bg-[#4361ee] rounded p-1 text-xs mt-1 ltr:ml-auto rtl:mr-auto">+ 2453</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between z-10">
-                            <div className="flex items-center justify-between">
-                                <button type="button" className="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#1937cc] place-content-center ltr:mr-2 rtl:ml-2">
-                                    <IconPlus />
-                                </button>
-                                <button type="button" className="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#1937cc] grid place-content-center">
-                                    <IconCreditCard />
-                                </button>
-                            </div>
-                            <button type="button" className="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#4361ee] z-10">
-                                Upgrade
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
