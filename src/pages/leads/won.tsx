@@ -10,9 +10,6 @@ import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import '../dashboard/dashboard.css';
 import { DataTableSortStatus } from 'mantine-datatable';
-
-
-
 interface SortStatus {
   columnAccessor: string;
   direction: 'asc' | 'desc';

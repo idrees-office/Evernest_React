@@ -245,12 +245,12 @@ const Roles = () => {
                                 onPageChange={(p) => setPage(p)}
                                 onRecordsPerPageChange={(size) => {
                                     setPageSize(size);
-                                    setPage(1); // Reset page when changing size
+                                    setPage(1);
                                 }}
                                 onSortChange={setSortStatus}
                                 onSearchChange={handleSearchChange}
                                 sortStatus={sortStatus}
-                                isLoading={false} // or true if you're adding loading state
+                                isLoading={false} 
                                 minHeight={200}
                                 noRecordsText="No users found"
                                 searchValue={searchQuery}

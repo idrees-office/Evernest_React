@@ -11,6 +11,7 @@ import Select from 'react-select';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
 import Table from '../../components/Table';
+import { AppDispatch } from '../../store';
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
@@ -21,7 +22,7 @@ const endpoints = {
 };
 
 const Users = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const loader = Loader();
     const combinedRef = useRef<any>({ userformRef: null });
     const [users, setUsers] = useState([]);
@@ -30,8 +31,6 @@ const Users = () => {
     const [urole, setRoles] = useState<any | null>(null); 
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
     const requestMade = useRef(false);
-
-    // Pagination state
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -44,14 +43,17 @@ const Users = () => {
             fetchRoles();
             requestMade.current = true;
         }
+    }, [dispatch]);
+
+    useEffect(() => {
         fetchUserLists();
-    }, [dispatch, page, pageSize, sortStatus, searchQuery]);
+    }, [page, pageSize, sortStatus, searchQuery]);
 
     const fetchRoles = async () => {
         try {
             const response = await apiClient.get(endpoints.roleApi);
             if (response.data) {
-                const roleOptions = response.data.map((role: any) => ({
+                const roleOptions = response.data.data.map((role: any) => ({
                     value: role.id,
                     label: role.name,
                 }));
@@ -61,7 +63,6 @@ const Users = () => {
             if (error.response?.status === 403) {
                 window.location.href = '/error';
             }
-            // showServerError();
         }
     };
 
@@ -76,8 +77,8 @@ const Users = () => {
             };
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                setUsers(response.data.data || []); 
-                setTotalRecords(response.data.total || 0); 
+                setUsers(response.data.data.data || []); 
+                setTotalRecords(response.data.data.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -171,7 +172,6 @@ const Users = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
-        
         if (result.isConfirmed) {
             try {
                 const response = await apiClient.delete(endpoints.destoryApi + `/${user.client_user_id}`);
@@ -197,67 +197,54 @@ const Users = () => {
         setPage(1); // Reset to first page when searching
     };
 
+    const handlePageChange = (p: number) => {
+        setPage(p);
+    };
+
+    const handlePageSizeChange = (size: number) => {
+        setPageSize(size);
+        setPage(1);
+    };
+
     const columns = [
         { 
-            accessor: 'id', 
+            accessor: 'client_user_id', 
             title: '#', 
-            sortable: true,
             width: 80,
-             key: 'id'
-        },
-
-        // {
-        //     accessor: 'id',
-        //     title: '#',
-        //     sortable: false,
-        //     width: 80,
-        //     key: 'id',
-        //     render: (_: any, index: number) => (
-        //         <span>{(page - 1) * pageSize + index + 1}</span>
-        //     ),
-        // },
-
+            key: 'id'
+        }, 
         { 
             accessor: 'client_user_name', 
             title: 'Name', 
             sortable: true, 
-            key : 'name'
+            key: 'client_user_name_column'
         },
         { 
             accessor: 'client_user_email', 
             title: 'Email', 
             sortable: true,
-            key : 'email' 
-        },
-        { 
-            accessor: 'roles', 
-            title: 'Role', 
-            sortable: true,
-            key: 'role',
-            render: (item: any) => (
-                <span>{item.roles[0]?.name || 'N/A'}</span>
-            )
+            key: 'email-column' 
         },
         {
             accessor: 'actions',
             title: 'Actions',
             width: 120,
-            key: 'actions', 
+            key: 'actions-column', 
             render: (item: any) => (
                 <div className="flex space-x-2">
                     <button 
                         type="button" 
                         onClick={() => handleEdit(item)} 
-                        className="btn px-1 py-0.5 rounded text-white bg-info"
-                        key="edit"
+                        className="btn px-1 py-0.5 rounded text-white bg-info" 
+                        key={`edit-${item.client_user_id}`} 
                     >
                         <IconPencil />
                     </button>
                     <button 
                         type="button" 
-                        onClick={() => handleDelete(item)} 
-                        className="btn px-1 py-0.5 rounded text-white bg-red-600"
-                        key="delete"
+                        onClick={() => handleDelete(item)}  
+                        className="btn px-1 py-0.5 rounded text-white bg-red-600" 
+                        key={`delete-${item.client_user_id}`} 
                     >
                         <IconTrashLines />
                     </button>
@@ -282,7 +269,11 @@ const Users = () => {
                                         className="form-input" 
                                     />
                                     <input type="hidden" name="client_user_id" id="client_user_id" />
-                                    {errors.client_user_name && ( <span key="name-error" className="text-red-500 text-sm"> {errors.client_user_name} </span> )}
+                                    {errors.client_user_name && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_name}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_phone">Phone</label>
@@ -292,8 +283,11 @@ const Users = () => {
                                         placeholder="Phone" 
                                         className="form-input" 
                                     />
-
-                                    {errors.client_user_phone && ( <span key="phone-error" className="text-red-500 text-sm"> {errors.client_user_phone} </span> )}
+                                    {errors.client_user_phone && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_phone}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_designation">Designation</label>
@@ -303,8 +297,11 @@ const Users = () => {
                                         placeholder="Designation" 
                                         className="form-input" 
                                     />
-                                    {errors.client_user_designation && ( <span key="designation-error" className="text-red-500 text-sm"> {errors.client_user_designation} </span> )}
-                                   
+                                    {errors.client_user_designation && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_designation}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_email">Email</label>
@@ -314,7 +311,11 @@ const Users = () => {
                                         placeholder="Email" 
                                         className="form-input" 
                                     />
-                                     {errors.client_user_email && ( <span key="email-error" className="text-red-500 text-sm"> {errors.client_user_email} </span> )}
+                                    {errors.client_user_email && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_email}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="password">Password</label>
@@ -324,7 +325,11 @@ const Users = () => {
                                         placeholder="Password" 
                                         className="form-input" 
                                     />
-                                    {errors.password && ( <span key="password-error" className="text-red-500 text-sm"> {errors.password} </span> )}
+                                    {errors.password && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.password}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_status">Status</label>
@@ -335,7 +340,11 @@ const Users = () => {
                                         value={options.find((option) => option.value === status)} 
                                         onChange={(selected) => setStatus(selected?.value || null)}
                                     />
-                                     {errors.client_user_status && ( <span key="status-error" className="text-red-500 text-sm"> {errors.client_user_status} </span> )}
+                                    {errors.client_user_status && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_status}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_sort_order">Sort Order</label>
@@ -345,7 +354,11 @@ const Users = () => {
                                         placeholder="Sort Order" 
                                         className="form-input" 
                                     />
-                                    {errors.client_sort_order && ( <span key="sortorder-error" className="text-red-500 text-sm"> {errors.client_sort_order} </span> )}
+                                    {errors.client_sort_order && ( 
+                                        <span  className="text-red-500 text-sm">
+                                            {errors.client_sort_order}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
@@ -356,7 +369,11 @@ const Users = () => {
                                         value={selectedRole} 
                                         onChange={handleRoleChange}
                                     />
-                                    {errors.role_id && ( <span key="roleId-error" className="text-red-500 text-sm"> {errors.role_id} </span> )}
+                                    {errors.role_id && ( 
+                                        <span className="text-red-500 text-sm">
+                                            {errors.role_id}
+                                        </span> 
+                                    )}
                                 </div>
                                 <div className="sm:col-span-2 flex justify-end">
                                     <button type="submit" className="btn btn-primary">
@@ -368,30 +385,26 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                    {/* <div className="panel"> */}
-                        <div className="datatables">
-                            <Table
-                                columns={columns}
-                                rows={users}
-                                title="Detail of the all users"
-                                totalRecords={totalRecords}
-                                currentPage={page}
-                                recordsPerPage={pageSize}
-                                onPageChange={(p) => setPage(p)}
-                                onRecordsPerPageChange={(size) => {
-                                    setPageSize(size);
-                                    setPage(1); // Reset page when changing size
-                                }}
-                                onSortChange={setSortStatus}
-                                onSearchChange={handleSearchChange}
-                                sortStatus={sortStatus}
-                                isLoading={false} // or true if you're adding loading state
-                                minHeight={200}
-                                noRecordsText="No users found"
-                                searchValue={searchQuery}
-                            />
-                        </div>
-                    {/* </div> */}
+                      <div className="datatables">
+                        <Table
+                            columns={columns}
+                            rows={users}
+                            title="List of all Users"
+                            idAccessor="client_user_id"
+                            totalRecords={totalRecords}
+                            currentPage={page}
+                            recordsPerPage={pageSize}
+                            onPageChange={handlePageChange}
+                            onRecordsPerPageChange={handlePageSizeChange}
+                            onSortChange={setSortStatus}
+                            onSearchChange={handleSearchChange}
+                            sortStatus={sortStatus}
+                            isLoading={false}
+                            minHeight={200}
+                            noRecordsText="No users found"
+                            searchValue={searchQuery}
+                        />
+                    </div>
                 </div>
             </div>
         </form>

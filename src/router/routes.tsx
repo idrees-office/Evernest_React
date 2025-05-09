@@ -29,6 +29,8 @@ const Activities = lazy(() => import('../pages/activities/activities'));
 const EmailTemplate = lazy(() => import('../pages/emails/template'));
 const EmailPreview = lazy(() => import('../pages/emails/preview'));
 const EmailSubscriber = lazy(() => import('../pages/emails/subscriber'));
+const AnalyticsDashboard = lazy(() => import('../pages/emails/analyticsDashboard'));
+
 
 const routes = [
     {
@@ -93,7 +95,12 @@ const routes = [
         element: <EmailSubscriber />, 
         layout: 'default',
     },
-
+    {
+        path: 'pages/email/analyticsDashboard',
+        type: 'protected',
+        element: <AnalyticsDashboard />, 
+        layout: 'default',
+    },
     
     {
         path: '/analytics',

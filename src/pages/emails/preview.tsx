@@ -43,7 +43,7 @@ const PreviewTemplate = () => {
             formData.append('htmlContent',generatePreview());
             formData.append('schedule_at', date);
             if (formData.has('send_to_all')) {
-                // alert("✅ Sending to all subscribers");
+                
             } else {
                 toast.error('Please select at least one subscriber to send the email.');
                 setErrors({ send_to_all: ['Please select at least one subscriber to send the email.'] });
