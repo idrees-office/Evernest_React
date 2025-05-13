@@ -64,7 +64,7 @@ const PreviewTemplate = () => {
     };
 
     const handleFormKeyUp = (e: React.KeyboardEvent) => {  
-        const target = e.target as HTMLInputElement;   // it will tale input attribute
+        const target = e.target as HTMLInputElement;   
         const inputName = target.name;
         if (errors[inputName]) {
             setErrors((prevErrors: any) => ({
@@ -108,16 +108,16 @@ const PreviewTemplate = () => {
     };
 
     const selectDate = (e: any) => {
+        setIsSendNow(false);
         const selectedDate = e[0]; 
         setDate(selectedDate);
         setErrors((prevErrors:any) => ({
             ...prevErrors,
             date: ''
         }));
-
-        if (isSendNow) {
-            setIsSendNow(false);
-        }
+        // if (isSendNow) {
+        //     setIsSendNow(false);
+        // }
     }
     
     return (
