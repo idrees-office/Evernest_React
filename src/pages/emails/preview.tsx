@@ -90,7 +90,7 @@ const PreviewTemplate = () => {
         if (isChecked) {
             setDate('');
         }
-
+        
         setErrors((prevErrors:any) => ({
             ...prevErrors,
             sendNow: '',
