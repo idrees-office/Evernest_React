@@ -8,6 +8,8 @@ import IconTrendingUp from '../../components/Icon/IconTrendingUp';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import { AppDispatch } from '../../store';
 import { useDispatch } from 'react-redux';
+import IconClock from '../../components/Icon/IconClock';
+import IconCircleCheck from '../../components/Icon/IconChecks';
 
 const endpoints = {
     reportApi: `${getBaseUrl()}/subscriber/tracking-report`,
@@ -27,7 +29,8 @@ const CampaignStatistics = () => {
         totalCampaigns: 0,
         totalEmails: 0,
         totalSendCampaigns : 0,
-        PendingCampaign : 0
+        PendingCampaign : 0,
+        openRate: 0
     });
 
     useEffect(() => {
@@ -51,7 +54,7 @@ const CampaignStatistics = () => {
             });
             
             setCampaignData(response.data.reports);
-            setStats({subscriber: response.data.subscriber, totalCampaigns: response.data.totalCampaigns, totalEmails: response.data.totalEmails, totalSendCampaigns : response.data.totalSendCampaigns, PendingCampaign : response.data.PendingCampaign });
+            setStats({subscriber: response.data.subscriber, totalCampaigns: response.data.totalCampaigns, totalEmails: response.data.totalEmails, totalSendCampaigns : response.data.totalSendCampaigns, PendingCampaign : response.data.PendingCampaign, openRate: response.data.openRate});
             setTotalRecords(response.data.totalCampaigns);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -79,6 +82,15 @@ const CampaignStatistics = () => {
             )
         },
         {
+            accessor: 'type',
+            title: 'Type',
+            key : 'type',
+            render: (record: any) => (
+                record.type == 1 ? <span className="badge bg-success">Immidiate</span> :
+                <span className="badge bg-warning">Scheduled</span>
+            )
+        },
+        {
             accessor: 'total',
             title: 'Total',
             sortable: true,
@@ -98,29 +110,21 @@ const CampaignStatistics = () => {
             key : 'read',
         },
         {
-            accessor: 'status',
-            title: 'Status',
-            key : 'status',
-            render: (record: any) => (<span className="badge bg-success">{record.status}</span> )
+            accessor: 'scheduled_at',
+            title: 'Scheduled At | Send-Time',
+            key : 'scheduled_at',
         },
         {
             accessor: 'created_at',
-            title: 'Created At | Send-Time',
-              key : 'created_at',
-            render: (record: any) => (
-                record.created_at 
-                    ? record.created_at 
-                    : <span className="badge bg-dark">Already Scheduled</span>
-            )
+            title: 'Created At',
+            key : 'created_at',
         },
         {
-            accessor: 'scheduled_at',
-            title: 'Scheduled At',
-            key : 'scheduled_at',
+            accessor: 'status',
+            title: 'Status',
+            key : 'status',
             render: (record: any) => (
-                record.scheduled_at 
-                    ? record.scheduled_at 
-                    : <span className="badge bg-dark">Already sent</span>
+                record.status == 1 ? <IconClock className="text-success" /> : <IconCircleCheck className="text-info" />
             )
         }
     ];
@@ -176,7 +180,7 @@ const CampaignStatistics = () => {
                         <div className="grid sm:grid-cols-2 gap-8 text-sm text-[#515365] font-bold">
                             <div>
                                 <div>Open Rate</div>
-                                <div className="text-[#f8538d] text-sm">{0}%</div>
+                                <div className="text-[#f8538d] text-sm">{stats.openRate}%</div>
                             </div>
                             <div>
                                 <div>Hot Leads</div>
