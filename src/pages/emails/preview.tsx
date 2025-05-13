@@ -87,7 +87,6 @@ const PreviewTemplate = () => {
 
     const handleSendNowToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
-
         if (isChecked) {
             setDate('');
         }
@@ -119,7 +118,6 @@ const PreviewTemplate = () => {
         //     setIsSendNow(false);
         // }
     }
-    
     return (
         <div>
             <div className="min-h-screen p-2 sm:p-4">
