@@ -64,7 +64,7 @@ const PreviewTemplate = () => {
     };
 
     const handleFormKeyUp = (e: React.KeyboardEvent) => {  
-        const target = e.target as HTMLInputElement;   
+        const target = e.target as HTMLInputElement;   // it will tale input attribute
         const inputName = target.name;
         if (errors[inputName]) {
             setErrors((prevErrors: any) => ({
@@ -87,10 +87,11 @@ const PreviewTemplate = () => {
 
     const handleSendNowToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = e.target.checked;
+
         if (isChecked) {
             setDate('');
         }
-        
+
         setErrors((prevErrors:any) => ({
             ...prevErrors,
             sendNow: '',
@@ -108,16 +109,20 @@ const PreviewTemplate = () => {
 
     const selectDate = (e: any) => {
         setIsSendNow(false);
+
         const selectedDate = e[0]; 
+            // console.log(selectedDate);
         setDate(selectedDate);
         setErrors((prevErrors:any) => ({
             ...prevErrors,
             date: ''
         }));
+
         // if (isSendNow) {
         //     setIsSendNow(false);
         // }
     }
+    
     return (
         <div>
             <div className="min-h-screen p-2 sm:p-4">
