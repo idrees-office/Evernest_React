@@ -105,11 +105,10 @@ const SubscriberTemplate = () => {
         phone: subscriberuser.phone,
         source: subscriberuser.status,
     }));
-    
     const Import = async () => {
         window.open('https://backend.leadshub.ae/add-subscriber', '_blank');
     };
-
+    
     const handleDelete = async (id: number) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
