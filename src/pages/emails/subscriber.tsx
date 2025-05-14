@@ -105,9 +105,9 @@ const SubscriberTemplate = () => {
         phone: subscriberuser.phone,
         source: subscriberuser.status,
     }));
-
+    
     const Import = async () => {
-        window.open('http://127.0.0.1:8000/add-subscriber', '_blank');
+        window.open('https://backend.leadshub.ae/add-subscriber', '_blank');
     };
 
     const handleDelete = async (id: number) => {

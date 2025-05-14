@@ -15,7 +15,7 @@ const endpoints = {
     createApi    : `${getBaseUrl()}/subscriber/send-campaign`,
 };
 
-const PreviewTemplate = () => {
+const EmailPreview = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const toast    = Toast();
@@ -64,7 +64,7 @@ const PreviewTemplate = () => {
     };
 
     const handleFormKeyUp = (e: React.KeyboardEvent) => {  
-        const target = e.target as HTMLInputElement;   // it will tale input attribute
+        const target = e.target as HTMLInputElement;   
         const inputName = target.name;
         if (errors[inputName]) {
             setErrors((prevErrors: any) => ({
@@ -233,4 +233,4 @@ const PreviewTemplate = () => {
     );
 };
 
-export default PreviewTemplate;
+export default EmailPreview;
