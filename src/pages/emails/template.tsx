@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CodeMirror from "@uiw/react-codemirror";
 import { html } from "@codemirror/lang-html";
-// import "tailwindcss/tailwind.css";
 
 const EmailTemplate = () => {
     const [htmlCode, setHtmlCode] = useState("");
@@ -10,7 +9,7 @@ const EmailTemplate = () => {
     const [recipients, setRecipients] = useState<string[]>([]); 
     const [emailInput, setEmailInput] = useState("");
     const navigate = useNavigate();
-
+    
     const generatePreview = () => {
         return `
             <html>

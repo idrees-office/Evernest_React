@@ -15,7 +15,7 @@ const endpoints = {
     createApi    : `${getBaseUrl()}/subscriber/send-campaign`,
 };
 
-const PreviewTemplate = () => {
+const EmailPreview = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const toast    = Toast();
@@ -27,11 +27,8 @@ const PreviewTemplate = () => {
     const [date, setDate] = useState<any>('');
 
     const togglePara = (value: string) => {
-        setActive((oldValue) => {
-            return oldValue === value ? '' : value;
-        });
+        setActive((oldValue) => { return oldValue === value ? '' : value; });
     };
-
     const generatePreview = () => {
         return htmlCode
     };
@@ -43,21 +40,27 @@ const PreviewTemplate = () => {
             formData.append('body', generatePreview());
             formData.append('schedule_at', date);
             if (formData.has('send_to_all')) {
-                
             } else {
                 toast.error('Please select at least one subscriber to send the email.');
                 setErrors({ send_to_all: ['Please select at least one subscriber to send the email.'] });
                 setActive('1');
                 return
             }
-            
             try {
-                const response = await apiClient.post(endpoints.createApi, formData);
-                alert("Emails are being sent in the background!");
+                const response = await apiClient.post(endpoints.createApi, formData);                
+                toast.success(response.data.message)
             } catch (error:any) {
                 if (error.response && error.response.status === 422) {
                     setActive('2');
                     setErrors(error.response.data);
+                    const errors = error.response.data;
+                    for (const key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                        errors[key].forEach((message:any) => {
+                            toast.error(message); 
+                        });
+                        }
+                    }
                 }
             }
         }
@@ -73,7 +76,7 @@ const PreviewTemplate = () => {
             }));
         }
     };
-
+    
     const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {  
         const target = e.target;
         const inputName = target.name;
@@ -90,7 +93,6 @@ const PreviewTemplate = () => {
         if (isChecked) {
             setDate('');
         }
-        
         setErrors((prevErrors:any) => ({
             ...prevErrors,
             sendNow: '',
@@ -114,9 +116,6 @@ const PreviewTemplate = () => {
             ...prevErrors,
             date: ''
         }));
-        // if (isSendNow) {
-        //     setIsSendNow(false);
-        // }
     }
     return (
         <div>
@@ -157,12 +156,12 @@ const PreviewTemplate = () => {
                                                 <div className="space-y-2 p-4 text-white-dark text-[13px] border-t border-[#d3d3d3] dark:border-[#1b2e4b]">
                                                     <div className="mb-3">
                                                         <label htmlFor="name">Campaign Name </label>
-                                                        <input id="name" type="text" name="name" placeholder="Evernest Real Estate" className="form-input" autoComplete="off" />
+                                                        <input id="name" type="text" name="name" placeholder="(Like) Banglore Roadshow 06052025 Post" className="form-input" autoComplete="off" />
                                                         {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
                                                     </div>
                                                     <div className="mb-3">
                                                         <label htmlFor="subject">Subject </label>
-                                                        <input id="subject" type="text" name="subject" placeholder="Subject" className="form-input" autoComplete="off" />
+                                                        <input id="subject" type="text" name="subject" placeholder="Email Subject" className="form-input" autoComplete="off" />
                                                         {errors.subject && <span className="text-red-500 text-sm">{errors.subject}</span>}
                                                     </div>
                                                     <div className="mb-3">
@@ -228,4 +227,4 @@ const PreviewTemplate = () => {
     );
 };
 
-export default PreviewTemplate;
+export default EmailPreview;

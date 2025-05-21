@@ -122,12 +122,9 @@ const NavBar = () => {
                             <IconCaretDown />
                         </div>
                     </button>
-               
-                <ul className="sub-menu">
-                        <li>
-                            <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink>
-                        </li>
-                </ul>
+                    <ul className="sub-menu">
+                        <li> <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink> </li>
+                    </ul>
             </li>   
             {(permissions.includes('create subscriber') || role === 'super admin') && (
             <li className="menu nav-item relative">
@@ -142,12 +139,10 @@ const NavBar = () => {
                     </button>
                     <ul className="sub-menu">
                         <li>
-                            <NavLink to="/pages/email/template">{t('Add-Template')}</NavLink>
-                            <NavLink to="/pages/email/subscriber">{t('Add-Subscriber')}</NavLink>
+                            <NavLink to="/pages/email/subscriber">{t('Create-Subscriber')}</NavLink>
+                            <NavLink to="/pages/email/template">{t('Create-Campaign')}</NavLink>
                             <NavLink to="/pages/email/analyticsDashboard">{t('Tracking Dashboard')}</NavLink>
                             <NavLink to="/pages/email/email-report-list">{t('Report List')}</NavLink>
-
-
                         </li>
                     </ul>
             </li>
