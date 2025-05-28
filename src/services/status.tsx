@@ -267,6 +267,23 @@ export const CountryList = [
       name: 'Riyadh',
     },
   ];
+  
+  export const Rentoptions = [
+    { value: 1, label: 'Rented' },
+    { value: 2, label: 'Vacant' },
+];
+
+ export const Saleoptions = [
+    { value: 1, label: 'Off-Plan' },
+    { value: 2, label: 'Ready' },
+];
+
+ export const RentalPeriodOption = [
+    { value: 1, label: 'Yearly' },
+    { value: 2, label: 'Monthly' },
+    { value: 3, label: 'Weekly' },
+    { value: 4, label: 'Daily' },
+];
 
 
 
