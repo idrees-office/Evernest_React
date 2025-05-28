@@ -30,7 +30,8 @@ const CampaignStatistics = () => {
         totalEmails: 0,
         totalSendCampaigns : 0,
         PendingCampaign : 0,
-        openRate: 0
+        openRate: 0,
+        hotLeads: 0
     });
 
     useEffect(() => {
@@ -54,7 +55,7 @@ const CampaignStatistics = () => {
             });
             
             setCampaignData(response.data.reports);
-            setStats({subscriber: response.data.subscriber, totalCampaigns: response.data.totalCampaigns, totalEmails: response.data.totalEmails, totalSendCampaigns : response.data.totalSendCampaigns, PendingCampaign : response.data.PendingCampaign, openRate: response.data.openRate});
+            setStats({subscriber: response.data.subscriber, totalCampaigns: response.data.totalCampaigns, totalEmails: response.data.totalEmails, totalSendCampaigns : response.data.totalSendCampaigns, PendingCampaign : response.data.PendingCampaign, openRate: response.data.openRate, hotLeads: response.data.hotLeads});
             setTotalRecords(response.data.totalCampaigns);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -184,7 +185,7 @@ const CampaignStatistics = () => {
                             </div>
                             <div>
                                 <div>Hot Leads</div>
-                                <div className="text-[#f8538d] text-sm">{0}</div>
+                                <div className="text-[#f8538d] text-sm">{stats.hotLeads}</div>
                             </div>
                         </div>
                     </div>
