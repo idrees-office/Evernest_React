@@ -6,7 +6,9 @@ export const getBaseUrl = () => {
         return 'http://10.99.1.99:8000/api';
     } else if (currentUrl.includes('leadshub.ae')) {
         return 'https://backend.leadshub.ae/api';  
-    } else {return 'http://10.99.1.93:8000/api'; 
-        return 'https://backend.leadshub.ae/api';  
+     } else if (currentUrl.includes('testcrm.leadshub.ae')) {
+        return 'https://testcrmbackend.leadshub.ae/api';
+    } else {
+        return 'http://10.99.1.93:8000/api';   
     }
 };
