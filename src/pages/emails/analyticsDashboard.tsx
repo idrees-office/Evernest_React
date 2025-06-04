@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import Table from '../../components/Table';
 import { getBaseUrl } from '../../components/BaseUrl';
@@ -10,9 +10,12 @@ import { AppDispatch } from '../../store';
 import { useDispatch } from 'react-redux';
 import IconClock from '../../components/Icon/IconClock';
 import IconCircleCheck from '../../components/Icon/IconChecks';
+import { Dialog, Transition } from '@headlessui/react';
+import IconX from '../../components/Icon/IconX';
 
 const endpoints = {
     reportApi: `${getBaseUrl()}/subscriber/tracking-report`,
+    userReadEmailApi: `${getBaseUrl()}/subscriber/check-read-email`,
 };
 
 const CampaignStatistics = () => {
@@ -33,6 +36,10 @@ const CampaignStatistics = () => {
         openRate: 0,
         hotLeads: 0
     });
+
+    const [openModal, SetopenModal] = useState(false);
+    const [hotLeadsDetail, setHotLeadsDetail] = useState([]);
+
 
     useEffect(() => {
         // if(!combinedRef.current.fetched){
@@ -63,6 +70,19 @@ const CampaignStatistics = () => {
             setIsLoading(false);
         }
     };
+
+    const handleHotLeadsClick = async () => {
+         const response = await apiClient.get(endpoints.userReadEmailApi)
+        if (response.data) {
+            setHotLeadsDetail(response.data);
+            SetopenModal(true);
+        }
+    }
+
+    const closeModal = (value: boolean) => {
+        SetopenModal(value);
+    };
+
 
     const columns = [
         {
@@ -183,7 +203,7 @@ const CampaignStatistics = () => {
                                 <div>Open Rate</div>
                                 <div className="text-[#f8538d] text-sm">{stats.openRate}%</div>
                             </div>
-                            <div>
+                            <div style={{ cursor: 'pointer' }} onClick={handleHotLeadsClick}>
                                 <div>Hot Leads</div>
                                 <div className="text-[#f8538d] text-sm">{stats.hotLeads}</div>
                             </div>
@@ -204,25 +224,57 @@ const CampaignStatistics = () => {
             </div>
              <div className="pt-2">
             <div className="h-full w-full">
-                <Table 
-                    columns={columns}
-                    rows={campaignData}
-                    title=""
-                    totalRecords={totalRecords}
-                    currentPage={page}
-                    recordsPerPage={pageSize}
-                    onPageChange={setPage}
-                    onRecordsPerPageChange={setPageSize}
-                    onSortChange={setSortStatus}
-                    sortStatus={sortStatus}
-                    isLoading={isLoading}
-                    noRecordsText="No campaign data available"
-                    idAccessor="id"
+                <Table columns={columns} rows={campaignData} title="" totalRecords={totalRecords} currentPage={page} recordsPerPage={pageSize} onPageChange={setPage} onRecordsPerPageChange={setPageSize} onSortChange={setSortStatus} sortStatus={sortStatus} isLoading={isLoading} noRecordsText="No campaign data available" idAccessor="id"
                 />
             </div>
         </div>
-        </div>
-       
+        <Transition appear show={openModal} as={Fragment}>
+            <Dialog as="div" open={openModal} onClose={() => closeModal(false)}>
+                <div className="fixed inset-0 z-[999] overflow-y-auto bg-[black]/60">
+                    <div className="flex items-start justify-center">
+                        <Transition.Child enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                            <Dialog.Panel as="div" className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-7xl my-8 text-black dark:text-white-dark">
+                                <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
+                                    <div className="text-lg font-bold">Report</div>
+                                    <button type="button" className="text-white-dark hover:text-dark" onClick={() => closeModal(false)}>
+                                        <IconX />
+                                    </button>
+                                </div>
+                                <div className="p-5">
+                                    {hotLeadsDetail.length > 0 ? (
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead className="bg-gray-100 dark:bg-gray-800">
+                                                    <tr>
+                                                        <th className="border-b p-3 text-left">Subscriber</th>
+                                                        <th className="border-b p-3 text-left">Campaign</th>
+                                                        <th className="border-b p-3 text-left">Emails</th>
+                                                        <th className="border-b p-3 text-left">Reads</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {hotLeadsDetail.map((lead: any, index: number) => (
+                                                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                            <td className="border-b p-3">{lead.name}</td>
+                                                            <td className="border-b p-3">{lead.campaign}</td>
+                                                            <td className="border-b p-3">{lead.emails}</td>
+                                                            <td className="border-b p-3">{lead.read}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div>No hot leads found.</div>
+                                    )}
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                </div>
+            </Dialog>
+        </Transition>
+    </div>
     );
 };
 

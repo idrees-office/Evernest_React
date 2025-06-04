@@ -18,7 +18,6 @@ import { co } from '@fullcalendar/core/internal-common';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-
     export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number, search }: { lead_status?: number, page_number?: number, search?: string }, { rejectWithValue }) => {
         try {
             const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
@@ -31,18 +30,7 @@ import { co } from '@fullcalendar/core/internal-common';
         }
     });
 
-    // export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ formData, status }: { formData: FormData; status?: number }, { rejectWithValue }) => {
-    //       try {
-    //         const url = status ? `${endpoints.listApi}/${status}` : endpoints.listApi;
-    //         const response = await apiClient.post(url, formData);
-    //         return { leadsdata: response.data, status: response.status };
-    //       } catch (error: any) {
-    //         return rejectWithValue(error.response?.data || error.message);
-    //       }
-    //     }
-    //   );
-
-      export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
+    export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
             const url = id ? `${endpoints.updateLead}/${id}` : endpoints.updateLead;
             const response = await apiClient.post(url, formData);

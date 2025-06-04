@@ -18,11 +18,8 @@ import 'react-quill/dist/quill.snow.css';
 import Toast from '../../services/toast';
 
 const endpoints = {
-    createApi: `${getBaseUrl()}/users/create_user`,
-    roleApi: `${getBaseUrl()}/users/get_user_role`,
-    listApi: `${getBaseUrl()}/users/user_list`,
-    destoryApi: `${getBaseUrl()}/users/delete_user`,
-    updateApi: `${getBaseUrl()}/users/update_user`,
+    listApi: `${getBaseUrl()}/listing/get_users`,
+    
 };
 
 const createListing = () => {
@@ -42,176 +39,113 @@ const createListing = () => {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'client_user_id', direction: 'asc' });
     const [searchQuery, setSearchQuery] = useState('');
     const [occupancy, setoccupancy] = useState<any>({ disabled : true, occupancyoption: {} });
-    const [selectedOccOption, setSelectedOccOption] = useState<any | null>(null);
-     const [rentalPeriod, setRentalPeriod] = useState<any>({ disabled : true, options: RentalPeriodOption});
-
+    const [selectedOccupancy, setselectedOccupancy] = useState<any | null>(null);
+    const [rentalPeriod, setRentalPeriod] = useState<any>({ disabled : true, rentalperiodOption: {} });
+    const [selectedRentalPeriod, setSelectedRentalPeriod] = useState<any | null>(null);
 
     useEffect(() => {
         if (!requestMade.current) {
-            dispatch(setPageTitle('Create User'));
-            fetchRoles();
+            dispatch(setPageTitle('Create User')); 
+            fetchUserLists();
             requestMade.current = true;
         }
     }, [dispatch]);
 
-    useEffect(() => {
-        fetchUserLists();
-    }, [page, pageSize, sortStatus, searchQuery]);
-
-    const fetchRoles = async () => {
-        try {
-            const response = await apiClient.get(endpoints.roleApi);
-            if (response.data) {
-                const roleOptions = response.data.data.map((role: any) => ({
-                    value: role.id,
-                    label: role.name,
-                }));
-                setRoles(roleOptions);
-            }
-        } catch (error: any) {
-            if (error.response?.status === 403) {
-                window.location.href = '/error';
-            }
-        }
-    };
 
     const fetchUserLists = async () => {
         try {
-            const params = {
-                page,
-                per_page: pageSize,
-                sort_field: sortStatus.columnAccessor,
-                sort_order: sortStatus.direction,
-                search: searchQuery,
-            };
-            const response = await apiClient.get(endpoints.listApi, { params });
-            if (response.data) {
-                setUsers(response.data.data.data || []);
-                setTotalRecords(response.data.data.total || 0);
+            const response = await apiClient.get(endpoints.listApi);
+            if (response.data) { 
+                const options = response.data.map((user: any) => ({
+                    value: user.client_user_id,
+                    label: user.client_user_name,
+                }));
+                setUsers(options);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
                 window.location.href = '/error';
             }
-            showServerError();
+            
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            if (combinedRef.current.userformRef) {
-                const formData = new FormData(combinedRef.current.userformRef);
-                const userId = formData.get('client_user_id');
-                const response = userId ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData) : await apiClient.post(endpoints.createApi, formData);
-                if (response.status === 200 || response.status === 201) {
-                    showSuccessToast(response.data.message);
-                    fetchUserLists();
-                    setErrors({});
-                    combinedRef.current.userformRef.reset();
-                    setSelectedRole(null);
-                    setStatus(null);
-                }
-            }
-        } catch (error: any) {
-            if (error.response?.data?.errors) {
-                setErrors(error.response.data.errors);
-            } else if (error.response?.status === 403) {
-                window.location.href = '/error';
-            } else {
-                showServerError();
-            }
-        }
-    };
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     try {
+    //         if (combinedRef.current.userformRef) {
+    //             const formData = new FormData(combinedRef.current.userformRef);
+    //             const userId = formData.get('client_user_id');
+    //             const response = userId ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData) : await apiClient.post(endpoints.createApi, formData);
+    //             if (response.status === 200 || response.status === 201) {
+    //                 showSuccessToast(response.data.message);
+    //                 fetchUserLists();
+    //                 setErrors({});
+    //                 combinedRef.current.userformRef.reset();
+    //                 setSelectedRole(null);
+    //                 setStatus(null);
+    //             }
+    //         }
+    //     } catch (error: any) {
+    //         if (error.response?.data?.errors) {
+    //             setErrors(error.response.data.errors);
+    //         } else if (error.response?.status === 403) {
+    //             window.location.href = '/error';
+    //         } else {
+    //             showServerError();
+    //         }
+    //     }
+    // };
     
-    const showSuccessToast = (message: string) => {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            title: message,
-            icon: 'success',
-        });
-    };
+    // const showSuccessToast = (message: string) => {
+    //     Swal.fire({
+    //         toast: true,
+    //         position: 'top-end',
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         timerProgressBar: true,
+    //         title: message,
+    //         icon: 'success',
+    //     });
+    // };
 
-    const showServerError = () => {
-        Swal.fire({
-            text: 'Something went wrong on the server',
-            icon: 'error',
-            title: 'Server Error',
-        });
-    };
+    // const showServerError = () => {
+    //     Swal.fire({
+    //         text: 'Something went wrong on the server',
+    //         icon: 'error',
+    //         title: 'Server Error',
+    //     });
+    // };
 
-    const handleRoleChange = (selectedOption: any) => {
-        setSelectedRole(selectedOption);
-    };
+    
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-        setPage(1); 
-    };
+   
 
-    const handlePageChange = (p: number) => {
-        setPage(p);
-    };
 
-    const handlePageSizeChange = (size: number) => {
-        setPageSize(size);
-        setPage(1);
-    };
+    
 
     const HandleCategory = (e:any) => {
         const optionValue = e.target.value ? e.target.value : '0';
-        setSelectedOccOption(null);
+        setselectedOccupancy(null);   //always reset occupancy selection
+        setSelectedRentalPeriod(null); // always reset rental period selection
         if (!optionValue || optionValue == 0) {
             setoccupancy({ disabled: true, occupancyoption: {} });
-            setRentalPeriod({ disabled: true, options: [] });
+            setRentalPeriod({ disabled: true, rentalperiodOption: {} });
             return;
         }
-        const isRent = optionValue == 1 || optionValue === 2;
+        const isRent = optionValue == 1 || optionValue == 2;
         const isSale = optionValue == 3 || optionValue == 4;
-
         if (isRent) {
+            setRentalPeriod({ disabled: false, rentalperiodOption: RentalPeriodOption });
             setoccupancy({ disabled: false, occupancyoption: Rentoptions });
-            setRentalPeriod({ disabled: false, options: RentalPeriodOption });
         } else if (isSale) {
+            setRentalPeriod({ disabled: true, rentalperiodOption: {}  });
             setoccupancy({ disabled: false, occupancyoption: Saleoptions });
-            setRentalPeriod({ disabled: true, options: [] });
         }
-
     }
-
-
-    const selectOption = (option: any) => {
-        setSelectedOccOption(option);   
-    }
-
-
-    const columns = [
-        {
-            accessor: 'client_user_id',
-            title: '#',
-            width: 80,
-            key: 'id',
-        },
-        {
-            accessor: 'client_user_name',
-            title: 'Name',
-            sortable: true,
-            key: 'client_user_name_column',
-        },
-        {
-            accessor: 'client_user_email',
-            title: 'Email',
-            sortable: true,
-            key: 'email-column',
-        },
-    ];
 
     return (
-        <form ref={(el) => (combinedRef.current.userformRef = el)} onSubmit={handleSubmit} className="space-y-5">
+        <form ref={(el) => (combinedRef.current.userformRef = el)}  className="space-y-5">
             <div className="flex flex-wrap -mx-4">
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
@@ -242,7 +176,7 @@ const createListing = () => {
                                  <div className="form-group">
                                     <div className="form-group">
                                         <label htmlFor="rental_period">Rental Period</label>
-                                        <Select name="rental_period" placeholder="Select rental period" value={selectedOccOption} options={rentalPeriod.options} isDisabled={rentalPeriod.disabled} />
+                                        <Select name="rental_period" placeholder="Select rental period" options={rentalPeriod.rentalperiodOption} isDisabled={rentalPeriod.disabled} value={selectedRentalPeriod} onChange={(selectedOption) => setSelectedRentalPeriod(selectedOption)} />
                                     </div>
                                     {errors.rental_period && <span className="text-red-500 text-sm">{errors.rental_period}</span>}
                                 </div>
@@ -252,10 +186,10 @@ const createListing = () => {
                                     <input name="price" type="text" placeholder="Price" className="form-input" />
                                     {errors.price && <span className="text-red-500 text-sm">{errors.price}</span>}
                                 </div>
-                                <div className="form-group sm:col-span-2">
+                                 <div className="form-group sm:col-span-2">
                                     <label htmlFor="listing_meta_description">Designation</label>
-                                    <ReactQuill theme="snow" placeholder="Description" />
-                                </div>
+                                    <ReactQuill theme="snow" placeholder="Description" modules={{ toolbar: [   [{ 'header': [1, 2, false] }], ['bold', 'italic', 'underline','strike', 'blockquote'],  [{'list': 'ordered'}, {'list': 'bullet'}],  ['link', 'image'], ] }} />
+                                </div> 
                             </div>
                             <div className="flex justify-end mt-4">
                                 <button type="submit" className="btn btn-primary">{' '}Submit{' '}</button>
@@ -297,11 +231,6 @@ const createListing = () => {
                                     <input name="listing_bathrooms" type="number" placeholder="Bathrooms.." className="form-input"/>
                                     {errors.listing_bathrooms && ( <span className="text-red-500 text-sm"> {errors.listing_bathrooms} </span> )}
                                 </div> 
-                                <div className="form-group">
-                                    <label htmlFor="listing_parking_space"># of Parking</label>
-                                    <input name="listing_parking_space" type="number" placeholder="Parking" className="form-input"/>
-                                    {errors.listing_parking_space && ( <span className="text-red-500 text-sm"> {errors.listing_parking_space} </span> )}
-                                </div> 
                                  <div className="form-group">
                                     <label htmlFor="listing_furnished_type">Furnished Type</label>
                                     <select id="listing_furnished_type" className="form-input">
@@ -317,21 +246,10 @@ const createListing = () => {
                                     <input name="listing_parking_space" type="number" placeholder="Parking" className="form-input"/>
                                     {errors.listing_parking_space && ( <span className="text-red-500 text-sm"> {errors.listing_parking_space} </span> )}
                                 </div>
-                                {/* <div className="form-group">
-                                    <label htmlFor="client_user_status">Occupancy</label>
-                                    <Select name="client_user_status" placeholder="Select an option" options={occupancy.occupancyoption} isDisabled={occupancy.disabled} 
-                                     onChange={selectOption} />
-                                </div> */}
                                 <div className="form-group">
                                 <label htmlFor="occupancy_status">Occupancy</label>
-                                <Select
-                                    name="occupancy_status"
-                                    placeholder="Select occupancy"
-                                    options={occupancy.occupancyoption}
-                                    isDisabled={occupancy.disabled}
-                                    onChange={(option) => setSelectedOccOption(option)}
-                                    value={selectedOccOption}
-                                />
+                                <Select name="occupancy_status" placeholder="Select occupancy" options={occupancy.occupancyoption} isDisabled={occupancy.disabled} value={selectedOccupancy} onChange={(selectedOption) => setselectedOccupancy(selectedOption)} />
+
                                 {errors.occupancy_status && (
                                     <span className="text-red-500 text-sm">{errors.occupancy_status}</span>
                                 )}
@@ -346,10 +264,15 @@ const createListing = () => {
                                     </select>
                                     {errors.listing_permit && <span className="text-red-500 text-sm"> {errors.listing_permit} </span>}
                                 </div>
-                                   <div className="form-group">
+                                <div className="form-group">
                                     <label htmlFor="listing_permit_number">Permit Number</label>
                                     <input name="listing_permit_number" type="number" placeholder="Permit Number" className="form-input"/>
                                     {errors.listing_permit_number && ( <span className="text-red-500 text-sm"> {errors.listing_permit_number} </span> )}
+                                </div>
+                                {/*  onChange={handleRoleChange}  value={selectedRole}  */}
+                                 <div className="form-group">
+                                    <label htmlFor="client_uslisting_agent_ider_id">Agent</label>
+                                    <Select name="listing_agent_id" placeholder="Select an Agent" options={users || []} />
                                 </div>
                             </div>
                         </div>
