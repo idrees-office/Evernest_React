@@ -17,7 +17,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown } from '../../services/status';
 import { DashboardLeadslist, setLoading } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
@@ -34,13 +34,16 @@ import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
 import RemarkModal from '../../components/RemarkModal';
 import { json } from 'stream/consumers';
+import IconSquareRotated from '../../components/Icon/IconSquareRotated';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
     const navigate        = useNavigate();
     const TopbarStatuses  = topBarStatus();
-    const Statues         = statues();
-    const loader          = Loader();
+    const JobDashboardList = JobDashboard();
+    const uniqueDropdownList = uniqueDropdown();
+    const Statues          = statues();
+    const loader           = Loader();
     const loader2          = Loader2();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
@@ -103,7 +106,9 @@ const DashboardBox = () => {
     }
 
     const LeadsTabs = async (status: number) => {
+
         const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status,  }) as any);
+
         if(response.payload.status === 200 || response.payload.status === 201){
              setSelectedTab(status);
         }
@@ -174,32 +179,53 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div>
-                        <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
-                            <div className="space-y-1">
-                                {SidebarStatuses.map((sidebarstatus) => { 
-                                    const counterKey = sidebarstatus.tab || '';
-                                    const sidebarcount = counters[counterKey] || 0;
-                                        return(
-                                            <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`} >
-                                            <div className="flex items-center"> {sidebarstatus.icon}
-                                                <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                            </div>
-                                             <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
-                                           </button>
-                                        )
-                                    })}
-                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
-                                    <div className="flex items-center">
-                                        <IconVideo className="shrink-0" />
-                                        <div className="ltr:ml-3 rtl:mr-3">
-                                            <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
-                                    </div>
+                        {loginuser?.roles[0].name === 'HR' ? (
+                           <>
+                            <div className="px-1 py-3 text-white-dark">Tags</div>
+                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
+                                    <IconSquareRotated className="fill-primary shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Personal</div>
                                 </button>
-                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                            </div>
-                        </PerfectScrollbar>
+                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
+                                    <IconSquareRotated className="fill-warning shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Work</div>
+                                </button>
+                                 <button
+                                    type="button"
+                                    className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
+                                    <IconSquareRotated className="fill-info shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Social</div>
+                                </button> 
+                           </>
+                        ) : (
+                           <>
+                                <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div><PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
+                                    <div className="space-y-1">
+                                        {SidebarStatuses.map((sidebarstatus) => {
+                                            const counterKey = sidebarstatus.tab || '';
+                                            const sidebarcount = counters[counterKey] || 0;
+                                            return (
+                                                <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
+                                                    <div className="flex items-center"> {sidebarstatus.icon}
+                                                        <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                                    </div>
+                                                    <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
+                                                </button>
+                                            );
+                                        })}
+                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                        <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
+                                            <div className="flex items-center">
+                                                <IconVideo className="shrink-0" />
+                                                <div className="ltr:ml-3 rtl:mr-3">
+                                                    <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
+                                            </div>
+                                        </button>
+                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                    </div>
+                                </PerfectScrollbar>
+                            </>
+                        )}                        
                     </div>
                 </div>
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
@@ -237,36 +263,37 @@ const DashboardBox = () => {
                                     </div>
                                 </div>
                             </div>
-
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
                                 <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
-                                    {TopbarStatuses.map((status) => { 
+                                    {(loginuser?.roles[0].name === 'HR' ? JobDashboardList : TopbarStatuses).map((status) => { 
                                         const counterKey = status.tab || '';
                                         const topcounter = counters[counterKey] || 0;
-                                        return( 
-                                            <button 
-                                                key={status.value} 
-                                                onClick={() => LeadsTabs(status?.value)} 
-                                                type="button" 
-                                                className={`
-                                                    btn ${status.outlineColor} 
-                                                    ${selectedTab === status.value ? status.activeColor : status.outlineColor}
-                                                    flex items-start justify-start
-                                                    text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm 
-                                                    px-1 sm:px-2 lg:px-3
-                                                    relative
-                                                    transition-all duration-300
-                                                    whitespace-nowrap
-                                                    overflow-hidden
-                                                `}
-                                            > 
-                                                <span className="flex items-center space-x-0">
-                                                    {status.icon}
-                                                    <span className="sm:inline text-sm" style={{ fontSize : '13px'}}>{status.label}</span>
-                                                </span>
-                                                <span className={`badge absolute -top-2 -right-1 text-x p-0.5 px-1.5  ${status.bgColor} rounded-full`}> {topcounter} </span>
-                                            </button>
+                                        return (
+                                        <button 
+                                            key={status.value} 
+                                            onClick={() => LeadsTabs(status.value)} 
+                                            type="button" 
+                                            className={`
+                                            btn ${status.outlineColor} 
+                                            ${selectedTab === status.value ? status.activeColor : status.outlineColor}
+                                            flex items-start justify-start
+                                            text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm 
+                                            px-1 sm:px-2 lg:px-3
+                                            relative
+                                            transition-all duration-300
+                                            whitespace-nowrap
+                                            overflow-hidden
+                                            `}
+                                        > 
+                                            <span className="flex items-center space-x-0">
+                                            {status.icon}
+                                            <span className="sm:inline text-sm" style={{ fontSize: '13px' }}>{status.label}</span>
+                                            </span>
+                                            <span className={`badge absolute -top-2 -right-1 text-x p-0.5 px-1.5 ${status.bgColor} rounded-full`}> 
+                                            {topcounter} 
+                                            </span>
+                                        </button>
                                         )
                                     })}
                                 </div>
@@ -284,7 +311,7 @@ const DashboardBox = () => {
                                                                     <div className="ltr:mr-3 rtl:ml-3">
                                                                         <Tippy content="Important">
                                                                             <button type="button" className={`enabled:hover:text-primary disabled:opacity-60 rotate-90 flex items-center ${ lead.isImportant ? 'text-primary' : ''
-                                                                                }`} disabled={selectedTab === 'trash'}>
+                                                                                }`}>
                                                                                 <IconBookmark bookmark={false} className={`w-4.5 h-4.5 ${lead.isImportant && 'fill-primary'}`} />
                                                                             </button>
                                                                         </Tippy>
@@ -296,8 +323,8 @@ const DashboardBox = () => {
                                                             </td>
                                                             <td>
                                                                 <div className="flex items-center whitespace-nowrap">
-                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${ !lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}
-                                                                    > { lead.agents.client_user_name || 'Not Found'}
+                                                                    <div className={`dark:text-gray-300 whitespace-nowrap font-semibold ${!lead.isUnread ? 'text-gray-500 dark:text-gray-500 font-normal' : ''}`}>
+                                                                        { lead.agents?.client_user_name || 'Not Found' }
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -380,7 +407,8 @@ const DashboardBox = () => {
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
                                     <div className="panel xl:col-span-2 md:col-span-2">
                                         <div className="flex items-center justify-between mb-5">
-                                            <h5 className="font-semibold text-lg dark:text-white-light">Client Detail </h5>
+                                            <h5 className="font-semibold text-lg dark:text-white-light">
+                                                {loginuser?.roles[0].name === 'HR' ? ( 'Job Seeker Detail' ) : ( 'Client Detail' )} </h5>
                                         </div>
                                         <div className="data">
                                             <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
@@ -408,7 +436,8 @@ const DashboardBox = () => {
                                                 </li>
                                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                                 <li className="flex items-center gap-2"> <IconUser className="shrink-0" />
-                                                    {selectedLead?.agents?.client_user_name}
+                                                    { selectedLead?.agents?.client_user_name || 'Not-Found' }
+                                                    {/* {loginuser?.roles[0].name === 'HR' ? ( loginuser?.client_user_name ) : (   )} */}
                                                 </li>
                                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                             </ul>
@@ -418,16 +447,19 @@ const DashboardBox = () => {
                                                 <div className="flex flex-col justify-between lg:flex-row">
                                                     <div className="w-full cursor-pointer">
                                                         <div className="mt-3 items-center">
-                                                        <Select placeholder="Move Lead...." options={dropdownOption} name="lead_status"  className="cursor-pointer" onChange={handleSelectChange} />
+                                                        <Select placeholder="Move Lead...." options={ 
+                                                            loginuser?.roles[0].name === 'HR' ? JobDashboardList : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
                                                         <input type="hidden" name="lead_id" className="form-input" defaultValue={selectedLead?.lead_id} />
                                                         <input type="hidden" name="agent_id" className="form-input" defaultValue={selectedLead?.agent_id} />
                                                         <input type="hidden" name="login_user_id" className="form-input" defaultValue={loginuser?.client_user_id}/>
                                                         {errors?.lead_status && <p className="text-danger error">{errors.lead_status[0]}</p>}
                                                         </div>
-                                                         <div className={`mt-4`}>
-                                                            <Flatpickr value={date} disabled={IsDisable} name="meeting_date" options={{ enableTime:true, dateFormat: 'Y-m-d H:i'}} className="form-input" placeholder='Confrimed Meeting Date'  style={{ background: IsColor }}/> 
-                                                            {errors?.meeting_date && <p className="text-danger error">{errors.meeting_date[0]}</p>}
-                                                        </div>
+                                                        {loginuser?.roles[0].name !== 'HR' && (
+                                                            <div className={`mt-4`}>
+                                                                <Flatpickr value={date} disabled={IsDisable} name="meeting_date" options={{ enableTime:true, dateFormat: 'Y-m-d H:i'}} className="form-input" placeholder='Confrimed Meeting Date'  style={{ background: IsColor }}/> 
+                                                                {errors?.meeting_date && <p className="text-danger error">{errors.meeting_date[0]}</p>}
+                                                            </div>
+                                                        )}
                                                         <div className="mt-3 items-center cursor-pointer">
                                                         <textarea id="description" className="form-textarea min-h-[130px]" name="lead_comment" placeholder="Comments"></textarea>
                                                         {errors?.lead_comment && <p className="text-danger error">{errors.lead_comment[0]}</p>}
@@ -478,7 +510,6 @@ const DashboardBox = () => {
                                                                             __html: getNotesByLeadStatus(comment.lead_status || '') 
                                                                         }}
                                                                     />
-                                                                    
                                                                     {comment.lead_status == 2 && (
                                                                         <span className="text-blue-500 dark:text-blue-400 text-[13px]">
                                                                             {comment?.agent_name}

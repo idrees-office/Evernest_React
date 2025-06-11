@@ -11,6 +11,10 @@ import IconInfoHexagon from '../components/Icon/IconInfoHexagon';
 import IconBookmark from '../components/Icon/IconBookmark';
 import IconTrash from '../components/Icon/IconTrash';
 import IconCalendar from '../components/Icon/IconCalendar';
+import IconSquareCheck from '../components/Icon/IconSquareCheck';
+import IconUsersGroup from '../components/Icon/IconUsersGroup';
+import { J } from '@fullcalendar/core/internal-common';
+
 
 export const options = [
     { value: 1, label: 'Active' },
@@ -34,7 +38,7 @@ export const STATUSES = [
     {
         value: 2,
         label: 'Assigned Lead',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconListCheck className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-dark',
         bgColor : 'bg-dark',
@@ -46,7 +50,7 @@ export const STATUSES = [
     {
         value: 3,
         label: 'Connected Lead',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray','uniqueDropdown'],
         icon: <IconStar className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
@@ -58,7 +62,7 @@ export const STATUSES = [
     {
         value: 4,
         label: 'Cold Lead',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-success',
         bgColor : 'bg-success',
@@ -70,7 +74,7 @@ export const STATUSES = [
     {
         value: 5,
         label: 'Warm Lead',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconFile className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-warning',
         bgColor : 'bg-warning',
@@ -82,7 +86,7 @@ export const STATUSES = [
     {
         value: 6,
         label: 'Hot Lead',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconSend className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-info',
         bgColor : 'bg-info',
@@ -94,7 +98,7 @@ export const STATUSES = [
     {
         value: 7,
         label: 'Meeting Schedule',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconCalendar className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-primary',
         bgColor : 'bg-primary',
@@ -106,7 +110,7 @@ export const STATUSES = [
     {
         value: 8,
         label: 'Meeting Complete',
-        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['dropdown', 'dashboard', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconUser className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-secondary',
         bgColor : 'bg-secondary',
@@ -118,7 +122,7 @@ export const STATUSES = [
     {
         value: 9,
         label: 'No-Answer',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconInfoHexagon className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-secondary',
@@ -130,7 +134,7 @@ export const STATUSES = [
     {
         value: 10,
         label: 'Low-Budget',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconBookmark className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-secondary',
@@ -142,7 +146,7 @@ export const STATUSES = [
     {
         value: 11,
         label: 'Not-Responding',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconInfoHexagon className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-secondary',
@@ -154,7 +158,7 @@ export const STATUSES = [
     {
         value: 12,
         label: 'Incorrect Detail',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconTrash className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-secondary',
@@ -166,7 +170,7 @@ export const STATUSES = [
     {
         value: 13,
         label: 'Agent',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
         icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-primary',
@@ -178,7 +182,7 @@ export const STATUSES = [
     {
         value: 14,
         label: 'Junk',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist'],
+        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'uniqueDropdown'],
         icon: <IconTrash className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-primary',
@@ -200,7 +204,7 @@ export const STATUSES = [
     {
         value: 16,
         label: 'Close Deal',
-        displayIn: ['dropdown', '', ''],
+        displayIn: ['dropdown', '', '', 'uniqueDropdown'],
         icon: <IconUser className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-primary',
@@ -217,7 +221,6 @@ export const STATUSES = [
         notes   : ' New Lead Created By <span class="text-success">Meta Campaign </span> or System',
         notes2  : ' From Meta Campaign'
     },
-
     {
         value: 18,
         label: 'Confimations',
@@ -230,14 +233,106 @@ export const STATUSES = [
         tab     : 'junktab',
         activeColor: "bg-white-dark/10 text-secondary",
     },
+    // 1 to 50 statuses reserved for future use
+    // Above 50 are custom hired statuses
+    {
+        value: 51,
+        label: 'First Stage Interview',
+        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        icon: <IconSquareCheck className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-info-500" />,
+        outlineColor: 'btn-outline-info',
+        bgColor: 'bg-info',
+        notes: 'Moved to: <span class="text-info-500">First Stage</span>',
+        notes2: 'First Stage Interview',
+        tab: 'firststagetab',
+        activeColor: 'bg-info text-white',
+    },
+    {
+        value: 52,
+        label: 'Second Stage Interview',
+        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        icon: <IconSquareCheck className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-info-500" />,
+        outlineColor: 'btn-outline-info',
+        bgColor: 'bg-info',
+        notes: 'Moved to: <span class="text-info-500">Second Stage</span>',
+        notes2: 'From Second Stage',
+        tab: 'seocndstagetab',
+        activeColor: 'bg-info text-white',
+    },
+    {
+        value: 53,
+        label: 'Send Offer Letter',
+        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        icon: <IconUsersGroup className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-secondary-500" />,
+        outlineColor: 'btn-outline-secondary',
+        bgColor: 'bg-purple-500 text-white',
+        notes: 'Moved to: <span class="text-secondary-500">Send Offer</span>',
+        notes2: 'Send Offer Letter',
+        tab: 'sendofferlettertab',
+        activeColor: 'bg-secondary text-white',
+    },
+    {
+        value: 54,
+        label: 'Singed/Join',
+        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
+        outlineColor: 'btn-outline-success',
+        bgColor : 'bg-success',
+        notes : ' Moved to: <span class="text-success">Singed/Join </span>',
+        notes2  : ' From Singed/Join',
+        tab   : 'signedjointab',
+        activeColor: "bg-success text-white",
+    },
+    {
+        value: 55,
+        label: 'Joined',
+        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
+        outlineColor: 'btn-outline-success',
+        bgColor : 'bg-success',
+        notes : ' Moved to: <span class="text-success"> Joined </span>',
+        notes2  : ' From Joined',
+        tab   : 'joinedtab',
+        activeColor: "bg-success text-white",
+    },
+    {
+        value: 56,
+        label: 'Resigned/Terminate',
+        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
+        outlineColor: 'btn-outline-danger',
+        bgColor : 'bg-danger',
+        notes : ' Moved to: <span class="text-danger"> Resigned/Terminate </span>',
+        notes2  : ' From Resigned/Terminate',
+        tab   : 'resignedterminatetab',
+        activeColor: "bg-danger text-white",
+    },
+
+    
+    {
+        value: 57,
+        label: 'Not Qualified',
+        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard'],
+        icon: <IconUsersGroup className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-danger-500" />,
+        outlineColor: 'btn-outline-danger',
+        bgColor: 'bg-danger',
+        notes: 'Moved to: <span class="text-success-500"> Not Qualified </span>',
+        notes2: 'From Not Qualified',
+        tab: 'notqualifiedtab',
+        activeColor: 'bg-danger text-white',
+    }
 
 ];
 
-export const statues = () => STATUSES;
+export const statues        = ()   => STATUSES;
 export const topBarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
 export const SidebarStatus  = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
 export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
 export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
+export const JobDashboard   = ()   => STATUSES.filter((status) => status.displayIn?.includes('jobdashboard'));
+export const uniqueDropdown = ()   => STATUSES.filter((status) => status.displayIn?.includes('uniqueDropdown'));
+
+
 
 
 //  country list

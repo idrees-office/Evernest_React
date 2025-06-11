@@ -11,15 +11,15 @@ import IconTrashLines from '../../components/Icon/IconTrashLines';
 import Table from '../../components/Table';
 
 const endpoints = {
-    listApi: `${getBaseUrl()}/users/get_user_role`,
-    createApi: `${getBaseUrl()}/users/create_role`,
-    destoryApi: `${getBaseUrl()}/users/delete_role`,
-    updateApi: `${getBaseUrl()}/users/update_role`,
+    listApi    : `${getBaseUrl()}/users/get_user_role`,
+    createApi  : `${getBaseUrl()}/users/create_role`,
+    destoryApi : `${getBaseUrl()}/users/delete_role`,
+    updateApi  : `${getBaseUrl()}/users/create_role`,
 };
 
 const Roles = () => {
     const dispatch = useDispatch();
-    const loader = Loader();
+    const loader   = Loader();
 
     const [options] = useState([
         { value: '1', name: 'Active' },
