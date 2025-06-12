@@ -94,8 +94,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                     frameBorder="0"
                                                 ></iframe>
                                             ) : isWordDoc(files[currentFileIndex].mime_type) ? (
-                                                <iframe
-                                                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(files[currentFileIndex].url)}`}
+                                                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(files[currentFileIndex].url)}`}
                                                     className="w-full h-[400px]"
                                                     frameBorder="0"
                                                 ></iframe>
