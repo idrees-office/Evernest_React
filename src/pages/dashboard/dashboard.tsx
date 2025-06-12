@@ -36,6 +36,7 @@ import { FileButton } from '@mantine/core';
 import IconFile from '../../components/Icon/IconFile';
 import IconEye from '../../components/Icon/IconEye';
 import FileViewerModal from '../../components/FileViewerModal';
+import IconNotesEdit from '../../components/Icon/IconNotesEdit';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -218,9 +219,6 @@ const DashboardBox = () => {
         }
     };
 
-
-   
-
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -230,21 +228,31 @@ const DashboardBox = () => {
                     <div className="flex flex-col h-full pb-16">
                         {loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? (
                            <>
+                           <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Stages</h3>
+                           <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
+                            <button type="button" className="w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10">
+                                <div className="flex items-center">
+                                    <IconNotesEdit className="shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">All  Jobs Stages</div>
+                                </div>
+                            </button>
+                             <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
                             <div className="px-1 py-3 text-white-dark">Tags</div>
                                 <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
                                     <IconSquareRotated className="fill-primary shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Personal</div>
+                                    <div className="ltr:ml-3 rtl:mr-3">First Stage</div>
                                 </button>
                                 <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
                                     <IconSquareRotated className="fill-warning shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Work</div>
+                                    <div className="ltr:ml-3 rtl:mr-3">Second Stage</div>
                                 </button>
                                  <button
                                     type="button"
                                     className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
                                     <IconSquareRotated className="fill-info shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Social</div>
+                                    <div className="ltr:ml-3 rtl:mr-3">Joined</div>
                                 </button> 
+                                 <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-1"></div>
                            </>
                         ) : (
                            <>
