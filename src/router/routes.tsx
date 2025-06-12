@@ -41,9 +41,13 @@ const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <DashboardBox />,
+        element: <DashboardBox key="default" />,
     },
-
+    {
+        path: '/dashboard/:dashboardType',
+        type: 'protected',
+        element: <DashboardBox key="dashboard" />,
+    },
     {
         path: 'pages/leads/assign',
         type: 'protected',

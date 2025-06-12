@@ -21,10 +21,10 @@ import { co } from '@fullcalendar/core/internal-common';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number, search }: { lead_status?: number, page_number?: number, search?: string }, { rejectWithValue }) => {
+    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number, search, type }: { lead_status?: number, page_number?: number, search?: string, type?: string }, { rejectWithValue }) => {
         try {
             const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
-            const response = await apiClient.post(url, {search: search});
+            const response = await apiClient.post(url, {search: search, type: type});
             return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
                 counters: response.data.counters || {}
             };
