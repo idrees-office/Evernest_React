@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
@@ -10,7 +10,7 @@ interface FileViewerModalProps {
     isOpen: boolean;
     onClose: () => void;
     files: Array<{
-        media_id: number;
+        file_id: number;
         name: string;
         size: number;
         mime_type: string;
@@ -22,6 +22,12 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
     const dispatch        = useDispatch<AppDispatch>();
     const toast           = Toast();
+
+    useEffect(() => {
+        if (files.length > 0) {
+            setCurrentFileIndex(0); 
+        }
+    }, [files]);
 
     const isImage = (mimeType: string) => {
         return mimeType.startsWith('image/');
@@ -47,9 +53,14 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
     };
 
     const deleteFilesHandler = async (mediaId: any) => {
+        
             try {
                 dispatch(setLoading(true));
                 const resultAction = await dispatch(deleteFiles(mediaId));
+                if(resultAction){
+                     toast.success(``+resultAction.payload.message+``);
+                     onClose();
+                }
             } catch (error) {
                 toast.error('Failed to load files');
                 console.error("Error viewing files:", error);
@@ -84,7 +95,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                     >
                         <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden my-8 w-full max-w-5xl text-black dark:text-white-dark">
                             <div className="p-5">
-                                {files.length > 0 ? (
+                                {files.length > 0 && files[currentFileIndex] ? (
                                     <div className="file-viewer-container">
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="text-lg font-semibold">
@@ -97,16 +108,12 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
 
                                         <div className="file-preview-container bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 flex justify-center items-center min-h-[400px] relative">
                                             {isImage(files[currentFileIndex].mime_type) ? (
-                                                <img src={files[currentFileIndex].url} alt={files[currentFileIndex].name} className="max-h-[400px] max-w-full object-contain"
+                                                <img src={files[currentFileIndex]?.url} alt={files[currentFileIndex].name} className="max-h-[400px] max-w-full object-contain"
                                                 />
-                                            ) : isPDF(files[currentFileIndex].mime_type) ? (
-                                                <iframe
-                                                    src={files[currentFileIndex].url}
-                                                    className="w-full h-[400px]"
-                                                    style={{ border: 'none' }}
-                                                ></iframe>
+                                            ) : isPDF(files[currentFileIndex]?.mime_type) ? (
+                                                <iframe src={files[currentFileIndex]?.url} className="w-full h-[400px]" style={{ border: 'none' }} ></iframe>
                                             ) : isWordDoc(files[currentFileIndex].mime_type) ? (
-                                                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(files[currentFileIndex].url)}`}
+                                                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(files[currentFileIndex]?.url)}`}
                                                     className="w-full h-[400px]"
                                                     style={{ border: 'none' }}
                                                 ></iframe>
@@ -115,26 +122,9 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                     <div className="text-center p-8">
                                                         <div className="text-4xl mb-4">📄</div>
                                                         <p>Preview not available for this file type</p>
-                                                        <button className="btn btn-danger mt-4" onClick={() => deleteFilesHandler(files[currentFileIndex].media_id)}>
-                                                            Delete Current
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center p-8">
-                                                        <div className="text-4xl mb-4">📄</div>
-                                                        <p>Preview not available for this file type</p>
-                                                        <a 
-                                                            href={files[currentFileIndex].url} 
-                                                            download={files[currentFileIndex].url}
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="btn btn-primary mt-4"
-                                                        >
-                                                            Download File
-                                                        </a>
                                                     </div>
                                                 </div>
                                             )}
-
                                             {files.length > 1 && (
                                                 <>
                                                     <button
@@ -154,7 +144,6 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                 </>
                                             )}
                                         </div>
-
                                         <div className="file-thumbnails flex gap-2 overflow-x-auto py-2">
                                             {files.map((file, index) => (
                                                 <div
@@ -163,11 +152,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                     className={`thumbnail cursor-pointer border-2 rounded ${currentFileIndex === index ? 'border-primary' : 'border-transparent'}`}
                                                 >
                                                     {isImage(file.mime_type) ? (
-                                                        <img
-                                                            src={file.url}
-                                                            alt={file.name}
-                                                            className="h-16 w-auto object-cover"
-                                                        />
+                                                        <img src={file.url} alt={file.name} className="h-16 w-auto object-cover" />
                                                     ) : isWordDoc(file.mime_type) ? (
                                                         <div className="h-16 w-16 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                                             <span className="text-xs text-center p-1 break-all">
@@ -190,33 +175,14 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                         <p className="text-gray-500">No files available</p>
                                     </div>
                                 )}
-
                                 <div className="flex justify-end items-center mt-4 gap-2">
-                                    {files.length > 0 && (
-                                        <div>
-                                            <div className="text-center p-8">
-                                                <div className="text-4xl mb-4">📄</div>
-                                                <p>Preview not available for this file type</p>
-                                                <button className="btn btn-danger mt-4" onClick={() => deleteFilesHandler(files[currentFileIndex].media_id)}>
-                                                    Delete Current
-                                                </button>
-                                            </div>
-                                            <a
-                                                href={files[currentFileIndex].url}
-                                                download={files[currentFileIndex].name}
-                                                className="btn btn-primary btn-sm"
-                                            >
-                                                Download Current
-                                            </a>
+                                    {files.length > 0 && files[currentFileIndex] && (
+                                        <div className='flex gap-2'>
+                                            <button className="btn btn-danger btn-sm" onClick={() => deleteFilesHandler(files[currentFileIndex].file_id)}> Delete Current </button>
+                                            <a href={files[currentFileIndex].url} download={files[currentFileIndex].name} className="btn btn-primary btn-sm" > Download Current</a>
                                         </div>
                                     )}
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger btn-sm"
-                                        onClick={onClose}
-                                    >
-                                        Close
-                                    </button>
+                                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={onClose}> Close </button>
                                 </div>
                             </div>
                         </Dialog.Panel>
