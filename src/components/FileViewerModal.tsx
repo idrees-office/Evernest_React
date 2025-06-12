@@ -85,10 +85,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
 
                                         <div className="file-preview-container bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 flex justify-center items-center min-h-[400px] relative">
                                             {isImage(files[currentFileIndex].mime_type) ? (
-                                                <img
-                                                    src={files[currentFileIndex].url}
-                                                    alt={files[currentFileIndex].name}
-                                                    className="max-h-[400px] max-w-full object-contain"
+                                                <img src={files[currentFileIndex].url} alt={files[currentFileIndex].name} className="max-h-[400px] max-w-full object-contain"
                                                 />
                                             ) : isPDF(files[currentFileIndex].mime_type) ? (
                                                 <iframe
@@ -106,9 +103,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                 <div className="text-center p-8">
                                                     <div className="text-4xl mb-4">📄</div>
                                                     <p>Preview not available for this file type</p>
-                                                    <a
-                                                        href={files[currentFileIndex].url}
-                                                        download={files[currentFileIndex].name}
+                                                    <a href={files[currentFileIndex].url} download={files[currentFileIndex].name}
                                                         className="btn btn-primary mt-4"
                                                     >
                                                         Download File
