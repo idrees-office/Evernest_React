@@ -3,18 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import IconHome from '../../components/Icon/IconHome';
-import IconDollarSignCircle from '../../components/Icon/IconDollarSignCircle';
-import IconUser from '../../components/Icon/IconUser';
 import IconPhone from '../../components/Icon/IconPhone';
-import IconLinkedin from '../../components/Icon/IconLinkedin';
-import IconTwitter from '../../components/Icon/IconTwitter';
-import IconFacebook from '../../components/Icon/IconFacebook';
-import IconGithub from '../../components/Icon/IconGithub';
 import apiClient from '../../utils/apiClient';
 import { getBaseUrl } from '../../components/BaseUrl';
 import Toast from '../../services/toast';
 import { debounce } from "lodash";
-import { t } from 'i18next';
 
 const endpoints = {
     updateApi  : `${getBaseUrl()}/users/update_user`,
