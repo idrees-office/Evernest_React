@@ -262,7 +262,7 @@ const Header = () => {
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
                                                 {user.client_user_name || 'john'} 
-                                                    <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
+                                                    <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">{ user.roles[0].name }</span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
                                                 {user.client_user_email || 'no@gmail.com'} 

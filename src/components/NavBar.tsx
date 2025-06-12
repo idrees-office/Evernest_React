@@ -41,6 +41,11 @@ const NavBar = () => {
                             <NavLink to="/">{t('Lead-Dashboard')}</NavLink>
                         </li>
                     )}
+                    {(role === 'super admin') && (
+                        <li>
+                            <NavLink to="/dashboard/hr">{t('HR Dashboard')}</NavLink>
+                        </li>
+                    )}
                     {(permissions.includes('assign leads')   || role === 'super admin') && (
                         <>
                             <NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink>

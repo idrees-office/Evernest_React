@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, Fragment } from 'react';
-import { Disclosure } from '@headlessui/react';
+import { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'react-quill/dist/quill.snow.css';
@@ -24,8 +24,6 @@ import Select from 'react-select';
 import { updateSingleLead, createLeads } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { Dialog, Transition } from '@headlessui/react';
-import IconX from '../../components/Icon/IconX';
 import './dashboard.css';
 import LeadModal from '../../components/LeadModal';
 import Loader from '../../services/loader';
@@ -33,7 +31,6 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
 import RemarkModal from '../../components/RemarkModal';
-import { json } from 'stream/consumers';
 import IconSquareRotated from '../../components/Icon/IconSquareRotated';
 
 const DashboardBox = () => {
@@ -68,11 +65,13 @@ const DashboardBox = () => {
     const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
     const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
     const [isMemark, setIsMemark] = useState(false);
-
+    const { dashboardType } = useParams();
+    console.log(dashboardType);
+    
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
-            dispatch(DashboardLeadslist({search: searchText}));
+            dispatch(DashboardLeadslist({search: searchText, type: dashboardType || 'all'}));
             combinedRef.current.fetched = true;
         }
     }, [loginuser?.client_user_id, dispatch]);
@@ -80,7 +79,7 @@ const DashboardBox = () => {
     useEffect(() => {
         if (loginuser?.client_user_id) {
             const delayDebounceFn = setTimeout(() => {
-                dispatch(DashboardLeadslist({search: searchText}));
+                dispatch(DashboardLeadslist({search: searchText, type: dashboardType || 'all'}));
             }, 500);
 
             return () => clearTimeout(delayDebounceFn);
@@ -107,7 +106,7 @@ const DashboardBox = () => {
 
     const LeadsTabs = async (status: number) => {
 
-        const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status,  }) as any);
+        const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status, type: dashboardType || 'all'  }) as any);
 
         if(response.payload.status === 200 || response.payload.status === 201){
              setSelectedTab(status);
@@ -147,7 +146,7 @@ const DashboardBox = () => {
     
     const handlePageChange = async (page_number: number) => {
         if (page_number >= 1 && page_number <= meta.total) {    
-            await dispatch(DashboardLeadslist({ page_number : page_number, lead_status : currentStatus,  }) as any);
+            await dispatch(DashboardLeadslist({ page_number : page_number, lead_status : currentStatus, type: dashboardType || 'all'  }) as any);
             setSelectedTab(currentStatus);
         }
     };
@@ -266,7 +265,7 @@ const DashboardBox = () => {
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
                                 <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
-                                    {(loginuser?.roles[0].name === 'HR' ? JobDashboardList : TopbarStatuses).map((status) => { 
+                                    {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? JobDashboardList : TopbarStatuses).map((status) => { 
                                         const counterKey = status.tab || '';
                                         const topcounter = counters[counterKey] || 0;
                                         return (
