@@ -9,7 +9,7 @@ import { co } from '@fullcalendar/core/internal-common';
         updateLead  : '/leads/update_single_lead',
         uploadFiles : '/leads/upload_files',
         getfiles  : '/leads/get_files',
-
+        deletefiles  : '/leads/delete_files',
     };
     
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
@@ -74,6 +74,15 @@ import { co } from '@fullcalendar/core/internal-common';
     export const getFiles = createAsyncThunk('files/getFiles', async (leadId: number, { rejectWithValue }) => {
         try {
             const response = await apiClient.get(`${endpoints.getfiles}/${leadId}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
+    export const deleteFiles = createAsyncThunk('files/deleteFiles', async (media_id: number, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.get(`${endpoints.deletefiles}/${media_id}`);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);

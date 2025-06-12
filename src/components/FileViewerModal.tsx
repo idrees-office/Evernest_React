@@ -1,10 +1,16 @@
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store';
+import { deleteFiles, setLoading } from '../slices/dashboardSlice';
+import Toast from '../services/toast';
+import { Divider } from '@mantine/core';
 
 interface FileViewerModalProps {
     isOpen: boolean;
     onClose: () => void;
     files: Array<{
+        media_id: number;
         name: string;
         size: number;
         mime_type: string;
@@ -14,6 +20,8 @@ interface FileViewerModalProps {
 
 const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
+    const dispatch        = useDispatch<AppDispatch>();
+    const toast           = Toast();
 
     const isImage = (mimeType: string) => {
         return mimeType.startsWith('image/');
@@ -30,14 +38,6 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
         ].includes(mimeType);
     };
 
-    const formatFileSize = (bytes: number) => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
-
     const nextFile = () => {
         setCurrentFileIndex((prev) => (prev < files.length - 1 ? prev + 1 : prev));
     };
@@ -45,6 +45,18 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
     const prevFile = () => {
         setCurrentFileIndex((prev) => (prev > 0 ? prev - 1 : prev));
     };
+
+    const deleteFilesHandler = async (mediaId: any) => {
+            try {
+                dispatch(setLoading(true));
+                const resultAction = await dispatch(deleteFiles(mediaId));
+            } catch (error) {
+                toast.error('Failed to load files');
+                console.error("Error viewing files:", error);
+            } finally {
+                dispatch(setLoading(false));
+            }
+        };
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -79,7 +91,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                 {files[currentFileIndex].name} ({currentFileIndex + 1}/{files.length})
                                             </h3>
                                             <div className="text-sm text-gray-500">
-                                                {formatFileSize(files[currentFileIndex].size)} • {files[currentFileIndex].mime_type}
+                                                { files[currentFileIndex].size } • {files[currentFileIndex].mime_type}
                                             </div>
                                         </div>
 
@@ -91,22 +103,35 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                                                 <iframe
                                                     src={files[currentFileIndex].url}
                                                     className="w-full h-[400px]"
-                                                    frameBorder="0"
+                                                    style={{ border: 'none' }}
                                                 ></iframe>
                                             ) : isWordDoc(files[currentFileIndex].mime_type) ? (
                                                 <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(files[currentFileIndex].url)}`}
                                                     className="w-full h-[400px]"
-                                                    frameBorder="0"
+                                                    style={{ border: 'none' }}
                                                 ></iframe>
                                             ) : (
-                                                <div className="text-center p-8">
-                                                    <div className="text-4xl mb-4">📄</div>
-                                                    <p>Preview not available for this file type</p>
-                                                    <a href={files[currentFileIndex].url} download={files[currentFileIndex].name}
-                                                        className="btn btn-primary mt-4"
-                                                    >
-                                                        Download File
-                                                    </a>
+                                                <div>
+                                                    <div className="text-center p-8">
+                                                        <div className="text-4xl mb-4">📄</div>
+                                                        <p>Preview not available for this file type</p>
+                                                        <button className="btn btn-danger mt-4" onClick={() => deleteFilesHandler(files[currentFileIndex].media_id)}>
+                                                            Delete Current
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center p-8">
+                                                        <div className="text-4xl mb-4">📄</div>
+                                                        <p>Preview not available for this file type</p>
+                                                        <a 
+                                                            href={files[currentFileIndex].url} 
+                                                            download={files[currentFileIndex].url}
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="btn btn-primary mt-4"
+                                                        >
+                                                            Download File
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -168,13 +193,22 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
 
                                 <div className="flex justify-end items-center mt-4 gap-2">
                                     {files.length > 0 && (
-                                        <a
-                                            href={files[currentFileIndex].url}
-                                            download={files[currentFileIndex].name}
-                                            className="btn btn-primary btn-sm"
-                                        >
-                                            Download Current
-                                        </a>
+                                        <div>
+                                            <div className="text-center p-8">
+                                                <div className="text-4xl mb-4">📄</div>
+                                                <p>Preview not available for this file type</p>
+                                                <button className="btn btn-danger mt-4" onClick={() => deleteFilesHandler(files[currentFileIndex].media_id)}>
+                                                    Delete Current
+                                                </button>
+                                            </div>
+                                            <a
+                                                href={files[currentFileIndex].url}
+                                                download={files[currentFileIndex].name}
+                                                className="btn btn-primary btn-sm"
+                                            >
+                                                Download Current
+                                            </a>
+                                        </div>
                                     )}
                                     <button
                                         type="button"
