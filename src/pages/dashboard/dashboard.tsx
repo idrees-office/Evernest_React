@@ -70,11 +70,11 @@ const DashboardBox = () => {
     const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
     const [isMemark, setIsMemark] = useState(false);
     const { dashboardType } = useParams();
-    console.log(dashboardType);
-        const fileInputRef = useRef<HTMLInputElement>(null);
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [files, setFiles] = useState([]);
-     const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
+    const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
 
 
     useEffect(() => {
@@ -242,7 +242,7 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        {loginuser?.roles[0].name === 'HR' ? (
+                        {loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? (
                            <>
                             <div className="px-1 py-3 text-white-dark">Tags</div>
                                 <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
