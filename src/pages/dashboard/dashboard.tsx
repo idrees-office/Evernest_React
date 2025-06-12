@@ -21,7 +21,7 @@ import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, J
 import { DashboardLeadslist, setLoading } from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
-import { updateSingleLead, createLeads } from '../../slices/dashboardSlice';
+import { updateSingleLead, createLeads, uploadFiles, getFiles } from '../../slices/dashboardSlice';
 import Toast from '../../services/toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
@@ -35,6 +35,10 @@ import Loader2 from '../../services/loader2';
 import RemarkModal from '../../components/RemarkModal';
 import { json } from 'stream/consumers';
 import IconSquareRotated from '../../components/Icon/IconSquareRotated';
+import { FileButton } from '@mantine/core';
+import IconFile from '../../components/Icon/IconFile';
+import IconEye from '../../components/Icon/IconEye';
+import FileViewerModal from '../../components/FileViewerModal';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -68,6 +72,11 @@ const DashboardBox = () => {
     const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
     const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
     const [isMemark, setIsMemark] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [files, setFiles] = useState([]);
+     const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
+
 
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
@@ -171,6 +180,61 @@ const DashboardBox = () => {
         SetIsRemarkData($data)
         setIsMemark(true);
     }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+     if (e.target.files && e.target.files.length > 0 && selectedLead) {
+         const formData = new FormData();
+            Array.from(e.target.files).forEach((file) => { formData.append('lead_files[]', file); });
+        try {
+                dispatch(setLoading(true));
+                await dispatch(uploadFiles({ leadId: selectedLead.lead_id, files: formData }) as any);
+                toast.success('Files uploaded successfully');
+                await dispatch(DashboardLeadslist({ page_number: meta.current_page, lead_status: currentStatus }) as any);
+            } catch (error) {
+                toast.error('Failed to upload files');
+            } finally {
+                dispatch(setLoading(false));
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            }
+    }
+   };
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
+
+     const viewFiles = async (leadId: any) => {
+        try {
+            dispatch(setLoading(true));
+            const resultAction = await dispatch(getFiles(leadId));
+            const fetchedFiles = getFiles.fulfilled.match(resultAction) ? resultAction.payload : [];
+            setFiles(fetchedFiles);
+            setIsFileViewerOpen(true);
+        } catch (error) {
+            toast.error('Failed to load files');
+            console.error("Error viewing files:", error);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+
+
+    const isImage = (mimeType: string) => {
+    return mimeType.startsWith('image/');
+    };
+
+    const isPDF = (mimeType: string) => {
+        return mimeType === 'application/pdf';
+    };
+
+    const formatFileSize = (bytes: number) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
 
     return (
         <div>
@@ -406,10 +470,31 @@ const DashboardBox = () => {
                                 {loading &&  loader2}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
                                     <div className="panel xl:col-span-2 md:col-span-2">
-                                        <div className="flex items-center justify-between mb-5">
-                                            <h5 className="font-semibold text-lg dark:text-white-light">
-                                                {loginuser?.roles[0].name === 'HR' ? ( 'Job Seeker Detail' ) : ( 'Client Detail' )} </h5>
-                                        </div>
+                                        <div className="flex items-center mb-5">
+                                            {loginuser?.roles[0].name === 'HR' ? (
+                                                <>
+                                                <h5 className="font-semibold text-lg dark:text-white-light">Job Seeker Detail</h5>
+                                                &nbsp; &nbsp;
+                                                <button type="button" className="btn btn-success" onClick={triggerFileInput}>
+                                                    <IconFile className="w-4 h-4" />
+                                                    <input
+                                                    type="file"
+                                                    multiple
+                                                    ref={fileInputRef}
+                                                    className="hidden"
+                                                    onChange={handleFileChange}
+                                                    accept=".pdf,.doc,.docx,.jpg,.png,.jpeg,.webp,.txt"
+                                                    />
+                                                </button>
+                                                &nbsp; &nbsp;
+                                                <button type="button" className="btn btn-secondary" onClick={() => selectedLead && viewFiles(selectedLead?.lead_id)}>
+                                                    <IconEye className="w-4 h-4" />
+                                                </button>
+                                                </>
+                                            ) : (
+                                                <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
+                                            )}
+                                            </div>
                                         <div className="data">
                                             <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
                                                 <li className="flex items-center gap-2 text-dark">
@@ -546,6 +631,8 @@ const DashboardBox = () => {
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
+            <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} 
+            />
     </div>
     );
 }

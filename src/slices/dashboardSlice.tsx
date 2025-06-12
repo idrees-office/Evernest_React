@@ -2,11 +2,14 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../utils/apiClient';
 import { co } from '@fullcalendar/core/internal-common';
     const endpoints = {
-        createApi  : '/leads/store',
-        listApi    : '/leads/get_all_leads?page=',
-        destoryApi : '/leads/delete',
-        editApi    : '/leads/edit',
-        updateLead : '/leads/update_single_lead',
+        createApi   : '/leads/store',
+        listApi     : '/leads/get_all_leads?page=',
+        destoryApi  : '/leads/delete',
+        editApi     : '/leads/edit',
+        updateLead  : '/leads/update_single_lead',
+        uploadFiles : '/leads/upload_files',
+        getfiles  : '/leads/get_files',
+
     };
     
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
@@ -56,8 +59,29 @@ import { co } from '@fullcalendar/core/internal-common';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
+
+    export const uploadFiles = createAsyncThunk('uploadFiles', async ({ leadId, files }: { leadId: number; files: FormData }, { rejectWithValue }) => {
+    try {
+        const response = await apiClient.post(`${endpoints.uploadFiles}/${leadId}`, files, {
+            headers: { 'Content-Type': 'multipart/form-data', },
+        });
+        return response.data;
+     } catch (error: any) {
+        return rejectWithValue(error.response?.data || error.message);
+     }
+    });
+
+    export const getFiles = createAsyncThunk('files/getFiles', async (leadId: number, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.get(`${endpoints.getfiles}/${leadId}`);
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    });
+
     const initialState = {
-        leads: [] as { lead_id: number }[],
+        leads: [] as { lead_id: number, files?: any[] }[],
         lead_status : 0,
         success : false,
         loading : false,
@@ -66,7 +90,7 @@ import { co } from '@fullcalendar/core/internal-common';
         links  : {},
         meta  : {},
         counters : {},
-
+        files: [] as any[],
     };
     
     const DashboardSlice = createSlice({
@@ -122,11 +146,21 @@ import { co } from '@fullcalendar/core/internal-common';
                 }).addCase(deleteLeads.fulfilled, (state, action) => {
                     state.success = true;
                     const { id } = action.payload;
-                    // state.leads = state.leads.filter((blog) => blog.id !== id);  
-                })
-                .addCase(editLeads.fulfilled, (state, action) => {
+  
+                }).addCase(editLeads.fulfilled, (state, action) => {
                     state.leads = action.payload; 
-                });
+                }).addCase(uploadFiles.fulfilled, (state, action) => {
+                    const { leadId, files } = action.payload;
+                    state.leads = state.leads.map(lead => {
+                        if (lead.lead_id === leadId) {
+                             return { ...lead, files: [...(lead.files || []), ...files] };
+                        }
+                        return lead;
+                    });
+                }).addCase(getFiles.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.files = action.payload;
+                })
         }
     });
 

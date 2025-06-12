@@ -38,8 +38,9 @@ const AssignPermission = () => {
 
     const getAgents = async () => {
         try {
-            const response = await apiClient.get('/users/user_list');
-            setAllAgents(response.data.data.data);
+            // const url = forSelect ? '/users/user_list?for_select=1' : '/users/user_list';
+            const response = await apiClient.get('/users/user_list?for_select=1');
+            setAllAgents(response.data);
         } catch (error) {
             toast.error('Failed to fetch agents');
         }
