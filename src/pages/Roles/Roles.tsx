@@ -30,8 +30,7 @@ const Roles = () => {
         id: number;
         name: string;
     }
-
-    // Pagination state
+    
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalRecords, setTotalRecords] = useState(0);

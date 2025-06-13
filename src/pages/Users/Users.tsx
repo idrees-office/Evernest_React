@@ -15,7 +15,7 @@ import { AppDispatch } from '../../store';
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
-    roleApi: `${getBaseUrl()}/users/get_user_role`,
+    roleApi: `${getBaseUrl()}/users/get_user_role?for_select=1`,
     listApi: `${getBaseUrl()}/users/user_list`,
     destoryApi: `${getBaseUrl()}/users/delete_user`,
     updateApi: `${getBaseUrl()}/users/update_user`,
@@ -53,7 +53,7 @@ const Users = () => {
         try {
             const response = await apiClient.get(endpoints.roleApi);
             if (response.data) {
-                const roleOptions = response.data.data.map((role: any) => ({
+                const roleOptions = response.data.map((role: any) => ({
                     value: role.id,
                     label: role.name,
                 }));

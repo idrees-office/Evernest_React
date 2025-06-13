@@ -356,7 +356,12 @@ const DashboardBox = () => {
                                 </div>
                             </div> 
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                { AllLeadList.length ? (
+                                {loading ? (
+                                    <div className="grid place-content-center min-h-[300px]">
+                                         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+                                    </div>
+                                ) : AllLeadList.length ? (
+                                // { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>

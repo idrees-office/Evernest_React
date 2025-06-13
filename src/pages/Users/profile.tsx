@@ -12,7 +12,7 @@ import { debounce } from "lodash";
 const endpoints = {
     updateApi  : `${getBaseUrl()}/users/update_user`,
     updateApi2 : `${getBaseUrl()}/users/update_status`,
-    agentApi   : `${getBaseUrl()}/users/user_list`,
+    agentApi   : `${getBaseUrl()}/users/user_list?for_select=1`,
 };
 
 const UserProfile    = () => {
