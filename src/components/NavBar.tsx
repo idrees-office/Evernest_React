@@ -57,7 +57,7 @@ const NavBar = () => {
                             <NavLink to="/pages/leads/won">{t('Won-Leads')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('all leads') || role === 'super admin') && (
+                    {(permissions.includes('view pdf') || role === 'super admin') && (
                         <li>
                            <NavLink to="/pages/leads/exportpdf">{t('Export Pdf')}</NavLink>
                         </li>
@@ -117,20 +117,22 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
-            <li className="menu nav-item relative">
-                    <button type="button" className="nav-link">
-                        <div className="flex items-center">
-                            <IconMenuDatatables className="shrink-0" />
-                            <span className="px-1">{t('Activities')}</span>
-                        </div>
-                        <div className="right_arrow">
-                            <IconCaretDown />
-                        </div>
-                    </button>
-                    <ul className="sub-menu">
-                        <li> <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink> </li>
-                    </ul>
-            </li>   
+            {(permissions.includes('view activities') || role === 'super admin') && (
+                <li className="menu nav-item relative">
+                        <button type="button" className="nav-link">
+                            <div className="flex items-center">
+                                <IconMenuDatatables className="shrink-0" />
+                                <span className="px-1">{t('Activities')}</span>
+                            </div>
+                            <div className="right_arrow">
+                                <IconCaretDown />
+                            </div>
+                        </button>
+                        <ul className="sub-menu">
+                            <li> <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink> </li>
+                        </ul>
+                </li>   
+            )}
             {(permissions.includes('create subscriber') || role === 'super admin') && (
             <li className="menu nav-item relative">
                     <button type="button" className="nav-link">
