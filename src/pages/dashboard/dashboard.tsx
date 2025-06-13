@@ -327,22 +327,9 @@ const DashboardBox = () => {
                                         const counterKey = status.tab || '';
                                         const topcounter = counters[counterKey] || 0;
                                         return (
-                                        <button 
-                                            key={status.value} 
-                                            onClick={() => LeadsTabs(status.value)} 
-                                            type="button" 
-                                            className={`
-                                            btn ${status.outlineColor} 
-                                            ${selectedTab === status.value ? status.activeColor : status.outlineColor}
-                                            flex items-start justify-start
-                                            text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm 
-                                            px-1 sm:px-2 lg:px-3
-                                            relative
-                                            transition-all duration-300
-                                            whitespace-nowrap
-                                            overflow-hidden
-                                            `}
-                                        > 
+                                        <button key={status.value} onClick={() => LeadsTabs(status.value)} type="button" 
+                                            className={`btn ${status.outlineColor} ${selectedTab === status.value ? status.activeColor : status.outlineColor} flex items-start justify-start text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm  px-1 sm:px-2 lg:px-3
+                                            relative transition-all duration-300 whitespace-nowrap overflow-hidden`}> 
                                             <span className="flex items-center space-x-0">
                                             {status.icon}
                                             <span className="sm:inline text-sm" style={{ fontSize: '13px' }}>{status.label}</span>
