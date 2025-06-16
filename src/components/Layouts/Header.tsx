@@ -54,7 +54,7 @@ const Header = () => {
                 }
             }
         }
-
+        
     }, [location]);
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
