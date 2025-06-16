@@ -321,8 +321,10 @@ const Header = () => {
                                             <img className="rounded-md w-10 h-10 object-cover" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                {user.client_user_name || 'john'} 
-                                                    <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">{ user.roles[0].name }</span>
+                                                    {user.client_user_name || 'john'} 
+                                                </h4>
+                                                <h4 className="text-base">
+                                                    <span className="text-xs bg-success-light rounded text-success">{ user.roles[0].name }</span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
                                                 {user.client_user_email || 'no@gmail.com'} 
