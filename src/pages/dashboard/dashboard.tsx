@@ -76,8 +76,7 @@ const DashboardBox = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [files, setFiles] = useState([]);
     const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
-
-
+    
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
@@ -348,7 +347,6 @@ const DashboardBox = () => {
                                          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
                                     </div>
                                 ) : AllLeadList.length ? (
-                                // { AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>

@@ -22,6 +22,15 @@ import IconLogout from '../Icon/IconLogout';
 import { logout } from '../../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../NavBar';
+import IconInfoCircle from '../Icon/IconInfoCircle';
+import IconBellBing from '../Icon/IconBellBing';
+import { getBaseUrl } from '../BaseUrl';
+import apiClient from '../../utils/apiClient';
+
+const endpoints = {
+    notificationApi    : `${getBaseUrl()}/leads/lead_notifications`,
+};
+
 
 const Header = () => {
     const location = useLocation();
@@ -50,14 +59,8 @@ const Header = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-
-    // const number  = useSelector((state: IRootState) => state.auth.number);
-    // const [shownumber, setNumber] = useState(number);
-
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     function createMarkup(messages: any) {
         return { __html: messages };
     }
@@ -91,32 +94,10 @@ const Header = () => {
             time: '5days',
         },
     ]);
-
     const removeMessage = (value: number) => {
         setMessages(messages.filter((user) => user.id !== value));
     };
-
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            profile: 'user-profile.jpeg',
-            message: '<strong className="text-sm mr-1">John Doe</strong>invite you to <strong>Prototyping</strong>',
-            time: '45 min ago',
-        },
-        {
-            id: 2,
-            profile: 'profile-34.jpeg',
-            message: '<strong className="text-sm mr-1">Adam Nolan</strong>mentioned you to <strong>UX Basics</strong>',
-            time: '9h Ago',
-        },
-        {
-            id: 3,
-            profile: 'profile-16.jpeg',
-            message: '<strong className="text-sm mr-1">Anna Morgan</strong>Upload a file',
-            time: '9h Ago',
-        },
-    ]);
-
+    const [notifications, setNotifications] = useState<any[]>([]);
     const removeNotification = (value: number) => {
         setNotifications(notifications.filter((user) => user.id !== value));
     };
@@ -137,6 +118,21 @@ const Header = () => {
         dispatch(logout()); // Dispatch the logout action
         navigate('/auth/cover-login'); // Redirect to login page
     };
+    
+    const handleNotificationClick = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await apiClient.get(endpoints.notificationApi);
+            if (response.status === 200) {
+                const data = response.data;
+                setNotifications(data || []);
+            } else {
+                console.error('Failed to fetch notifications:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
 
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -197,14 +193,79 @@ const Header = () => {
                                     </button>
                                 </div> 
                             </form> */}
-                            <button
-                                type="button"
-                                onClick={() => setSearch(!search)}
-                                className="search_btn sm:hidden p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
-                            >
+                            <button type="button" onClick={() => setSearch(!search)} className="search_btn sm:hidden p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60">
                                 <IconSearch className="w-4.5 h-4.5 mx-auto dark:text-[#d0d2d6]" />
                             </button>
                         </div>
+
+
+                        <div className="dropdown shrink-0">
+                            <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
+                                btnClassName="relative block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60"
+                                button={
+                                    <span onClick={(e) => handleNotificationClick(e)}>
+                                        <IconBellBing/>
+                                        <span className="flex absolute w-3 h-3 ltr:right-0 rtl:left-0 top-0">
+                                            <span className="animate-ping absolute ltr:-left-[3px] rtl:-right-[3px] -top-[3px] inline-flex h-full w-full rounded-full bg-success/50 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full w-[6px] h-[6px] bg-success"></span>
+                                        </span>
+                                    </span>
+                                }
+                            >
+                                <ul className="!py-0 text-dark dark:text-white-dark w-[300px] sm:w-[350px] divide-y dark:divide-white/10">
+                                    <li  onClick={(e) => { e.stopPropagation();}}>
+                                        <div className="flex items-center px-4 py-2 justify-between font-semibold">
+                                            <h4 className="text-lg">Notification</h4>
+                                            {/* {notifications.length ? <span className="badge bg-primary/80">{notifications.length}New</span> : ''} */}
+                                        </div>
+                                    </li>
+                                    {notifications.length > 0 ? (
+                                        <>
+                                            {notifications.map((notification:any) => {
+                                                return (
+                                                    <li key={notification.notification_id} className="dark:text-white-light/90" onClick={(e) => e.stopPropagation()}>
+                                                        <div className="group flex items-center px-4 py-2">
+                                                            <div className="grid place-content-center rounded">
+                                                                <div className="w-12 h-12 relative">
+                                                                    {/* <img className="w-12 h-12 rounded-full object-cover" alt="profile" src={`/assets/images/${notification.profile}`} /> */}
+                                                                    <span className="bg-success w-2 h-2 rounded-full block absolute right-[6px] bottom-0"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="ltr:pl-3 rtl:pr-3 flex flex-auto">
+                                                                <div className="ltr:pr-3 rtl:pl-3">
+                                                                    <h6
+                                                                        dangerouslySetInnerHTML={{__html: notification.message, }}
+                                                                    ></h6>
+                                                                    {/* <span className="text-xs block font-normal dark:text-gray-500">{notification.time}</span> */}
+                                                                </div>
+                                                                <button type="button" className="ltr:ml-auto rtl:mr-auto text-neutral-300 hover:text-danger opacity-0 group-hover:opacity-100" onClick={() => removeNotification(notification.id)} >
+                                                                    <IconXCircle />
+                                                                </button> 
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                );
+                                            })}
+                                            {/* <li>
+                                                <div className="p-4">
+                                                    <button className="btn btn-primary block w-full btn-small">Read All Notifications</button>
+                                                </div>
+                                            </li> */}
+                                        </>
+                                    ) : (
+                                        <li onClick={(e) => e.stopPropagation()}>
+                                            <button type="button" className="!grid place-content-center hover:!bg-transparent text-lg min-h-[200px]">
+                                                <div className="mx-auto ring-4 ring-primary/30 rounded-full mb-4 text-primary">
+                                                    <IconInfoCircle fill={true} className="w-10 h-10" />
+                                                </div>
+                                                No data available.
+                                            </button>
+                                        </li>
+                                    )}
+                                </ul>
+                            </Dropdown>
+                        </div>
+
                         <div>
                             {themeConfig.theme === 'light' ? (
                                 <button
@@ -248,13 +309,12 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
+
+                        
+
                         <div className="dropdown shrink-0 flex">
-                            <Dropdown
-                                offset={[0, 8]}
-                                placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                btnClassName="relative group block"
-                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />}
-                            >
+                            <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="relative group block"
+                                button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />} >
                                 <ul className="text-dark dark:text-white-dark !py-0 w-[230px] font-semibold dark:text-white-light/90">
                                     <li>
                                         <div className="flex items-center px-4 py-4">

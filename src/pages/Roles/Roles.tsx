@@ -92,7 +92,7 @@ const Roles = () => {
             } else {
                 response = await apiClient.post(endpoints.createApi, formData);
             }
-
+            
             if (response.status === 200 || response.status === 201) {
                 showSuccessToast(response.data.message);
                 setFormData({ id: '', name: '' });

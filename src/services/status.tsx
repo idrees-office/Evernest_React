@@ -33,7 +33,6 @@ export const STATUSES = [
         notes2   : ' From Interested Lead',
         tab     : 'newtab',
         activeColor: "bg-dark text-white",
-
     },
     {
         value: 2,
