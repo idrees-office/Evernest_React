@@ -6,15 +6,20 @@ export default function WebSocket() {
     const [messages, setMessages] = useState<string[]>([]);
 
     useEffect(() => {
+        
         // Test public channel
-        echo.channel('test-channel')
-            .listen('RealTimeNotification', (data: any) => {
-                setMessages(prev => [...prev, data.message]);
-            });
+        const channel = echo.channel('test-channel');
+        
+        channel.listen('RealTimeNotification', (data: any) => {
+            console.log('Received message:', data);
+            setMessages(prev => [...prev, data.message]);
+        });
 
         return () => {
+            channel.stopListening('RealTimeNotification');
             echo.leave('test-channel');
         };
+        
     }, []);
 
     return (

@@ -13,15 +13,18 @@ window.Pusher = Pusher;
 
 const echo = new Echo({
     broadcaster: 'reverb',
-    key: 'aaokmzip3cio74osv4im', // Replace with your actual Reverb app key
+    key: 'aaokmzip3cio74osv4im',
     wsHost: 'socket.leadshub.ae',
     wsPort: 443,
     wssPort: 443,
     forceTLS: true,
     enabledTransports: ['ws', 'wss'],
+    authEndpoint: '/broadcasting/auth', // Add this
     auth: {
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
     }
 });
