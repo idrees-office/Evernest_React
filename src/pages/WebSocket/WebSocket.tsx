@@ -21,7 +21,7 @@ export default function WebSocket() {
         <div>
             <h1>WebSocket Test</h1>
             <button onClick={() => {
-                fetch('https://newcrmbackend.ddev.site/api/broadcast-test')
+                fetch('https://testcrmbackend.leadshub.ae/api/broadcast-test')
                     .then(res => res.json());
             }}>
                 Send Test Event
