@@ -15,8 +15,8 @@ const echo = new Echo({
     broadcaster: 'reverb',
     key: 'aaokmzip3cio74osv4im',
     wsHost: 'socket.leadshub.ae',
-    wsPort: 443,
-    wssPort: 443,
+    wsPort: 8080,
+    wssPort: 8080,
     forceTLS: true,
     enabledTransports: ['ws', 'wss'],
     authEndpoint: '/broadcasting/auth', // Add this
