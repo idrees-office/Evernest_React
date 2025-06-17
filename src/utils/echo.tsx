@@ -14,7 +14,7 @@ window.Pusher = Pusher;
 const echo = new Echo({
     broadcaster: 'reverb',
     key: 'aaokmzip3cio74osv4im', // Replace with your actual Reverb app key
-    wsHost: 'websocket.leadshub.ae',
+    wsHost: 'socket.leadshub.ae',
     wsPort: 443,
     wssPort: 443,
     forceTLS: true,
