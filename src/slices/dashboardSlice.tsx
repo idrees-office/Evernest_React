@@ -10,6 +10,7 @@ import { co } from '@fullcalendar/core/internal-common';
         uploadFiles : '/leads/upload_files',
         getfiles  : '/leads/get_files',
         deletefiles  : '/leads/delete_files',
+        exportCsv    : '/leads/export_csv',
     };
     
     export const createLeads = createAsyncThunk('createlead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
@@ -108,11 +109,9 @@ import { co } from '@fullcalendar/core/internal-common';
         reducers: {
             setLeads() {},
             deleteLeadsById() {},
-
             setLoading: (state, action) => {
                 state.loading = action.payload;
             },
-
         },
         extraReducers: (builder) => {
             builder
@@ -135,7 +134,6 @@ import { co } from '@fullcalendar/core/internal-common';
                     state.lead_status = action.payload.lead_status;
                     state.counters = action.payload.counters;
                     state.loading = false;
-                    
                 })
                 .addCase(DashboardLeadslist.rejected, (state) => {
                     state.success = false;
@@ -155,7 +153,6 @@ import { co } from '@fullcalendar/core/internal-common';
                 }).addCase(deleteLeads.fulfilled, (state, action) => {
                     state.success = true;
                     const { id } = action.payload;
-  
                 }).addCase(editLeads.fulfilled, (state, action) => {
                     state.leads = action.payload; 
                 }).addCase(uploadFiles.fulfilled, (state, action) => {

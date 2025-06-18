@@ -16,7 +16,7 @@ import { DataTableSortStatus } from 'mantine-datatable';
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const toast = Toast();
+    const toast = Toast();;
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,6 +27,7 @@ const Assign = () => {
         direction: 'desc',
     });
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
+    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     
      useEffect(() => {
         dispatch(setPageTitle('New Leads'));
@@ -48,14 +49,13 @@ const Assign = () => {
             // combinedRef.current.prevPerPage = per_page;
             // combinedRef.current.prevSortStatus = sortStatus;
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
-        
-    const transformedAgents = agents?.map(agent => ({
-        value: agent?.client_user_id,
-        label: agent?.client_user_name,
-        phone: agent?.client_user_phone,
+
+        const transformedAgents = agents?.map(agent => ({
+            value: agent?.client_user_id,
+            label: agent?.client_user_name,
+            phone: agent?.client_user_phone,
     })) || [];
-
-
+    
     const tableData = useMemo(() => {
         return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
             id: lead.lead_id || 'Unknown',
@@ -80,7 +80,7 @@ const Assign = () => {
             if(selectedRecords.length === 1) { setDisable(true); } 
         }
     };
-    const AssignLead = async (agentId: number, phone: number) => {
+    const AssignLead = async (agentId: number, phone: number) => {    // basicaly agentId is just varible for number status and agent_id i get her
         if (selectedRecords.length === 0) { 
             toast.error('Please select at least one lead to assign');
             return;
@@ -88,7 +88,8 @@ const Assign = () => {
         const leadIds = selectedRecords.map((record) => record.id);
         const formData = new FormData();
         leadIds.forEach((id) => formData.append('lead_id[]', id));
-        formData.append('agent_id', agentId.toString());
+        // formData.append('agent_id', agentId.toString());
+        loginuser?.roles[0].name === 'HR' ?  formData.append('status', agentId.toString()) : formData.append('agent_id', agentId.toString());;
         formData.append('agent_phone', phone.toString());
         try {
             const response = await dispatch(assignleads({ formData }) as any);

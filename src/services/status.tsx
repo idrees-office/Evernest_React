@@ -331,9 +331,6 @@ export const DropdownOption = ()   => STATUSES.filter((status) => status.display
 export const JobDashboard   = ()   => STATUSES.filter((status) => status.displayIn?.includes('jobdashboard'));
 export const uniqueDropdown = ()   => STATUSES.filter((status) => status.displayIn?.includes('uniqueDropdown'));
 
-
-
-
 //  country list
 export const CountryList = [
     {

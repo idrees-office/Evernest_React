@@ -18,7 +18,7 @@ import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
 import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown } from '../../services/status';
-import { DashboardLeadslist, setLoading } from '../../slices/dashboardSlice';
+import { DashboardLeadslist, setLoading} from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
 import { updateSingleLead, createLeads, uploadFiles, getFiles } from '../../slices/dashboardSlice';
@@ -30,6 +30,7 @@ import Loader from '../../services/loader';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import Loader2 from '../../services/loader2';
+import Loader3 from '../../services/loader3';
 import RemarkModal from '../../components/RemarkModal';
 import IconSquareRotated from '../../components/Icon/IconSquareRotated';
 import { FileButton } from '@mantine/core';
@@ -45,12 +46,11 @@ const DashboardBox = () => {
     const JobDashboardList = JobDashboard();
     const uniqueDropdownList = uniqueDropdown();
     const Statues          = statues();
-    const loader           = Loader();
     const loader2          = Loader2();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
     const dropdownOption  = DropdownOption();
-    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, addleadform:null });
+    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, addleadform:null, ishideshow:false });
     const toast           = Toast();
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
@@ -71,12 +71,11 @@ const DashboardBox = () => {
     const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
     const [isMemark, setIsMemark] = useState(false);
     const { dashboardType } = useParams();
-    
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [files, setFiles] = useState([]);
     const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
-    
+
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
@@ -114,14 +113,13 @@ const DashboardBox = () => {
     }
 
     const LeadsTabs = async (status: number) => {
-
+        combinedRef.current.ishideshow = true;
         const response = await dispatch(DashboardLeadslist({ page_number : 1 , lead_status : status, type: dashboardType || 'all'  }) as any);
-
         if(response.payload.status === 200 || response.payload.status === 201){
              setSelectedTab(status);
         }
     }
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (combinedRef.current.form) {
@@ -140,7 +138,6 @@ const DashboardBox = () => {
                     return
                 }
             } catch (error: any) { console.error('Error creating/updating news:', error); 
-
             } finally{
                 dispatch(setLoading(false));
             }
@@ -213,6 +210,32 @@ const DashboardBox = () => {
         } catch (error) {
             toast.error('Failed to load files');
             console.error("Error viewing files:", error);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    };
+    
+    const exportCSV = async () => {
+        if (!selectedTab) {
+            toast.error('Please select any leads status first, Like Cold,Warm, Hot Lead');
+            return;
+        }
+        try {
+            dispatch(setLoading(true));
+            const response = await dispatch(DashboardLeadslist({ page_number: 1,  lead_status: selectedTab,  type: 'csv' }) as any);
+            if (response.payload?.leadsdata?.data) {
+                const link = document.createElement('a');
+                link.href = response.payload.leadsdata.data;
+                link.target = '_blank';
+                link.click();
+                Refresh();
+                // dispatch(DashboardLeadslist({search: searchText, type: dashboardType || 'all'}));
+            } else {
+                toast.error('Failed to export CSV');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Something went wrong while exporting CSV');
         } finally {
             dispatch(setLoading(false));
         }
@@ -301,7 +324,13 @@ const DashboardBox = () => {
                                     <div className="flex items-center w-full sm:w-auto">
                                         <button type="button" className="xl:hidden hover:text-primary mr-3 p-1" onClick={() => setIsShowMailMenu(!isShowMailMenu)}>
                                             <IconMenu className="w-5 h-5"/>
-                                        </button>
+                                        </button> 
+                                        <div className="gap-1">
+                                            {combinedRef.current.ishideshow && (
+                                               <button className='btn btn-success btn-sm' onClick={() => exportCSV()}>Export Csv</button>
+                                            )}
+                                        </div>
+                                         &nbsp; &nbsp;
                                         <div className="relative flex-1 sm:flex-none">
                                             <input type="text" className="form-input w-full sm:w-[200px] pr-8" placeholder="Search Lead" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                                             <div className="absolute right-2 top-1/2 -translate-y-1/2 peer-focus:text-primary"> <IconSearch className="w-4 h-4"/> </div>
@@ -343,10 +372,8 @@ const DashboardBox = () => {
                             </div> 
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 {loading ? (
-                                    <div className="grid place-content-center min-h-[300px]">
-                                         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-                                    </div>
-                                ) : AllLeadList.length ? (
+                                    <Loader3 />
+                                ) : Array.isArray(AllLeadList) && AllLeadList.length ? (
                                     <div className="table-responsive grow overflow-y-auto sm:min-h-[300px] min-h-[400px]">
                                         <table className="table-hover">
                                             <tbody>
