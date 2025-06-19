@@ -88,8 +88,8 @@ const Assign = () => {
         const leadIds = selectedRecords.map((record) => record.id);
         const formData = new FormData();
         leadIds.forEach((id) => formData.append('lead_id[]', id));
-        // formData.append('agent_id', agentId.toString());
-        loginuser?.roles[0].name === 'HR' ?  formData.append('status', agentId.toString()) : formData.append('agent_id', agentId.toString());;
+        formData.append('agent_id', agentId.toString());
+        // loginuser?.roles[0].name === 'HR' ?  formData.append('status', agentId.toString()) : formData.append('agent_id', agentId.toString());;
         formData.append('agent_phone', phone.toString());
         try {
             const response = await dispatch(assignleads({ formData }) as any);

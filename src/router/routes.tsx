@@ -31,11 +31,9 @@ const EmailPreview = lazy(() => import('../pages/emails/preview'));
 const EmailSubscriber = lazy(() => import('../pages/emails/subscriber'));
 const AnalyticsDashboard = lazy(() => import('../pages/emails/analyticsDashboard'));
 const EmailReportList = lazy(() => import('../pages/emails/email-report'));
+const Createannouncements = lazy(() => import('../pages/announcements/create'));
 // listing
 const CreateListing = lazy(() => import('../pages/listing/createListing'));
-
-
-
 
 const routes = [
     {
@@ -117,6 +115,13 @@ const routes = [
         element: <EmailReportList />, 
         layout: 'default',
     },
+    {
+        path: 'pages/announcements/create',
+        type: 'protected',
+        element: <Createannouncements />, 
+        layout: 'default',
+    },
+
 
     {
         path: 'pages/listing/create-listing',

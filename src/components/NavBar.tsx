@@ -174,6 +174,23 @@ const NavBar = () => {
                 </li>
             )}
 
+             {(permissions.includes('create subscriber') || role === 'super admin') && (
+                <li className="menu nav-item relative">
+                        <button type="button" className="nav-link">
+                            <div className="flex items-center">
+                                <IconMenuElements className="shrink-0" />
+                                <span className="px-1">{t('Announcements')}</span>
+                            </div>
+                            <div className="right_arrow">
+                                <IconCaretDown />
+                            </div>
+                        </button>
+                        <ul className="sub-menu">
+                            <li> <NavLink to="/pages/announcements/create">{t('HR-Announcements')}</NavLink> </li>
+                        </ul>
+                </li>
+            )}
+
         </>
     );
 };
