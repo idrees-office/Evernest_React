@@ -35,7 +35,7 @@ const Create = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'client_user_id', direction: 'asc' });
     const [searchQuery, setSearchQuery] = useState('');
-    
+
     useEffect(() => {
         fetchAnnouncementsList();
     }, [page, pageSize, sortStatus, searchQuery]);
@@ -140,25 +140,20 @@ const Create = () => {
             }
         }
     };
-
     const handleRoleChange = (selectedOption: any) => {
         setSelectedRole(selectedOption); 
     };
-
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         setPage(1); // Reset to first page when searching
     };
-
     const handlePageChange = (p: number) => {
         setPage(p);
     };
-
     const handlePageSizeChange = (size: number) => {
         setPageSize(size);
         setPage(1);
     };
-
     const columns = [
         { 
             accessor: 'id', 
@@ -171,6 +166,12 @@ const Create = () => {
             title: 'Title', 
             sortable: true, 
             key: 'title'
+        },
+        { 
+            accessor: 'created_at', 
+            title: 'Date', 
+            sortable: true, 
+            key: 'created_at'
         },
         {
             accessor: 'actions',
