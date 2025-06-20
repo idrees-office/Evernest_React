@@ -143,7 +143,7 @@ const DashboardBox = () => {
             }
         }
     }
-
+    
     const getLeads = (status: number) => {
         const filterLead = leads.filter((lead: any) => lead.lead_status == status);        
         setAllLeadList(filterLead);
@@ -160,7 +160,7 @@ const DashboardBox = () => {
         setIsModalOpen(true);
     } 
     const handleSelectChange = (e:any) => {
-        if(e.value == 7 || e.value === 7){
+        if((e.value == 7 || e.value === 7) || (e.value == 19 || e.value === 19)){
             setIsDisable(false);
             setsColor('');
         }else{

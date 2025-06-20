@@ -37,6 +37,7 @@ const Create = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
+        setPageTitle('Create Announcements')
         fetchAnnouncementsList();
     }, [page, pageSize, sortStatus, searchQuery]);
 
@@ -45,8 +46,9 @@ const Create = () => {
             const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery};
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                setAnnouncements(response.data.data.data || []); 
-                setTotalRecords(response.data.data.total || 0);
+                console.log(response.data.data)
+                setAnnouncements(response.data.data || []); 
+                setTotalRecords(response.data.data.length || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -73,7 +75,7 @@ const Create = () => {
             }
         } catch (error: any) {
 
-            console.log(error);
+        
 
             if (error.response?.data?.errors) {
 
@@ -105,7 +107,7 @@ const Create = () => {
             title: 'Server Error',
         });
     };
-    
+
     const handleEdit = async (announcements: any) => {
         if (combinedRef.current.userformRef) {
             const form = combinedRef.current.userformRef;

@@ -69,24 +69,6 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
-            {permissions.includes('create userprofile') && (
-                <li className="menu nav-item relative">
-                    <button type="button" className="nav-link">
-                        <div className="flex items-center">
-                            <IconMenuApps className="shrink-0" />
-                            <span className="px-1">{t('Account Setting')}</span>
-                        </div>
-                        <div className="right_arrow">
-                            <IconCaretDown />
-                        </div>
-                    </button>
-                    <ul className="sub-menu">
-                        <li>
-                            <NavLink to="/pages/users/profile">{t('Profile')}</NavLink>
-                        </li>
-                    </ul>
-                </li>
-            )}
             <li className="menu nav-item relative">
                 {(permissions.includes('create user') || role === 'super admin') && (
                     <button type="button" className="nav-link">
@@ -154,7 +136,6 @@ const NavBar = () => {
                     </ul>
             </li>
             )}
-
             {(permissions.includes('create subscriber') || role === 'super admin') && (
                 <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
@@ -174,23 +155,25 @@ const NavBar = () => {
                 </li>
             )}
 
-             {(permissions.includes('create subscriber') || role === 'super admin') && (
-                <li className="menu nav-item relative">
-                        <button type="button" className="nav-link">
-                            <div className="flex items-center">
-                                <IconMenuElements className="shrink-0" />
-                                <span className="px-1">{t('Announcements')}</span>
-                            </div>
-                            <div className="right_arrow">
-                                <IconCaretDown />
-                            </div>
-                        </button>
-                        <ul className="sub-menu">
-                            <li> <NavLink to="/pages/announcements/create">{t('HR-Announcements')}</NavLink> </li>
-                        </ul>
-                </li>
+             {(permissions.includes('create announcements') || role === 'super admin' || role === 'agent') && (
+            <li className="menu nav-item relative">
+                <button type="button" className="nav-link">
+                <div className="flex items-center">
+                    <IconMenuElements className="shrink-0" />
+                    <span className="px-1">{t('Announcements')}</span>
+                </div>
+                <div className="right_arrow">
+                    <IconCaretDown />
+                </div>
+                </button>
+                <ul className="sub-menu">
+                {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR') && (
+                    <li><NavLink to="/pages/announcements/create">  <span>   {t('HR-Announcements')} </span></NavLink> </li>
+                )}
+                    <li> <NavLink to="/pages/announcements/view"><span>{t('New-Announcements')}</span></NavLink> </li>
+                </ul>
+            </li>
             )}
-
         </>
     );
 };
