@@ -6,7 +6,6 @@ interface RemarkModalProps {
     onClose: () => void;
     data: Array<{ name: string; values: string[] }>;
 }
-
 const RemarkModal: React.FC<RemarkModalProps> = ({ isOpen, onClose, data }) => {
     return (
         <Transition appear show={isOpen} as={Fragment}>

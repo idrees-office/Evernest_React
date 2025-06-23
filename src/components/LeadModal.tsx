@@ -16,8 +16,7 @@
     const toast           = Toast();
     const [permissions, setPermissions] = useState<any>([]);
     const [role, setRoles] = useState<string>();
-
-
+    
     useEffect(() => {
         if (isOpen) { setErrors({}); }
 

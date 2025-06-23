@@ -254,7 +254,6 @@ const Reports = () => {
             <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
             onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
         </div>
-
         <Flatpickr 
             options={{ 
                 mode: 'range', 
