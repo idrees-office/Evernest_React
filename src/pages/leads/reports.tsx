@@ -19,8 +19,14 @@ import { DropdownOption } from '../../services/status';
 import { jsPDF } from 'jspdf';
 import "jspdf-autotable";
 import { DataTableSortStatus } from 'mantine-datatable';
+import IconSearch from '../../components/Icon/IconSearch';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+import IconEye from '../../components/Icon/IconEye';
+import LeadDetailModal from '../../components/LeadDetailModal';
 
-const ExportPdf = () => {
+
+const Reports = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast    = Toast();
@@ -34,10 +40,33 @@ const ExportPdf = () => {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
-    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
+
+    type Lead = {
+        lead_id: number;
+        lead_title?: string;
+        customer_name?: string;
+        customer_phone?: string;
+        lead_source?: string;
+        created_at?: string;
+        comments?: any[]; // Add other fields as needed
+    };
+    
+    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices) as {
+        leads: Lead[];
+        loading: boolean;
+        agents: any[];
+        total: number;
+        last_page: number;
+        current_page: number;
+        per_page: number;
+    };
+    const [dateRange, setDateRange] = useState<string>('');
+
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedLead, setSelectedLead] = useState<any>(null);
 
       useEffect(() => {
-        dispatch(setPageTitle('All Leads'));
+        dispatch(setPageTitle('Agents Reports'));
 
         const fetchData = () => {
             dispatch(allLeads({ 
@@ -45,7 +74,8 @@ const ExportPdf = () => {
                 perPage: per_page,
                 sortField: sortStatus.columnAccessor,
                 sortOrder: sortStatus.direction,
-                search: searchTerm
+                search: searchTerm,
+                date_range: dateRange 
             }));
         };
         if (!combinedRef.current.fetched) {
@@ -53,9 +83,7 @@ const ExportPdf = () => {
             combinedRef.current.fetched = true;
             return;
         } 
-        // combinedRef.current.prevPage = current_page;
-        // combinedRef.current.prevPerPage = per_page;
-        // combinedRef.current.prevSortStatus = sortStatus;
+
     }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
     const transformedAgents = agents?.map(agent => ({
@@ -83,74 +111,34 @@ const ExportPdf = () => {
         setSelectedStatus(status.value);
       }
 
-      const DownloadPdf = async () => {
+      const Search = async () => {
         if (!selectedAgent) {
-            toast.error('Please select an agent before downloading.');
+            toast.error('Please select an agent before Search.');
             return;
         }
-        if (!selectedStatus) {
-            toast.error('Please select a status before downloading.');
-            return;
-        }
-        const formData = new FormData();
-        formData.append('lead_status', selectedStatus);
-        formData.append('agent_id', selectedAgent.toString());
-        const response = await dispatch(download({ formData }) as any);
-        if (response.payload.status === 200 || response.payload.status === 201){
-            dispatch(allLeads({ 
-              page: current_page, 
-              perPage: per_page,
-              sortField: sortStatus.columnAccessor,
-              sortOrder: sortStatus.direction,
-              search: searchTerm  
-          }));
-            const doc = new jsPDF();
-            doc.setFontSize(16);
-            const leadStatusLabel = getLeadStatusLabel(selectedStatus);
-            doc.text(`Agent: ${response.payload.agent_name}`, 10, 10);
-            doc.text(`Lead Status: Not Responding`, 180, 10, { align: 'right' }); 
-            doc.text(' ', 10, 10);
-            const headers = [['Lead Title', 'Comment', 'Time']];
-            const body = response.payload.data?.map((row: any) => [
-                row.lead_title,
-                row.lead_comment,
-                formatDate(row.updated_at), 
-              ]);
-              (doc as any).autoTable({
-                head: headers,
-                body: body,
-                startY: 30,  
-                columnStyles: { 
-                  0: { cellWidth: 'auto' },
-                  1: { cellWidth: 'auto' },
-                  2: { cellWidth: 'auto' } 
-                },
-                theme: 'grid', 
-                styles: {
-                  cellPadding: 3,
-                  fontSize: 12, 
-                  fontStyle: 'normal',
-                },
-                headStyles: {
-                  fillColor: [22, 160, 133], 
-                  textColor: [255, 255, 255], 
-                  fontStyle: 'bold', 
-                },
-                bodyStyles: {
-                  fillColor: [240, 240, 240],
-                }
-              });
-              doc.save('reports.pdf');
-        }
-      }
-      const formatDate =  (date: string) => {
-        const formattedDate = new Date(date);
-        return formattedDate.toLocaleString(); 
-      } 
+        
+        dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            date_range: dateRange,
+            agent_id: selectedAgent
+        }));
+    }
+    
       const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
         return status ? status.label : 'Unknown Status';
       }
+
+     const setDate = async () => {
+
+     }
+      
+    const formatDate = (date: Date) => { return date.toISOString().split('T')[0]; };
+
 
     const tableData = useMemo(() => {
       return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
@@ -168,7 +156,12 @@ const ExportPdf = () => {
                page,
                sortField: sortStatus.columnAccessor,
                sortOrder: sortStatus.direction,
-               search: searchTerm  
+               search: searchTerm,
+
+               agent_id: selectedAgent, 
+               date_range: dateRange
+
+              
            }));
            setSelectedRecords([]);
            setDisable(true);
@@ -178,7 +171,9 @@ const ExportPdf = () => {
                perPage: pageSize,
                sortField: sortStatus.columnAccessor,
                sortOrder: sortStatus.direction,
-               search: searchTerm  
+               search: searchTerm,
+               agent_id: selectedAgent,  
+              date_range: dateRange  
            }));
            setSelectedRecords([]);
            setDisable(true);
@@ -190,7 +185,9 @@ const ExportPdf = () => {
               perPage: per_page,
               sortField: sortStatus.columnAccessor,
               sortOrder: sortStatus.direction,
-              search: searchTerm  
+              search: searchTerm,
+              agent_id: selectedAgent, 
+              date_range: dateRange   
           }));
       };
       const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,6 +224,19 @@ const ExportPdf = () => {
             },
         },
         { accessor: 'date', title: 'Date', sortable: true },
+        {
+            accessor: 'actions', 
+            title: 'Actions',
+            render: (record: any) => {
+                const fullLead = leads.find((l: any) => l.lead_id === record.id);
+                return (
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ height: '23px', borderRadius: '13px' }} onClick={() => {  setIsDetailModalOpen(true); setSelectedLead(fullLead?.comments || []);  }} >
+                        View
+                    </button>
+                );
+            },
+        },
+
     ];
 
     return (
@@ -234,36 +244,40 @@ const ExportPdf = () => {
         <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
         <div className="flex items-center">
             <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
-            <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Pdf Reports. </span>
+            <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Reports. </span>
         </div> 
         <div className="flex items-center space-x-2">
-        <div className="w-[300px]">
+        <div className="w-[500px]">
             <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
             onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
         </div>
-        <Select placeholder="Move Lead...." options={dropdownOption} onChange={(selectedOption) => SelectStatus(selectedOption)} name="lead_status"  className="cursor-pointer custom-multiselect z-10 w-[300px]"/>        
-        <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus /> Download </button>
+        <Flatpickr 
+            options={{ 
+                mode: 'range', 
+                dateFormat: 'Y-m-d',
+            }} 
+            className="form-input" 
+            placeholder='Y-m-d' 
+            onChange={(dates) => {
+                if (dates.length === 2) {
+                    const startDate = formatDate(dates[0]);
+                    const endDate = formatDate(dates[1]);
+                    setDateRange(`${startDate},${endDate}`);
+                } else {
+                    setDateRange('');
+                }
+            }} 
+        />
+        <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Search </button>
     </div>
     </div>
        <div className="datatables mt-6"> 
-              <Table title="All Leads"  
-                  columns={columns}  
-                  rows={tableData}  
-                  totalRecords={total || 0}  
-                  currentPage={current_page} 
-                  recordsPerPage={per_page} 
-                  onPageChange={handlePageChange} 
-                  onRecordsPerPageChange={handlePerPageChange} 
-                  onSortChange={handleSortChange} 
-                  sortStatus={sortStatus} 
-                  isLoading={loading}
-                  onSearchChange={onSearchChange}
-                  searchValue={searchTerm}
-                  noRecordsText="No records found matching your search criteria"
+              <Table title="All Leads" columns={columns}  rows={tableData}  totalRecords={total || 0}  currentPage={current_page} recordsPerPage={per_page} onPageChange={handlePageChange} onRecordsPerPageChange={handlePerPageChange} onSortChange={handleSortChange} sortStatus={sortStatus} isLoading={loading}onSearchChange={onSearchChange}searchValue={searchTerm}noRecordsText="No records found matching your search criteria"
               />
             </div>
-        <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
+            <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
+            <LeadDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} comments={selectedLead} />
     </div>
     )
 }
-export default ExportPdf;
+export default Reports;

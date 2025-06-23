@@ -57,14 +57,20 @@ const NavBar = () => {
                             <NavLink to="/pages/leads/won">{t('Won-Leads')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('view pdf') || role === 'super admin') && (
+                    {/* {(permissions.includes('view pdf') || role === 'super admin') && (
                         <li>
                            <NavLink to="/pages/leads/exportpdf">{t('Export Pdf')}</NavLink>
                         </li>
-                    )}
+                    )} */}
                     {(permissions.includes('roadshow leads') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/leads/roadshow">{t('Road-Show Leads')}</NavLink>
+                        </li>
+                    )}
+
+                    {(permissions.includes('roadshow leads') || role === 'super admin') && (
+                        <li>
+                            <NavLink to="/pages/leads/reports">{t('Agent Reports')}</NavLink>
                         </li>
                     )}
                 </ul>

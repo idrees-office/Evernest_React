@@ -23,6 +23,7 @@ const ReAssign = lazy(() => import('../pages/leads/reassign'));
 const WonLeads = lazy(() => import('../pages/leads/won'));
 const ExportLeads = lazy(() => import('../pages/leads/exportpdf'));
 const RoadShow = lazy(() => import('../pages/leads/roadshow'));
+const Reports = lazy(() => import('../pages/leads/reports'));
 const Profile = lazy(() => import('../pages/users/profile'));
 const Error404 = lazy(() => import('../pages/errors/error404'));
 const Activities = lazy(() => import('../pages/activities/activities'));
@@ -33,7 +34,6 @@ const AnalyticsDashboard = lazy(() => import('../pages/emails/analyticsDashboard
 const EmailReportList = lazy(() => import('../pages/emails/email-report'));
 const Createannouncements = lazy(() => import('../pages/announcements/create'));
 const Viewannouncements = lazy(() => import('../pages/announcements/view'));
-
 // listing
 const CreateListing = lazy(() => import('../pages/listing/createListing'));
 
@@ -78,6 +78,14 @@ const routes = [
         element : <RoadShow/>,
         layout: 'default',
     },
+
+    {
+        path: 'pages/leads/reports',
+        type: 'protected',
+        element : <Reports/>,
+        layout: 'default',
+    },
+
     {
         path: 'pages/activities/activities',
         type: 'protected',
