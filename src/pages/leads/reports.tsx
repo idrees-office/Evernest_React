@@ -127,7 +127,7 @@ const Reports = () => {
             agent_id: selectedAgent
         }));
     }
-    
+
       const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
         return status ? status.label : 'Unknown Status';
@@ -137,7 +137,10 @@ const Reports = () => {
 
      }
       
-    const formatDate = (date: Date) => { return date.toISOString().split('T')[0]; };
+    
+     const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
 
 
     const tableData = useMemo(() => {
@@ -251,6 +254,7 @@ const Reports = () => {
             <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
             onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
         </div>
+
         <Flatpickr 
             options={{ 
                 mode: 'range', 
@@ -259,15 +263,28 @@ const Reports = () => {
             className="form-input" 
             placeholder='Y-m-d' 
             onChange={(dates) => {
-                if (dates.length === 2) {
-                    const startDate = formatDate(dates[0]);
-                    const endDate = formatDate(dates[1]);
-                    setDateRange(`${startDate},${endDate}`);
+                if (dates.length === 2) {  const startDate = formatDate(dates[0]); const endDate = formatDate(dates[1]); setDateRange(`${startDate},${endDate}`);
                 } else {
                     setDateRange('');
                 }
             }} 
         />
+
+        {/* <Flatpickr 
+            options={{ 
+                mode: 'range', 
+                dateFormat: 'Y-m-d',
+            }} 
+            className="form-input" 
+            placeholder='Y-m-d' 
+            onChange={(dates) => {
+                if (dates.length === 2) { const startDate = dates[0]; const endDate = dates[1];
+                    setDateRange(`${startDate},${endDate}`);
+                } else {
+                    setDateRange('');
+                }
+            }} 
+        /> */}
         <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Search </button>
     </div>
     </div>
