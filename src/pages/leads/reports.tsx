@@ -241,7 +241,6 @@ const Reports = () => {
         },
 
     ];
-
     return (
     <div>
         <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
