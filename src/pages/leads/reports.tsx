@@ -147,7 +147,7 @@ const Reports = () => {
           name: lead.customer_name || 'Unknown',
           phone: lead.customer_phone || 'Unknown',
           source: lead.lead_source || 'Unknown',
-          date: lead.created_at ? new Date(lead.created_at).toLocaleString() : 'Unknown',
+          date: lead.assigned_at ? new Date(lead.assigned_at).toLocaleString() : 'Unknown',
       }));
     }, [leads]);  
 
