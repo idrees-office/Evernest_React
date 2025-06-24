@@ -128,20 +128,17 @@ const Reports = () => {
         }));
     }
 
-      const getLeadStatusLabel = (leadStatus: any) => {
+    const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
         return status ? status.label : 'Unknown Status';
-      }
+    }
 
-     const setDate = async () => {
-
-     }
-      
-    
      const formatDate = (date: Date) => {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
-
 
     const tableData = useMemo(() => {
       return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
@@ -160,11 +157,8 @@ const Reports = () => {
                sortField: sortStatus.columnAccessor,
                sortOrder: sortStatus.direction,
                search: searchTerm,
-
                agent_id: selectedAgent, 
                date_range: dateRange
-
-              
            }));
            setSelectedRecords([]);
            setDisable(true);
@@ -267,21 +261,6 @@ const Reports = () => {
                 }
             }} 
         />
-        {/* <Flatpickr 
-            options={{ 
-                mode: 'range', 
-                dateFormat: 'Y-m-d',
-            }} 
-            className="form-input" 
-            placeholder='Y-m-d' 
-            onChange={(dates) => {
-                if (dates.length === 2) { const startDate = dates[0]; const endDate = dates[1];
-                    setDateRange(`${startDate},${endDate}`);
-                } else {
-                    setDateRange('');
-                }
-            }} 
-        /> */}
         <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Search </button>
     </div>
     </div>
