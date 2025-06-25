@@ -8,9 +8,9 @@ import apiClient from '../utils/apiClient';
 import { setLoading } from '../slices/dashboardSlice';
 import { useDispatch } from 'react-redux';
 
-interface CustomSideNavProps { isOpen: boolean; onClose: () => void; leadId?: string; }
+interface CustomSideNavProps { isOpen: boolean; onClose: () => void; leadId?: string;  onSuccess?: () => void;  }
 
-const CustomSideNav: React.FC<CustomSideNavProps> = ({ isOpen, onClose, leadId }) => {
+const CustomSideNav: React.FC<CustomSideNavProps> = ({ isOpen, onClose, leadId, onSuccess  }) => {
     const dispatch = useDispatch();
     const toast = Toast();
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -44,7 +44,10 @@ const CustomSideNav: React.FC<CustomSideNavProps> = ({ isOpen, onClose, leadId }
             if (response.status === 200) {
                 toast.success('Lead assigned successfully');
                 onClose();
-
+                 if (onSuccess) {
+                    onSuccess();
+                }
+                
             }
         } catch (error) {
             toast.error('Failed to assign lead');

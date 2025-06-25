@@ -527,8 +527,7 @@ const DashboardBox = () => {
                                                     <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
                                                     &nbsp; &nbsp;
                                                     {loginuser?.roles[0].name === 'super admin' && (
-                                                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => selectedLead && AssignToAgent(selectedLead?.lead_id)}> Assign this lead another Agent
-                                                        </button>
+                                                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => selectedLead && AssignToAgent(selectedLead?.lead_id)}> Transfer Lead </button>
                                                     )}
                                                 </>
                                             )}
@@ -670,7 +669,7 @@ const DashboardBox = () => {
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
             <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} />
-            <CustomSideNav isOpen={isCustomizerOpen}  onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} />
+            <CustomSideNav isOpen={isCustomizerOpen}  onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} onSuccess={() => { setSelectedLead(null);  setIsCustomizerOpen(false);  Refresh() }}/>
     </div>
     );
 }
