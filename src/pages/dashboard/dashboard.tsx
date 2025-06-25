@@ -38,6 +38,8 @@ import IconFile from '../../components/Icon/IconFile';
 import IconEye from '../../components/Icon/IconEye';
 import FileViewerModal from '../../components/FileViewerModal';
 import IconNotesEdit from '../../components/Icon/IconNotesEdit';
+import IconPlus from '../../components/Icon/IconPlus';
+import CustomSideNav from '../../components/CustomSideNav';
 
 const DashboardBox = () => {
     const dispatch        = useDispatch<AppDispatch>();
@@ -75,6 +77,8 @@ const DashboardBox = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [files, setFiles] = useState([]);
     const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
+    const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+
 
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
@@ -240,6 +244,29 @@ const DashboardBox = () => {
             dispatch(setLoading(false));
         }
     };
+
+
+
+    const AssignToAgent = async (leadId: any) => {
+        try {
+            // dispatch(setLoading(true));
+
+            // alert(leadId);
+            setIsCustomizerOpen(true);
+
+
+            // const resultAction = await dispatch(getFiles(leadId));
+            // const fetchedFiles = getFiles.fulfilled.match(resultAction) ? resultAction.payload : [];
+            // setFiles(fetchedFiles);
+            // setIsFileViewerOpen(true);
+        } catch (error) {
+            // toast.error('Failed to load files');
+            // console.error("Error viewing files:", error);
+        } finally {
+            // dispatch(setLoading(false));
+        }
+    };
+
 
     return (
         <div>
@@ -477,34 +504,35 @@ const DashboardBox = () => {
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="p-4 relative">
-                                {loading &&  loader2}
+                                {loading && loader2}
                                 <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-5">
                                     <div className="panel xl:col-span-2 md:col-span-2">
                                         <div className="flex items-center mb-5">
                                             {loginuser?.roles[0].name === 'HR' ? (
                                                 <>
-                                                <h5 className="font-semibold text-lg dark:text-white-light">Job Seeker Detail</h5>
-                                                &nbsp; &nbsp;
-                                                <button type="button" className="btn btn-success" onClick={triggerFileInput}>
-                                                    <IconFile className="w-4 h-4" />
-                                                    <input
-                                                    type="file"
-                                                    multiple
-                                                    ref={fileInputRef}
-                                                    className="hidden"
-                                                    onChange={handleFileChange}
-                                                    accept=".pdf,.doc,.docx,.jpg,.png,.jpeg,.webp,.txt"
-                                                    />
-                                                </button>
-                                                &nbsp; &nbsp;
-                                                <button type="button" className="btn btn-secondary" onClick={() => selectedLead && viewFiles(selectedLead?.lead_id)}>
-                                                    <IconEye className="w-4 h-4" />
-                                                </button>
+                                                    <h5 className="font-semibold text-lg dark:text-white-light">Job Seeker Detail</h5>
+                                                    &nbsp; &nbsp;
+                                                    <button type="button" className="btn btn-success" onClick={triggerFileInput}>
+                                                        <IconFile className="w-4 h-4" />
+                                                        <input type="file" multiple ref={fileInputRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.jpg,.png,.jpeg,.webp,.txt"
+                                                        />
+                                                    </button>
+                                                    &nbsp; &nbsp;
+                                                    <button type="button" className="btn btn-secondary" onClick={() => selectedLead && viewFiles(selectedLead?.lead_id)}
+                                                    > <IconEye className="w-4 h-4" />
+                                                    </button>
                                                 </>
                                             ) : (
-                                                <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
+                                                <>
+                                                    <h5 className="font-semibold text-lg dark:text-white-light">Client Detail</h5>
+                                                    &nbsp; &nbsp;
+                                                    {loginuser?.roles[0].name === 'super admin' && (
+                                                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => selectedLead && AssignToAgent(selectedLead?.lead_id)}> Assign this lead another Agent
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
-                                            </div>
+                                        </div>
                                         <div className="data">
                                             <ul className="mt-5 m-auto space-y-4 font-semibold text-white-dark">
                                                 <li className="flex items-center gap-2 text-dark">
@@ -641,8 +669,8 @@ const DashboardBox = () => {
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
-            <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} 
-            />
+            <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} />
+            <CustomSideNav isOpen={isCustomizerOpen}  onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} />
     </div>
     );
 }

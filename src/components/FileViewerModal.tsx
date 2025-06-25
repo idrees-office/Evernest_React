@@ -84,14 +84,7 @@ const FileViewerModal = ({ isOpen, onClose, files }: FileViewerModalProps) => {
                     <div className="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto" />
                 </Transition.Child>
                 <div className="fixed inset-0 z-[1000] flex items-start justify-center min-h-screen px-4">
-                    <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0 scale-95"
-                        enterTo="opacity-100 scale-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100 scale-100"
-                        leaveTo="opacity-0 scale-95"
+                    <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
                     >
                         <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden my-8 w-full max-w-5xl text-black dark:text-white-dark">
                             <div className="p-5">
