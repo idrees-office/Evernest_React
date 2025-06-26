@@ -9,14 +9,14 @@ export default function WebSocket() {
         
         // Test public channel
         const channel = echo.channel('test-channel');
-        
-        channel.listen('RealTimeNotification', (data: any) => {
-            console.log('Received message:', data);
+
+        channel.listen('.RealTimeNotification', (data: any) => {
+            console.log('Received:', data);
             setMessages(prev => [...prev, data.message]);
         });
 
         return () => {
-            channel.stopListening('RealTimeNotification');
+            channel.stopListening('.RealTimeNotification');
             echo.leave('test-channel');
         };
         
@@ -26,7 +26,7 @@ export default function WebSocket() {
         <div>
             <h1>WebSocket Test</h1>
             <button onClick={() => {
-                fetch('https://testcrmbackend.leadshub.ae/api/broadcast-test')
+                fetch('https://newcrmbackend.ddev.site/api/broadcast-test')
                     .then(res => res.json());
             }}>
                 Send Test Event

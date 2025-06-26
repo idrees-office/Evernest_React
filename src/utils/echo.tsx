@@ -14,19 +14,11 @@ window.Pusher = Pusher;
 const echo = new Echo({
     broadcaster: 'reverb',
     key: 'aaokmzip3cio74osv4im',
-    wsHost: 'socket.leadshub.ae',
-    wsPort: 8080,
-    wssPort: 8080,
+    wsHost: 'websocke1.ddev.site',
+    wsPort: 8082,
+    wssPort: 8083,
     forceTLS: true,
     enabledTransports: ['ws', 'wss'],
-    authEndpoint: '/broadcasting/auth', // Add this
-    auth: {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    }
 });
 
 export default echo;
