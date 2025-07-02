@@ -8,7 +8,7 @@ export default function WebSocket() {
     useEffect(() => {
         
         // Test public channel
-        const channel = echo.channel('test-channel');
+        const channel = echo.channel('test_name.1');
 
         channel.listen('.RealTimeNotification', (data: any) => {
             console.log('Received:', data);
@@ -17,7 +17,7 @@ export default function WebSocket() {
 
         return () => {
             channel.stopListening('.RealTimeNotification');
-            echo.leave('test-channel');
+            echo.leave('test_name.1');
         };
         
     }, []);

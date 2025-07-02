@@ -2,7 +2,7 @@ export const getBaseUrl = () => {
   const currentUrl = window.location.href;
   console.log('Current URL:', currentUrl);
   if (currentUrl.includes('localhost')) {
-    return 'https://testcrmbackend.leadshub.ae/api';
+    // return 'https://testcrmbackend.leadshub.ae/api';
     return 'https://newcrmbackend.ddev.site/api';
     return 'http://10.99.1.12:8000/api';
   } else if (currentUrl.includes('testcrm.leadshub.ae')) {
