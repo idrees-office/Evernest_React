@@ -15,7 +15,7 @@ import Select from 'react-select';
 import LeadModal from '../../components/LeadModal';
 import { createLeads } from '../../slices/dashboardSlice';
 import '../dashboard/dashboard.css'; 
-import { DropdownOption } from '../../services/status';
+import { uniqueDropdown } from '../../services/status';
 import { jsPDF } from 'jspdf';
 import "jspdf-autotable";
 import { DataTableSortStatus } from 'mantine-datatable';
@@ -25,7 +25,7 @@ const ExportPdf = () => {
     const navigate = useNavigate();
     const toast    = Toast();
     const loader   = Loader();
-    const dropdownOption  = DropdownOption();
+    const dropdownOption  = uniqueDropdown();
     const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'lead_id', direction: 'desc' } });
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);

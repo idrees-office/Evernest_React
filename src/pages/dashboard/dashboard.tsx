@@ -17,7 +17,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown, HrSidebarStatus } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, HRDropdownOption, statues, JobDashboard, uniqueDropdown, HrSidebarStatus } from '../../services/status';
 import { DashboardLeadslist, setLoading} from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
@@ -52,7 +52,7 @@ const DashboardBox = () => {
     const loader2          = Loader2();
     const SidebarStatuses = SidebarStatus();
     const colorsarray     = MatchColorList();
-    const dropdownOption  = DropdownOption();
+    const hrdropdownOption  = HRDropdownOption();
     const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, addleadform:null, ishideshow:false });
     const toast           = Toast();
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
@@ -541,7 +541,7 @@ const DashboardBox = () => {
                                                     <div className="w-full cursor-pointer">
                                                         <div className="mt-3 items-center">
                                                         <Select placeholder="Move Lead...." options={ 
-                                                            loginuser?.roles[0].name === 'HR' ? JobDashboardList : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
+                                                            loginuser?.roles[0].name === 'HR' ? hrdropdownOption : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
                                                         <input type="hidden" name="lead_id" className="form-input" defaultValue={selectedLead?.lead_id} />
                                                         <input type="hidden" name="agent_id" className="form-input" defaultValue={selectedLead?.agent_id} />
                                                         <input type="hidden" name="login_user_id" className="form-input" defaultValue={loginuser?.client_user_id}/>
