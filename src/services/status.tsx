@@ -332,6 +332,19 @@ export const STATUSES = [
         notes2: 'From Not Qualified',
         tab: 'notqualifiedtab',
         activeColor: 'bg-danger text-white',
+    },
+
+    {
+        value: 58,
+        label: 'Call | No Answer',
+        displayIn: ['dropdown', 'matchcolorlist', 'hrsidebar', 'uniqueDropdown'],
+        icon: <IconUsersGroup className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-danger-500" />,
+        outlineColor: 'btn-outline-danger',
+        bgColor: 'bg-danger',
+        notes: 'Moved to: <span class="text-success-500"> Call | No Answer </span>',
+        notes2: 'From Call | No Answer',
+        tab: 'callnoanswertab',
+        activeColor: 'bg-danger text-white',
     }
 
 ];
@@ -339,6 +352,7 @@ export const STATUSES = [
 export const statues        = ()   => STATUSES;
 export const topBarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
 export const SidebarStatus  = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
+export const HrSidebarStatus = () => STATUSES.filter((status) => status.displayIn?.includes('hrsidebar'));
 export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
 export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
 export const JobDashboard   = ()   => STATUSES.filter((status) => status.displayIn?.includes('jobdashboard'));

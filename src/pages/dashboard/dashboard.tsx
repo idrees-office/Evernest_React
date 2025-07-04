@@ -17,7 +17,7 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUser from '../../components/Icon/IconUser';
 import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown } from '../../services/status';
+import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown, HrSidebarStatus } from '../../services/status';
 import { DashboardLeadslist, setLoading} from '../../slices/dashboardSlice';
 import IconPhone from '../../components/Icon/IconPhone';
 import Select from 'react-select';
@@ -42,11 +42,12 @@ import IconPlus from '../../components/Icon/IconPlus';
 import CustomSideNav from '../../components/CustomSideNav';
 
 const DashboardBox = () => {
-    const dispatch        = useDispatch<AppDispatch>();
-    const navigate        = useNavigate();
-    const TopbarStatuses  = topBarStatus();
+    const dispatch         = useDispatch<AppDispatch>();
+    const navigate         = useNavigate();
+    const TopbarStatuses   = topBarStatus();
     const JobDashboardList = JobDashboard();
     const uniqueDropdownList = uniqueDropdown();
+    const hrSidebarStatus  = HrSidebarStatus();
     const Statues          = statues();
     const loader2          = Loader2();
     const SidebarStatuses = SidebarStatus();
@@ -275,63 +276,33 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        {loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? (
-                           <>
-                           <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Stages</h3>
-                           <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
-                            <button type="button" className="w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10">
-                                <div className="flex items-center">
-                                    <IconNotesEdit className="shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">All  Jobs Stages</div>
+                            <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div>
+                            <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
+                                <div className="space-y-1">
+                                    {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? hrSidebarStatus : SidebarStatuses).map((sidebarstatus) => { 
+                                    // {SidebarStatuses.map((sidebarstatus) => {
+                                        const counterKey = sidebarstatus.tab || '';
+                                        const sidebarcount = counters[counterKey] || 0;
+                                        return (
+                                            <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
+                                                <div className="flex items-center"> {sidebarstatus.icon}
+                                                    <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                                </div>
+                                                <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
+                                            </button>
+                                        );
+                                    })}
+                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                    <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
+                                        <div className="flex items-center">
+                                            <IconVideo className="shrink-0" />
+                                            <div className="ltr:ml-3 rtl:mr-3">
+                                                <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
+                                        </div>
+                                    </button>
+                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 </div>
-                            </button>
-                             <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
-                            <div className="px-1 py-3 text-white-dark">Tags</div>
-                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-primary shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">First Stage</div>
-                                </button>
-                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-warning shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Second Stage</div>
-                                </button>
-                                 <button
-                                    type="button"
-                                    className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-info shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Joined</div>
-                                </button> 
-                                 <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-1"></div>
-                           </>
-                        ) : (
-                           <>
-                                <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div><PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
-                                    <div className="space-y-1">
-                                        {SidebarStatuses.map((sidebarstatus) => {
-                                            const counterKey = sidebarstatus.tab || '';
-                                            const sidebarcount = counters[counterKey] || 0;
-                                            return (
-                                                <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
-                                                    <div className="flex items-center"> {sidebarstatus.icon}
-                                                        <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                                    </div>
-                                                    <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
-                                                </button>
-                                            );
-                                        })}
-                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                        <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
-                                            <div className="flex items-center">
-                                                <IconVideo className="shrink-0" />
-                                                <div className="ltr:ml-3 rtl:mr-3">
-                                                    <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
-                                            </div>
-                                        </button>
-                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                    </div>
-                                </PerfectScrollbar>
-                            </>
-                        )}                        
+                            </PerfectScrollbar>                   
                     </div>
                 </div>
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
