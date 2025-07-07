@@ -13,7 +13,7 @@ import { allLeads, download } from '../../slices/leadsSlice';
 import Select from 'react-select';
 import LeadModal from '../../components/LeadModal';
 import '../dashboard/dashboard.css'; 
-import { DropdownOption } from '../../services/status';
+import { uniqueDropdown } from '../../services/status';
 import { jsPDF } from 'jspdf';
 import "jspdf-autotable";
 import { DataTableSortStatus } from 'mantine-datatable';
@@ -33,7 +33,7 @@ const ExportPdf = () => {
         
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [date, setDate] = useState<any>(null);
-    const dropdownOption  = DropdownOption();
+    const dropdownOption  = uniqueDropdown();
     const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'lead_id', direction: 'desc' } });
     const [selectedRecords, setSelectedRecords] = useState<any[]>([]);
     const [disable, setDisable] = useState(true);
@@ -108,7 +108,7 @@ const ExportPdf = () => {
             return;
         }
         const formData = new FormData();
-        formData.append('lead_status', selectedStatus);
+        formData.append('lead_status', selectedStatus ?? '');
         formData.append('agent_id', selectedAgent.toString());
         formData.append('date_range', JSON.stringify(selectionRange));
         
@@ -339,7 +339,13 @@ const ExportPdf = () => {
           <div className="panel flex items-center justify-center overflow-visible whitespace-nowrap p-3 text-dark relative">
             <DateRangePicker
               ranges={[selectionRange]}
-              onChange={(ranges) => setSelectionRange(ranges.selection)}
+              onChange={(ranges) =>
+                setSelectionRange({
+                  startDate: ranges.selection.startDate ?? new Date(),
+                  endDate: ranges.selection.endDate ?? new Date(),
+                  key: ranges.selection.key ?? 'selection',
+                })
+              }
               />
           </div>
         )}
