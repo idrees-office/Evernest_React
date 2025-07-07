@@ -14,6 +14,7 @@ const CreateDevelopers = lazy(() => import('../pages/developers/create'));
 const ListDevelopers = lazy(() => import('../pages/developers/list'));
 const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
+const Dashboardanalysis = lazy(() => import('../pages/dashboard/leadsanalysis'));
 const Users = lazy(() => import('../pages/users/users'));
 const Roles = lazy(() => import('../pages/Roles/roles'));
 import ProtectedRoute from '../components/ProtectedRoute';
@@ -41,13 +42,21 @@ const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <DashboardBox key="default" />,
+        element: <Dashboardanalysis key="default" />,
     },
+    
+    {
+        path: 'pages/leads/dashboard',
+        type: 'protected',
+        element: <DashboardBox key="dashboard" />,
+    },
+
     {
         path: '/dashboard/:dashboardType',
         type: 'protected',
         element: <DashboardBox key="dashboard" />,
     },
+
     {
         path: 'pages/leads/assign',
         type: 'protected',

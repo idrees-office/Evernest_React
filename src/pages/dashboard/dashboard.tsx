@@ -1,84 +1,41 @@
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
-import 'react-quill/dist/quill.snow.css';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootState, AppDispatch } from '../../store';
+import { useEffect } from 'react';
+import { useDashboardStates } from '../../hooks/useDashboardStates';
+import { DashboardLeadslist, setLoading, updateSingleLead, createLeads, uploadFiles, getFiles } from '../../slices/dashboardSlice';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import IconMail from '../../components/Icon/IconMail';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
-import IconBookmark from '../../components/Icon/IconBookmark';
-import IconVideo from '../../components/Icon/IconVideo';
-import IconRefresh from '../../components/Icon/IconRefresh';
 import IconMenu from '../../components/Icon/IconMenu';
+import IconRefresh from '../../components/Icon/IconRefresh';
+import Tippy from '@tippyjs/react';
+import IconVideo from '../../components/Icon/IconVideo';
+import { Link } from 'react-router-dom';
 import IconSearch from '../../components/Icon/IconSearch';
-import IconUser from '../../components/Icon/IconUser';
-import IconArrowLeft from '../../components/Icon/IconArrowLeft';
-import IconPrinter from '../../components/Icon/IconPrinter';
-import { topBarStatus, SidebarStatus, MatchColorList, DropdownOption, statues, JobDashboard, uniqueDropdown } from '../../services/status';
-import { DashboardLeadslist, setLoading} from '../../slices/dashboardSlice';
-import IconPhone from '../../components/Icon/IconPhone';
-import Select from 'react-select';
-import { updateSingleLead, createLeads, uploadFiles, getFiles } from '../../slices/dashboardSlice';
-import Toast from '../../services/toast';
-import { Link, useNavigate } from 'react-router-dom';
-import './dashboard.css';
-import LeadModal from '../../components/LeadModal';
-import Loader from '../../services/loader';
-import Flatpickr from 'react-flatpickr';
-import 'flatpickr/dist/flatpickr.css';
-import Loader2 from '../../services/loader2';
 import Loader3 from '../../services/loader3';
-import RemarkModal from '../../components/RemarkModal';
-import IconSquareRotated from '../../components/Icon/IconSquareRotated';
-import { FileButton } from '@mantine/core';
+import IconBookmark from '../../components/Icon/IconBookmark';
+import IconUser from '../../components/Icon/IconUser';
+import IconPhone from '../../components/Icon/IconPhone';
+import IconArrowLeft from '../../components/Icon/IconArrowLeft';
 import IconFile from '../../components/Icon/IconFile';
 import IconEye from '../../components/Icon/IconEye';
+import IconMail from '../../components/Icon/IconMail';
+import Select from 'react-select';
+import LeadModal from '../../components/LeadModal';
+import RemarkModal from '../../components/RemarkModal';
 import FileViewerModal from '../../components/FileViewerModal';
-import IconNotesEdit from '../../components/Icon/IconNotesEdit';
-import IconPlus from '../../components/Icon/IconPlus';
 import CustomSideNav from '../../components/CustomSideNav';
-
-const DashboardBox = () => {
-    const dispatch        = useDispatch<AppDispatch>();
-    const navigate        = useNavigate();
-    const TopbarStatuses  = topBarStatus();
-    const JobDashboardList = JobDashboard();
-    const uniqueDropdownList = uniqueDropdown();
-    const Statues          = statues();
-    const loader2          = Loader2();
-    const SidebarStatuses = SidebarStatus();
-    const colorsarray     = MatchColorList();
-    const dropdownOption  = DropdownOption();
-    const combinedRef     = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {} as Record<number, HTMLButtonElement | null>, addleadform:null, ishideshow:false });
-    const toast           = Toast();
-    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
-    const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
-    const currentStatus   = useSelector((state: IRootState) => state.dashboardslice.lead_status);
-    const [AllLeadList, setAllLeadList] = useState<any[]>([]);
-    const [selectedLead, setSelectedLead] = useState<any>(null);
-    const [selectedTab, setSelectedTab] = useState<any>();
-    const [isShowMailMenu, setIsShowMailMenu] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
-    const [searchText, setSearchText] = useState<any>('');
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
-    const [date, setDate] = useState<any>(null);
-    const [IsDisable, setIsDisable] = useState(true);
-    const [IsColor, setsColor] = useState('hsl(0, 0%, 95%)');
-    const [IsRemarkData, SetIsRemarkData] = useState<Array<{ name: string; values: string[] }>>([]);   
-    const [isMemark, setIsMemark] = useState(false);
-    const { dashboardType } = useParams();
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const [files, setFiles] = useState([]);
-    const [isFileViewerOpen, setIsFileViewerOpen] = useState(false);
-    const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
-
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+  const DashboardBox = () => {
+    const {
+        dispatch, navigate, dashboardType, TopbarStatuses, JobDashboardList, uniqueDropdownList, hrSidebarStatus,
+        Statues, loader2, SidebarStatuses, colorsarray, hrdropdownOption, toast,
+        loginuser, leads, currentStatus, loading, meta, counters, isRtl, combinedRef, fileInputRef,
+        AllLeadList, setAllLeadList, selectedLead, setSelectedLead, selectedTab, setSelectedTab,
+        isShowMailMenu, setIsShowMailMenu, isEdit, setIsEdit, searchText, setSearchText, isModalOpen, setIsModalOpen,
+        errors, setErrors, date, setDate, IsDisable, setIsDisable, IsColor, setsColor, IsRemarkData, SetIsRemarkData,
+        isMemark, setIsMemark, isOpen, setIsOpen, files, setFiles, isFileViewerOpen, setIsFileViewerOpen,
+        isCustomizerOpen, setIsCustomizerOpen
+    } = useDashboardStates();
 
     useEffect(() => {
         dispatch(setPageTitle('Dashboard'));
@@ -245,8 +202,6 @@ const DashboardBox = () => {
         }
     };
 
-
-
     const AssignToAgent = async (leadId: any) => {
         try {
             // dispatch(setLoading(true));
@@ -267,7 +222,6 @@ const DashboardBox = () => {
         }
     };
 
-
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
@@ -275,63 +229,42 @@ const DashboardBox = () => {
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                        {loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? (
-                           <>
-                           <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Stages</h3>
-                           <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
-                            <button type="button" className="w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10">
-                                <div className="flex items-center">
-                                    <IconNotesEdit className="shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">All  Jobs Stages</div>
-                                </div>
-                            </button>
-                             <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-2"></div>
-                            <div className="px-1 py-3 text-white-dark">Tags</div>
-                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-primary shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">First Stage</div>
-                                </button>
-                                <button type="button" className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-warning shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Second Stage</div>
-                                </button>
-                                 <button
-                                    type="button"
-                                    className="w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300">
-                                    <IconSquareRotated className="fill-info shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Joined</div>
-                                </button> 
-                                 <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-1"></div>
-                           </>
-                        ) : (
-                           <>
-                                <div className="pb-5"> <button className="btn btn-success w-full" type="button" onClick={openLeadModal}> Add Lead </button> </div><PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
-                                    <div className="space-y-1">
-                                        {SidebarStatuses.map((sidebarstatus) => {
-                                            const counterKey = sidebarstatus.tab || '';
-                                            const sidebarcount = counters[counterKey] || 0;
-                                            return (
-                                                <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
-                                                    <div className="flex items-center"> {sidebarstatus.icon}
-                                                        <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                                    </div>
-                                                    <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
-                                                </button>
-                                            );
-                                        })}
-                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                        <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
-                                            <div className="flex items-center">
-                                                <IconVideo className="shrink-0" />
-                                                <div className="ltr:ml-3 rtl:mr-3">
-                                                    <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link></div>
+                            <div className="pb-5"> <button className="btn btn-success w-full btn-sm" type="button" onClick={openLeadModal}> Add Lead </button> </div>
+                            <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
+                                <div className="space-y-1">
+                                    {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? hrSidebarStatus : SidebarStatuses).map((sidebarstatus) => { 
+                                    // {SidebarStatuses.map((sidebarstatus) => {
+                                        const counterKey = sidebarstatus.tab || '';
+                                        const sidebarcount = counters[counterKey] || 0;
+                                        return (
+                                            <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
+                                                <div className="flex items-center"> {sidebarstatus.icon}
+                                                    <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
+                                                </div>
+                                                <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
+                                            </button>
+                                        );
+                                    })}
+                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                    <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
+                                        <div className="flex items-center">
+                                            <IconVideo className="shrink-0" />
+                                            <div className="ltr:ml-3 rtl:mr-3">
+                                                <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link>
+                                            </div>    
+                                        </div>
+                                    </button>
+                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                    &nbsp;
+                                    <button type="button" className={`btn btn-success btn-sm w-full flex justify-between items-center rounded-md font-medium`}>
+                                        <div className="flex items-center">
+                                            <div className="ltr:ml-3 rtl:mr-3">
+                                                <Link to="/"> Leads Analysis </Link>
                                             </div>
-                                        </button>
-                                        <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                    </div>
-                                </PerfectScrollbar>
-                            </>
-                        )}                        
+                                        </div>
+                                    </button>
+                                </div>
+                            </PerfectScrollbar>                   
                     </div>
                 </div>
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
@@ -570,7 +503,7 @@ const DashboardBox = () => {
                                                     <div className="w-full cursor-pointer">
                                                         <div className="mt-3 items-center">
                                                         <Select placeholder="Move Lead...." options={ 
-                                                            loginuser?.roles[0].name === 'HR' ? JobDashboardList : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
+                                                            loginuser?.roles[0].name === 'HR' ? hrdropdownOption : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
                                                         <input type="hidden" name="lead_id" className="form-input" defaultValue={selectedLead?.lead_id} />
                                                         <input type="hidden" name="agent_id" className="form-input" defaultValue={selectedLead?.agent_id} />
                                                         <input type="hidden" name="login_user_id" className="form-input" defaultValue={loginuser?.client_user_id}/>

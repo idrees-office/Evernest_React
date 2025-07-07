@@ -251,7 +251,7 @@ export const STATUSES = [
     {
         value: 51,
         label: 'First Stage Interview',
-        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        displayIn: ['hrdropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
         icon: <IconSquareCheck className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-info-500" />,
         outlineColor: 'btn-outline-info',
         bgColor: 'bg-info',
@@ -263,7 +263,7 @@ export const STATUSES = [
     {
         value: 52,
         label: 'Second Stage Interview',
-        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        displayIn: ['hrdropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
         icon: <IconSquareCheck className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-info-500" />,
         outlineColor: 'btn-outline-info',
         bgColor: 'bg-info',
@@ -275,7 +275,7 @@ export const STATUSES = [
     {
         value: 53,
         label: 'Send Offer Letter',
-        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
+        displayIn: ['hrdropdown', 'matchcolorlist', 'jobdashboard', 'commentsarray'],
         icon: <IconUsersGroup className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-secondary-500" />,
         outlineColor: 'btn-outline-secondary',
         bgColor: 'bg-purple-500 text-white',
@@ -287,7 +287,7 @@ export const STATUSES = [
     {
         value: 54,
         label: 'Singed/Join',
-        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['hrdropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
         icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-success',
         bgColor : 'bg-success',
@@ -299,7 +299,7 @@ export const STATUSES = [
     {
         value: 55,
         label: 'Joined',
-        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['hrdropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
         icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-success',
         bgColor : 'bg-success',
@@ -311,7 +311,7 @@ export const STATUSES = [
     {
         value: 56,
         label: 'Resigned/Terminate',
-        displayIn: ['dropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
+        displayIn: ['hrdropdown', 'jobdashboard', 'matchcolorlist', 'commentsarray'],
         icon: <IconThumbUp className="w-5 h-5 ltr:mr-1 rtl:ml-1" />,
         outlineColor: 'btn-outline-danger',
         bgColor : 'bg-danger',
@@ -324,7 +324,7 @@ export const STATUSES = [
     {
         value: 57,
         label: 'Not Qualified',
-        displayIn: ['dropdown', 'matchcolorlist', 'jobdashboard'],
+        displayIn: ['hrdropdown', 'matchcolorlist', 'jobdashboard'],
         icon: <IconUsersGroup className="w-5 h-5 ltr:mr-2 rtl:ml-2 text-danger-500" />,
         outlineColor: 'btn-outline-danger',
         bgColor: 'bg-danger',
@@ -332,17 +332,30 @@ export const STATUSES = [
         notes2: 'From Not Qualified',
         tab: 'notqualifiedtab',
         activeColor: 'bg-danger text-white',
-    }
+    },
+    {
+        value: 58,
+        label: 'Call | No Answer',
+        displayIn: ['hrdropdown', 'matchcolorlist',  'commentsarray', 'hrsidebar',],
+        icon: <IconThumbUp className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
+        outlineColor: 'bg-white text-secondary',
+        bgColor : 'bg-primary',
+        notes  : ' Moved to: <span class="text-primary">Call | No Answer </span>',
+        notes2   : ' From Call | No Answer',
+        tab     : 'callnoanswertab',
+        activeColor: "bg-white-dark/10 text-secondary",
+    },
 
 ];
 
-export const statues        = ()   => STATUSES;
-export const topBarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
-export const SidebarStatus  = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
-export const MatchColorList = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
-export const DropdownOption = ()   => STATUSES.filter((status) => status.displayIn?.includes('dropdown'));
-export const JobDashboard   = ()   => STATUSES.filter((status) => status.displayIn?.includes('jobdashboard'));
-export const uniqueDropdown = ()   => STATUSES.filter((status) => status.displayIn?.includes('uniqueDropdown'));
+export const statues           = ()   => STATUSES;
+export const topBarStatus      = ()   => STATUSES.filter((status) => status.displayIn?.includes('dashboard'));
+export const SidebarStatus     = ()   => STATUSES.filter((status) => status.displayIn?.includes('sidebar'));
+export const HrSidebarStatus   = ()   => STATUSES.filter((status) => status.displayIn?.includes('hrsidebar'));
+export const MatchColorList    = ()   => STATUSES.filter((status) => status.displayIn?.includes('matchcolorlist'));
+export const HRDropdownOption  = ()   => STATUSES.filter((status) => status.displayIn?.includes('hrdropdown'));
+export const JobDashboard      = ()   => STATUSES.filter((status) => status.displayIn?.includes('jobdashboard'));
+export const uniqueDropdown    = ()   => STATUSES.filter((status) => status.displayIn?.includes('uniqueDropdown'));
 
 //  country list
 export const CountryList = [
