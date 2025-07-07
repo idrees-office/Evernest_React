@@ -36,17 +36,17 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('view dashboard') || role === 'super admin') && (
+                    {/* {(permissions.includes('view dashboard') || role === 'super admin'  || role === 'agent') && (
                         <li>
-                            <NavLink to="/">{t('Lead-Dashboard')}</NavLink>
+                            <NavLink to="/pages/leads/dashboard">{t('Lead-Dashboard')}</NavLink>
                         </li>
-                    )}
+                    )} */}
                     {(role === 'super admin') && (
                         <li>
                             <NavLink to="/dashboard/hr">{t('HR Dashboard')}</NavLink>
                         </li>
                     )}
-                    {(permissions.includes('assign leads')   || role === 'super admin') && (
+                    {(permissions.includes('assign leads') || role === 'super admin') && (
                         <>
                             <NavLink to="/pages/leads/assign">{t('New-Leads')}</NavLink>
                             <NavLink to="/pages/leads/reassign">{t('Re-Assign')}</NavLink>
