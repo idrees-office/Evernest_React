@@ -329,9 +329,9 @@ const ExportPdf = () => {
           <div className="w-[200px]">
             <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10" onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
           </div>
-          <div className="w-[200px]">
+          {/* <div className="w-[200px]">
             <Select placeholder="Move Lead...." options={dropdownOption} onChange={(selectedOption) => SelectStatus(selectedOption)} name="lead_status"  className="cursor-pointer custom-multiselect z-10 w-[200px]"/>     
-          </div>   
+          </div>    */}
           <button onClick={() => { DownloadPdf(); }}  type="button" className="btn btn-secondary btn-sm"><IconPlus /> Download </button>
         </div>
       </div>
