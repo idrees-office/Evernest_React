@@ -161,7 +161,7 @@ const NavBar = () => {
                 </li>
             )}
 
-             {(permissions.includes('create announcements') || role === 'super admin' || role === 'agent') && (
+             {(permissions.includes('create announcements') || role === 'super admin') && (
             <li className="menu nav-item relative">
                 <button type="button" className="nav-link">
                 <div className="flex items-center">
