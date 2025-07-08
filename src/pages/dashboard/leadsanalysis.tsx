@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconUsersGroup from '../../components/Icon/IconUsersGroup';
 import apiClient from '../../utils/apiClient';
-import { topBarStatus } from '../../services/status';
+import { topBarStatus, statues } from '../../services/status';
 import IconServer from '../../components/Icon/IconServer';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
@@ -16,13 +16,13 @@ import IconMail from '../../components/Icon/IconMail';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconFile from '../../components/Icon/IconFile';
 import IconChatDots from '../../components/Icon/IconChatDots';
+import CustomSideNav from '../../components/CustomSideNav';
 
 interface LeadData {
     total_leads: number;
     percentages: Record<string, number>;
     status_counts: Record<string, number>;
-    daily_counts?: Record<string, Record<string, number>>; // Add daily counts structure
-
+    daily_counts?: Record<string, Record<string, number>>;
     recent_comments?: Array<{
         lead: {
             lead_title: any;
@@ -40,17 +40,24 @@ interface LeadData {
     }>;
 }
 
+interface FilterOptions {
+    agents: string[];
+    statuses: string[];
+}
+
 const LeadsAnalysis = () => {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const [leadsData, setLeadsData] = useState<LeadData | null>(null);
     const [error, setError] = useState<any | null>(null);
-    const STATUSES = topBarStatus();
-
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
-
-    
+    const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+    const [filters, setFilters] = useState<FilterOptions>({
+        agents: [],
+        statuses: []
+    });
+    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     useEffect(() => {
         dispatch(setPageTitle('Leads Analysis'));
     }, [dispatch]);
@@ -59,8 +66,18 @@ const LeadsAnalysis = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await apiClient.get('/leads/leads-analysis');
+                const params = new URLSearchParams();
+                if (filters.agents.length > 0) {
+                    params.append('agents', filters.agents.join(','));
+                }
+
+                if (filters.statuses.length > 0) {
+                    params.append('statuses', filters.statuses.join(','));
+                }
+                
+                const response = await apiClient.get(`/leads/leads-analysis?${params.toString()}`);
                 if (response.status === 200) {
+                    console.log(response.data.data);
                     setLeadsData(response.data.data);
                 } else {
                     throw new Error('Failed to fetch data');
@@ -73,23 +90,22 @@ const LeadsAnalysis = () => {
         };
 
         fetchData();
-    }, []);
+    }, [filters]);
 
-   const generateChartData = (statusName: string) => {
-        if (!leadsData?.daily_counts) return [];
-        const dailyData = leadsData.daily_counts[statusName] || {};
-        const dataPoints = Object.entries(dailyData)
-            .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-            .map(([date, count]) => ({ x: date, y: count }));
+        const generateChartData = (statusNumber: number) => {
+            if (!leadsData?.daily_counts) return [];
+            const dailyData = leadsData.daily_counts[statusNumber] || {};
+            const dataPoints = Object.entries(dailyData)
+                .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+                .map(([date, count]) => ({ x: date, y: count }));
 
-        return [{
-            name: statusName,
-            data: dataPoints.length > 0 ? dataPoints : [{ x: new Date().toISOString().split('T')[0], y: 0 }]
-        }];
-    };
-
-    // Chart options
-    const getChartOptions = (color: string) => ({
+            const status = statues().find(s => s.value == statusNumber);
+            return [{
+                name: status?.label || `Status ${statusNumber}`, // Fallback if status not found
+                data: dataPoints.length > 0 ? dataPoints : [{ x: new Date().toISOString().split('T')[0], y: 0 }]
+            }];
+        };
+            const getChartOptions = (color: string) => ({
         chart: {
             height: 160,
             type: 'area' as const,
@@ -138,11 +154,13 @@ const LeadsAnalysis = () => {
         '#805dca', // Purple
         '#00ab55', // Green
         '#e7515a', // Red
+        '#ffbb44', // Orange
+        '#2196f3', // Blue
+        '#3b3f5c', // Dark
     ];
 
-    // Get status info from STATUSES array
-    const getStatusInfo = (statusName: string, index: number) => {
-        const status = STATUSES.find(s => s.label === statusName);
+    const getStatusInfo = (statusLabel: string, index: number) => {
+        const status = statues().find(s => s.label === statusLabel);
         const color = statusColors[index % statusColors.length];
         
         return {
@@ -150,6 +168,11 @@ const LeadsAnalysis = () => {
             bgColor: status ? `${status.bgColor}/10` : 'bg-primary/10',
             color: color
         };
+    };
+
+    const handleFilterUpdate = (newFilters: FilterOptions) => {
+        setFilters(newFilters);
+        setIsCustomizerOpen(false);
     };
 
     if (loading) {
@@ -163,7 +186,6 @@ const LeadsAnalysis = () => {
     if (!leadsData) {
         return <div className="text-center py-10">No data available</div>;
     }
-
 
     const uniqueVisitorSeries: any = {
         series: [
@@ -261,46 +283,49 @@ const LeadsAnalysis = () => {
             },
         },
     };
-    
+
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
                 <ul className="flex space-x-2 rtl:space-x-reverse">
-                    <li>
-                        <Link to="/" className="text-primary hover:underline">
-                            Dashboard
-                        </Link>
-                    </li>
-                    <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2">
-                        <span>Analytics</span>
-                    </li>
+                    <li><Link to="/" className="text-primary hover:underline"> Dashboard </Link> </li>
+                    <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2"><span>Analytics</span></li>
                 </ul>
-                <Link to="/pages/leads/dashboard" className="btn btn-success btn-sm flex items-center gap-2"> Lead Dashboard </Link>
+                <div className="flex items-center">
+                    <Link to="/pages/leads/dashboard" className="btn btn-success btn-sm"> Lead Dashboard </Link> &nbsp; &nbsp;
+                     {loginuser?.roles[0].name === 'super admin' && (
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setIsCustomizerOpen(true)}> Update Filter </button>
+                    )}
+                </div>
             </div>
             <div className="pt-5">
                 <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-                    {Object.entries(leadsData.percentages).map(([statusName, percentage], index) => {
-                        const statusInfo = getStatusInfo(statusName, index);
+                    {Object.entries(leadsData.percentages).map(([statusNumber, percentage], index) => {
+                        const statusNum = Number(statusNumber);
+                        const status = statues().find(s => s.value == statusNum);
+                        const statusInfo = getStatusInfo(status?.label || '', index);
                         return (
-                            <div key={statusName} className="panel h-full p-0 rounded-2xl shadow-md bg-white dark:bg-gray-900">
+                            <div key={statusNumber} className="panel h-full p-0 rounded-2xl shadow-md bg-white dark:bg-gray-900">
                                 <div className="flex items-center p-5">
                                     <div 
                                         className={`flex items-center justify-center w-12 h-12 rounded-full ${statusInfo.bgColor}`}
                                         style={{ color: statusInfo.color }}
                                     >
-                                        {statusInfo.icon}
+                                        {status?.icon || <IconUsersGroup className="w-5 h-5" />}
                                     </div>
                                     <div className="ml-4">
                                         <p className="text-2xl font-bold text-gray-800 dark:text-white">{percentage}%</p>
-                                        <span className="text-sm text-gray-500 dark:text-white-light">{statusName}</span>
+                                        <span className="text-sm text-gray-500 dark:text-white-light">
+                                            {status?.label || `Status ${statusNumber}`}
+                                        </span>
                                         <p className="text-sm text-gray-500 dark:text-white-light mt-1">
-                                            {leadsData.status_counts[statusName]} leads
+                                            {leadsData.status_counts[statusNumber]} leads
                                         </p>
                                     </div>
                                 </div>
                                 <div className="relative h-40">
                                     <ReactApexChart
-                                        series={generateChartData(statusName)}
+                                        series={generateChartData(statusNum)}
                                         options={getChartOptions(statusInfo.color)}
                                         type="area"
                                         height={160}
@@ -314,27 +339,8 @@ const LeadsAnalysis = () => {
 
                 <div className="grid lg:grid-cols-3 gap-6 mb-6">
                     <div className="panel h-full p-0 lg:col-span-2">
-                        <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b  border-white-light dark:border-[#1b2e4b]">
-                            <h5 className="font-semibold text-lg ">Unique Visitors</h5>
-                            {/* <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 5]}
-                                    btnClassName="hover:text-primary"
-                                    button={<IconHorizontalDots className="text-black/70 dark:text-white/70 hover:!text-primary" />}
-                                >
-                                    <ul>
-                                        <li>
-                                            <button type="button">View</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Update</button>
-                                        </li>
-                                        <li>
-                                            <button type="button">Delete</button>
-                                        </li>
-                                    </ul>
-                                </Dropdown>
-                            </div> */}
+                        <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b border-white-light dark:border-[#1b2e4b]">
+                            <h5 className="font-semibold text-lg">Unique Visitors</h5>
                         </div>
                         <ReactApexChart options={uniqueVisitorSeries.options} series={uniqueVisitorSeries.series} type="bar" height={360} className="overflow-hidden" />
                     </div>
@@ -344,7 +350,7 @@ const LeadsAnalysis = () => {
                         </div>
                         <PerfectScrollbar className="perfect-scrollbar relative h-[360px] ltr:pr-3 rtl:pl-3 ltr:-mr-3 rtl:-ml-3">
                             <div className="space-y-7">
-                                {leadsData.recent_comments?.map((comment, index) => (
+                                {leadsData.recent_comments?.map((comment) => (
                                     <div key={comment.lead_comment_id} className="flex">
                                         <div className="shrink-0 ltr:mr-2 rtl:ml-2 relative z-10 before:w-[2px] before:h-[calc(100%-24px)] before:bg-white-dark/30 before:absolute before:top-10 before:left-4">
                                             <div className="bg-primary shadow-primary w-8 h-8 rounded-full flex items-center justify-center text-white">
@@ -356,12 +362,12 @@ const LeadsAnalysis = () => {
                                             <p className="text-white-dark text-xs">
                                                 Lead : {comment.lead.lead_title} | {comment.created_at}
                                             </p>
-                                                Responsible Agent: <span className="badge bg-success text-white">
-                                                    {comment.agent_id ? (
-                                                        <> {comment?.agents?.client_user_name || 'Null'} </> 
-                                                    ) : (
-                                                        <span className="badge bg-success text-white">No Agent Assigned</span>
-                                                    )}
+                                            <span className="badge bg-success text-white">
+                                                {comment.agent_id ? (
+                                                    <> {comment?.agents?.client_user_name || 'Null'} </>
+                                                ) : (
+                                                    <span className="badge bg-success text-white">No Agent Assigned</span>
+                                                )}
                                             </span>
                                         </div>
                                     </div>
@@ -371,6 +377,7 @@ const LeadsAnalysis = () => {
                     </div>
                 </div>
             </div>
+            <CustomSideNav isOpen={isCustomizerOpen} onClose={() => setIsCustomizerOpen(false)} onFilterUpdate={handleFilterUpdate} initialFilters={filters} leadId={null} onSuccess={() => {}} />
         </div>
     );
 };

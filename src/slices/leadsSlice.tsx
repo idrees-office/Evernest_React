@@ -9,7 +9,8 @@ import apiClient from '../utils/apiClient';
         allLeadsApi      : '/leads/all-leads',
         pdfurl           : 'leads/filter-pdf-data',
         roadshowLeadApi  : 'leads/roadshow-leads',
-        assignLeadsApi   : 'leads/assign-multiple-lead'
+        assignLeadsApi   : 'leads/assign-multiple-lead',
+        takebackleads   : 'leads/take_back_leads'
     };
 
     interface FetchLeadsParams {
@@ -19,9 +20,9 @@ import apiClient from '../utils/apiClient';
         sortOrder?: string;
         search? : string;
         cityname?: string;
-        date_range?: string
-        agent_id?: any
-
+        date_range?: string;
+        agent_id?: any;
+        idsOnly?: boolean;
     }
 
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
@@ -162,9 +163,22 @@ import apiClient from '../utils/apiClient';
         }
     });
 
+
+
+    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number }, { rejectWithValue }) => {
+        try {
+           const response = await apiClient.post(endpoints.takebackleads, payload);
+            return response.data;
+        } catch (error) {
+
+            return rejectWithValue((error as any).response.data);
+        }
+    }
+);
+
     const initialState = {
         leads        : [] as { lead_id: number }[],
-        agents       : [] as { client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
+        agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
         lead_status  : 0,
         success      : false,
         loading      : false,
@@ -266,6 +280,17 @@ import apiClient from '../utils/apiClient';
                 state.loading = false;
                 state.leads   = action.payload.data;
             })
+            .addCase(updateLeadsStatus.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updateLeadsStatus.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(updateLeadsStatus.rejected, (state) => {
+                state.loading = false;
+            });
+
+
         },
     })
 export const { setLeads } = LeadsSlice.actions;

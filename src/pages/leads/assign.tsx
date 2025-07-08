@@ -50,12 +50,48 @@ const Assign = () => {
             // combinedRef.current.prevSortStatus = sortStatus;
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
+        // const transformedAgents = agents?.map(agent => ({
+        //     value: agent?.client_user_id,
+        //     label: (
+        //         <>
+        //             {agent?.client_user_name}
+        //             {agent?.client_user_designation && (
+        //                 <span style={{ marginLeft: 8 }}>
+        //                     <span className="badge bg-success" style={{ color: '#fff' }}>
+        //                         {agent.client_user_designation}
+        //                     </span>
+        //                 </span>
+        //             )}
+        //         </>
+        //     ),
+        //     phone: agent?.client_user_phone,
+        // })) || [];
+        
+
         const transformedAgents = agents?.map(agent => ({
             value: agent?.client_user_id,
-            label: agent?.client_user_name,
+            label: agent?.client_user_name, // Plain text for searching
             phone: agent?.client_user_phone,
-    })) || [];
-    
+            // Custom display component
+            customLabel: (
+                <>
+                    {agent?.client_user_name}
+                    {agent?.client_user_designation && (
+                        <span style={{ marginLeft: 8 }}>
+                            <span className="badge bg-success" style={{ color: '#fff' }}>
+                                {agent.client_user_designation}
+                            </span>
+                        </span>
+                    )}
+                </>
+            ),
+        })) || [];
+
+
+        const formatOptionLabel = ({ label, customLabel }: any) => {
+                return customLabel || label;
+            };
+
     const tableData = useMemo(() => {
         return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
             id: lead.lead_id || 'Unknown',
@@ -222,6 +258,7 @@ const Assign = () => {
                     case 'Website': return <span className="badge bg-warning">Website</span>;
                     case 'Reshuffle': return <span className="badge bg-primary">Reshuffle</span>;
                     case 'Walk-in': return <span className="badge bg-danger">Walk-in</span>;
+                    case 'Marketing': return <span className="badge bg-success">Marketing</span>;
                     case 'Other': return <span className="badge bg-secondary">Other</span>;
                     default: return <span className="badge bg-secondary">Unknown</span>;
                 }
@@ -243,7 +280,7 @@ const Assign = () => {
                     </button>
                 </div> 
                 <div className="flex items-center space-x-2">
-                    <Select 
+                    {/* <Select 
                         placeholder="Select an option" 
                         options={transformedAgents} 
                         isDisabled={disable} 
@@ -253,7 +290,21 @@ const Assign = () => {
                                 AssignLead(selectedOption.value, selectedOption.phone); 
                             } 
                         }} 
-                    />
+                    /> */}
+                        <Select 
+                            placeholder="Select an option" 
+                            options={transformedAgents} 
+                            isDisabled={disable} 
+                            className="cursor-pointer custom-multiselect z-10 w-[300px]" 
+                            formatOptionLabel={formatOptionLabel}
+                            getOptionLabel={option => option.label} // This ensures searching works
+                            getOptionValue={option => option.value}
+                            onChange={(selectedOption) => {  
+                                if (selectedOption?.value !== undefined) { 
+                                    AssignLead(selectedOption.value, selectedOption.phone); 
+                                } 
+                            }} 
+                        />
                     <button 
                         onClick={RemoveLead} 
                         type="button" 

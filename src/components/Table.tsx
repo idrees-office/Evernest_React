@@ -3,7 +3,8 @@ import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 
 interface Column {
   accessor: string;
-  title: string;
+  // title: string;
+  title: string | React.ReactNode;
   sortable?: boolean;
   render?: (record: any) => JSX.Element;
   width?: string | number;

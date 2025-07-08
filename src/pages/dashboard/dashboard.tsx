@@ -492,7 +492,6 @@ import 'flatpickr/dist/flatpickr.css';
                                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                                 <li className="flex items-center gap-2"> <IconUser className="shrink-0" />
                                                     { selectedLead?.agents?.client_user_name || 'Not-Found' }
-                                                    {/* {loginuser?.roles[0].name === 'HR' ? ( loginuser?.client_user_name ) : (   )} */}
                                                 </li>
                                                 <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                             </ul>
@@ -601,8 +600,18 @@ import 'flatpickr/dist/flatpickr.css';
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
-            <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} />
-            <CustomSideNav isOpen={isCustomizerOpen}  onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} onSuccess={() => { setSelectedLead(null);  setIsCustomizerOpen(false);  Refresh() }}/>
+            <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} />    
+            <CustomSideNav
+                isOpen={isCustomizerOpen}
+                leadId={selectedLead?.lead_id}
+                onClose={() => setIsCustomizerOpen(false)}
+                onSuccess={() => {
+                    setSelectedLead(null);
+                    Refresh();
+                }}
+                onFilterUpdate={() => {}}
+                initialFilters={{ agents: [], statuses: [] }}
+            />
     </div>
     );
 }

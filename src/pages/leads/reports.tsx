@@ -10,10 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../../services/toast';
 import Loader from '../../services/loader';
 import { setPageTitle } from '../../slices/themeConfigSlice';
-import { allLeads, download } from '../../slices/leadsSlice';
+import { allLeads, download, updateLeadsStatus } from '../../slices/leadsSlice';
 import Select from 'react-select';
 import LeadModal from '../../components/LeadModal';
-import { createLeads } from '../../slices/dashboardSlice';
+import { createLeads, setLoading } from '../../slices/dashboardSlice';
 import '../dashboard/dashboard.css'; 
 import { uniqueDropdown } from '../../services/status';
 import { jsPDF } from 'jspdf';
@@ -24,6 +24,7 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import IconEye from '../../components/Icon/IconEye';
 import LeadDetailModal from '../../components/LeadDetailModal';
+import { s } from '@fullcalendar/core/internal-common';
 
 
 const Reports = () => {
@@ -40,6 +41,8 @@ const Reports = () => {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
 
     type Lead = {
         lead_id: number;
@@ -48,7 +51,7 @@ const Reports = () => {
         customer_phone?: string;
         lead_source?: string;
         created_at?: string;
-        comments?: any[]; // Add other fields as needed
+        comments?: any[]; 
     };
     
     const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices) as {
@@ -61,11 +64,9 @@ const Reports = () => {
         per_page: number;
     };
     const [dateRange, setDateRange] = useState<string>('');
-
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
-
-      useEffect(() => {
+    useEffect(() => {
         dispatch(setPageTitle('Agents Reports'));
 
         const fetchData = () => {
@@ -127,6 +128,52 @@ const Reports = () => {
             agent_id: selectedAgent
         }));
     }
+
+
+
+    const handleTakeBackConfirm = async () => {
+        if (!selectedAgent) {
+            toast.error('Please select an agent before taking back leads.');
+            return;
+        }
+        if (leads.length === 0) {
+            toast.error('No leads found to take back.');
+            return;
+        }
+
+    try {
+        setLoading(true);
+        const leadIds = leads.map(lead => lead.lead_id);
+        if (leadIds.length === 0) {
+            toast.error('No leads available to take back.');
+            return;
+        }
+        const response = await dispatch(updateLeadsStatus({ agent_id: selectedAgent })).unwrap();
+        if (response.status === 'success') {
+            toast.success(response.message || 'Leads successfully taken back!');
+            setIsConfirmModalOpen(false);
+            setSelectedRecords([]);
+            setDisable(true);
+        } else {
+            toast.error(response.message || 'Failed to take back leads.');
+        }
+        dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            date_range: dateRange,
+            agent_id: selectedAgent
+        }));
+        
+    } catch (error) {
+        toast.error('Failed to take back leads.');
+    } finally {
+       setLoading(true);;
+    }
+}
+
 
     const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
@@ -261,7 +308,17 @@ const Reports = () => {
                 }
             }} 
         />
-        <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Search </button>
+        <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp;Search</button>
+            <button 
+            onClick={() => setIsConfirmModalOpen(true)} 
+            type="button" 
+            className="btn btn-secondary btn-sm"
+        >
+            <IconSearch /> &nbsp; Take-Back
+        </button>
+
+        {/* <button onClick={() => { TakeBack(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Take-Back</button> */}
+
     </div>
     </div>
        <div className="datatables mt-6"> 
@@ -270,6 +327,24 @@ const Reports = () => {
             </div>
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <LeadDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} comments={selectedLead} />
+
+
+
+        {isConfirmModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md">
+                        <h3 className="text-lg font-bold mb-4">Confirm Take Back</h3>
+                        <p>Are you sure you want to take back {selectedRecords.length} selected leads?</p>
+                        <div className="flex justify-end mt-4 space-x-2">
+                            <button onClick={() => setIsConfirmModalOpen(false)} className="btn btn-outline-secondary"> Cancel
+                            </button>
+                            <button onClick={handleTakeBackConfirm} className="btn btn-primary">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}        
     </div>
     )
 }
