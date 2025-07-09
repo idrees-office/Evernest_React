@@ -161,24 +161,32 @@ const NavBar = () => {
                 </li>
             )}
 
-             {(permissions.includes('create announcements') || role === 'super admin') && (
-            <li className="menu nav-item relative">
-                <button type="button" className="nav-link">
-                <div className="flex items-center">
-                    <IconMenuElements className="shrink-0" />
-                    <span className="px-1">{t('Announcements')}</span>
-                </div>
-                <div className="right_arrow">
-                    <IconCaretDown />
-                </div>
-                </button>
-                <ul className="sub-menu">
-                {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR') && (
-                    <li><NavLink to="/pages/announcements/create">  <span>   {t('HR-Announcements')} </span></NavLink> </li>
-                )}
-                    <li> <NavLink to="/pages/announcements/view"><span>{t('New-Announcements')}</span></NavLink> </li>
-                </ul>
-            </li>
+            {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR' || role === 'receptionist') && (
+                <li className="menu nav-item relative">
+                    <button type="button" className="nav-link">
+                    <div className="flex items-center">
+                        <IconMenuElements className="shrink-0" />
+                        <span className="px-1">{t('Announcements')}</span>
+                    </div>
+                    <div className="right_arrow">
+                        <IconCaretDown />
+                    </div>
+                    </button>
+                    <ul className="sub-menu">
+                    {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR' || role === 'receptionist') && (
+                        <li>
+                        <NavLink to="/pages/announcements/create">
+                            <span>{t('HR-Announcements')}</span>
+                        </NavLink>
+                        </li>
+                    )}
+                    <li>
+                        <NavLink to="/pages/announcements/view">
+                        <span>{t('New-Announcements')}</span>
+                        </NavLink>
+                    </li>
+                    </ul>
+                </li>
             )}
         </>
     );
