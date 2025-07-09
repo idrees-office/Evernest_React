@@ -181,7 +181,7 @@ const NavBar = () => {
                 )}
                 <li>
                     <NavLink to="/pages/announcements/view">
-                    <span>{t('New-Announcements')}</span>
+                        <span>{t('New-Announcements')}</span>
                     </NavLink>
                 </li>
                 </ul>
