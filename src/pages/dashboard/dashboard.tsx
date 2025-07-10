@@ -229,7 +229,13 @@ import 'flatpickr/dist/flatpickr.css';
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
                     <div className="flex flex-col h-full pb-16">
-                            <div className="pb-5"> <button className="btn btn-success w-full btn-sm" type="button" onClick={openLeadModal}> Add Lead </button> </div>
+                            <div className="pb-5"> 
+                                <button className="btn btn-success w-full btn-sm" type="button" onClick={openLeadModal}> Add Lead </button> 
+                                <br />
+                                <Link to="/">
+                                    <button className="btn btn-info w-full btn-sm" type="button"> Leads Analytics </button> 
+                                </Link>
+                            </div>
                             <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                                 <div className="space-y-1">
                                     {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? hrSidebarStatus : SidebarStatuses).map((sidebarstatus) => { 
@@ -252,15 +258,6 @@ import 'flatpickr/dist/flatpickr.css';
                                             <div className="ltr:ml-3 rtl:mr-3">
                                                 <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link>
                                             </div>    
-                                        </div>
-                                    </button>
-                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                    &nbsp;
-                                    <button type="button" className={`btn btn-success btn-sm w-full flex justify-between items-center rounded-md font-medium`}>
-                                        <div className="flex items-center">
-                                            <div className="ltr:ml-3 rtl:mr-3">
-                                                <Link to="/"> Leads Analysis </Link>
-                                            </div>
                                         </div>
                                     </button>
                                 </div>
