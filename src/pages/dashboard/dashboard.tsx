@@ -526,7 +526,7 @@ import 'flatpickr/dist/flatpickr.css';
                                             </div>
                                         </form>
                                     </div>
-                                    <div className="panel lg:col-span-2 xl:col-span-3 md:col-span-3">
+                                    <div className="panel xl:col-span-3 md:col-span-3 lg:col-span-2">
                                         <div className="mb-5">
                                             <h5 className="font-semibold text-lg dark:text-white-light">History of the Leads </h5>
                                         </div>
@@ -535,7 +535,7 @@ import 'flatpickr/dist/flatpickr.css';
                                                 <div className="max-w-[900px] mx-auto">
                                                     {selectedLead?.comments?.map((comment: any, i: any) => (
                                                         <div className="flex" key={i}>
-                                                            <p className="text-[#3b3f5c] dark:text-white-light min-w-[120px] max-w-[150px] text-sm font-semibold py-2.5">
+                                                            <p className="text-[#3b3f5c] dark:text-white-light min-w-[180px] max-w-[150px] text-sm font-semibold py-2.5">
                                                                 {comment?.created_at || 'Invalid Time'}
                                                             </p>
                                                             <div className={`

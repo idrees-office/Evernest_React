@@ -2,15 +2,10 @@ import { useState, useEffect } from 'react';
 import IconCaretDown from './Icon/IconCaretDown';
 import IconMenuDashboard from './Icon/Menu/IconMenuDashboard';
 import { NavLink } from 'react-router-dom';
-import IconMenuApps from './Icon/Menu/IconMenuApps';
-import IconMenuComponents from './Icon/Menu/IconMenuComponents';
 import IconMenuElements from './Icon/Menu/IconMenuElements';
-import IconMenuForms from './Icon/Menu/IconMenuForms';
 import { useTranslation } from 'react-i18next';
 import IconMenuDatatables from './Icon/Menu/IconMenuDatatables';
-import IconMenuPages from './Icon/Menu/IconMenuPages';
-import IconMenuMore from './Icon/Menu/IconMenuMore';
-import { useSelector } from 'react-redux';
+
 const NavBar = () => {
     const { t } = useTranslation();
     const [permissions, setPermissions] = useState<any>([]);
@@ -36,11 +31,9 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {/* {(permissions.includes('view dashboard') || role === 'super admin'  || role === 'agent') && (
-                        <li>
-                            <NavLink to="/pages/leads/dashboard">{t('Lead-Dashboard')}</NavLink>
-                        </li>
-                    )} */}
+                    <li>
+                        <NavLink to="/pages/leads/dashboard">{t('Lead-Dashboard')}</NavLink>
+                    </li>
                     {(role === 'super admin') && (
                         <li>
                             <NavLink to="/dashboard/hr">{t('HR Dashboard')}</NavLink>
@@ -175,13 +168,13 @@ const NavBar = () => {
                 {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR' || role === 'receptionist') && (
                     <li>
                     <NavLink to="/pages/announcements/create">
-                        <span>{t('HR-Announcements')}</span>
+                        <span>{t('Add Announcements')}</span>
                     </NavLink>
                     </li>
                 )}
                 <li>
                     <NavLink to="/pages/announcements/view">
-                        <span>{t('New-Announcements')}</span>
+                        <span>{t('View Announcements')}</span>
                     </NavLink>
                 </li>
                 </ul>

@@ -20,6 +20,7 @@ import CustomSideNav from '../../components/CustomSideNav';
 
 interface LeadData {
     total_leads: number;
+    overall_total: number;
     percentages: Record<string, number>;
     status_counts: Record<string, number>;
     daily_counts?: Record<string, Record<string, number>>;
@@ -291,6 +292,16 @@ const LeadsAnalysis = () => {
                     <li><Link to="/" className="text-primary hover:underline"> Dashboard </Link> </li>
                     <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2"><span>Analytics</span></li>
                 </ul>
+
+                <div className="flex space-x-2 rtl:space-x-reverse">
+                    <span className="badge bg-dark text-white">
+                        Overall Leads: {leadsData.total_leads}
+                    </span>
+                    <span className="badge bg-info text-white">
+                        Filtered Leads: {Object.values(leadsData.status_counts).reduce((sum, count) => sum + count, 0)} leads
+                    </span>
+                </div>
+
                 <div className="flex items-center">
                     <Link to="/pages/leads/dashboard" className="btn btn-success btn-sm"> Lead Dashboard </Link> &nbsp; &nbsp;
                      {loginuser?.roles[0].name === 'super admin' && (
