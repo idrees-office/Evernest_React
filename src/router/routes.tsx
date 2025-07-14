@@ -153,9 +153,7 @@ const routes = [
         type: 'protected',
         element: <CreateListing />, 
         layout: 'default',
-    },
-
-    
+    },    
 
     {
         path: '/analytics',

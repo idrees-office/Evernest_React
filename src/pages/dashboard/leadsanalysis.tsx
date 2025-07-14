@@ -20,6 +20,7 @@ import CustomSideNav from '../../components/CustomSideNav';
 
 interface LeadData {
     total_leads: number;
+    overall_total: number;
     percentages: Record<string, number>;
     status_counts: Record<string, number>;
     daily_counts?: Record<string, Record<string, number>>;
@@ -58,6 +59,13 @@ const LeadsAnalysis = () => {
         statuses: []
     });
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
+    
+    // Add state for dailySales chart data
+    const [dailySales, setDailySales] = useState<any>({
+        series: [],
+        options: {},
+    });
+
     useEffect(() => {
         dispatch(setPageTitle('Leads Analysis'));
     }, [dispatch]);
@@ -89,6 +97,28 @@ const LeadsAnalysis = () => {
             }
         };
 
+        // Fetch agent-wise total leads and won leads for the chart
+        const fetchTotalLeads = async () => {
+            try {
+            const params = new URLSearchParams();
+            if (filters.agents.length > 0) {
+                params.append('agents', filters.agents.join(','));
+            }
+            if (filters.statuses.length > 0) {
+                params.append('statuses', filters.statuses.join(','));
+            }
+            const response = await apiClient.get(`/leads/total-leads?${params.toString()}`);
+            if (response.status === 200) {
+                setDailySales(response.data); // Save chart data to state
+            } else {
+                throw new Error('Failed to fetch agent leads chart data');
+            }
+            } catch (err) {
+            setError(err);
+            }
+        };
+
+        fetchTotalLeads();
         fetchData();
     }, [filters]);
 
@@ -187,103 +217,6 @@ const LeadsAnalysis = () => {
         return <div className="text-center py-10">No data available</div>;
     }
 
-    const uniqueVisitorSeries: any = {
-        series: [
-            {
-                name: 'Direct',
-                data: [58, 44, 55, 57, 56, 61, 58, 63, 60, 66, 56, 63],
-            },
-            {
-                name: 'Organic',
-                data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70],
-            },
-        ],
-        options: {
-            chart: {
-                height: 360,
-                type: 'bar',
-                fontFamily: 'Nunito, sans-serif',
-                toolbar: {
-                    show: false,
-                },
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            stroke: {
-                width: 2,
-                colors: ['transparent'],
-            },
-            colors: ['#5c1ac3', '#ffbb44'],
-            dropShadow: {
-                enabled: true,
-                blur: 3,
-                color: '#515365',
-                opacity: 0.4,
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    borderRadius: 8,
-                    borderRadiusApplication: 'end',
-                },
-            },
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
-                fontSize: '14px',
-                itemMargin: {
-                    horizontal: 8,
-                    vertical: 8,
-                },
-            },
-            grid: {
-                borderColor: isDark ? '#191e3a' : '#e0e6ed',
-                padding: {
-                    left: 20,
-                    right: 20,
-                },
-                xaxis: {
-                    lines: {
-                        show: false,
-                    },
-                },
-            },
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                axisBorder: {
-                    show: true,
-                    color: isDark ? '#3b3f5c' : '#e0e6ed',
-                },
-            },
-            yaxis: {
-                tickAmount: 6,
-                opposite: isRtl ? true : false,
-                labels: {
-                    offsetX: isRtl ? -10 : 0,
-                },
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: isDark ? 'dark' : 'light',
-                    type: 'vertical',
-                    shadeIntensity: 0.3,
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 0.8,
-                    stops: [0, 100],
-                },
-            },
-            tooltip: {
-                marker: {
-                    show: true,
-                },
-            },
-        },
-    };
-
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
@@ -291,6 +224,16 @@ const LeadsAnalysis = () => {
                     <li><Link to="/" className="text-primary hover:underline"> Dashboard </Link> </li>
                     <li className="before:content-['/'] ltr:before:mr-2 rtl:before:ml-2"><span>Analytics</span></li>
                 </ul>
+
+                <div className="flex space-x-2 rtl:space-x-reverse">
+                    <span className="badge bg-dark text-white">
+                        Overall Leads: {leadsData.total_leads}
+                    </span>
+                    <span className="badge bg-info text-white">
+                        Filtered Leads: {Object.values(leadsData.status_counts).reduce((sum, count) => sum + count, 0)} leads
+                    </span>
+                </div>
+
                 <div className="flex items-center">
                     <Link to="/pages/leads/dashboard" className="btn btn-success btn-sm"> Lead Dashboard </Link> &nbsp; &nbsp;
                      {loginuser?.roles[0].name === 'super admin' && (
@@ -337,43 +280,13 @@ const LeadsAnalysis = () => {
                     })}
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-6 mb-6">
-                    <div className="panel h-full p-0 lg:col-span-2">
-                        <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b border-white-light dark:border-[#1b2e4b]">
-                            <h5 className="font-semibold text-lg">Unique Visitors</h5>
-                        </div>
-                        <ReactApexChart options={uniqueVisitorSeries.options} series={uniqueVisitorSeries.series} type="bar" height={360} className="overflow-hidden" />
-                    </div>
+                <div className="grid mb-6">
                     <div className="panel h-full">
-                        <div className="flex items-start justify-between dark:text-white-light mb-5 -mx-5 p-5 pt-0 border-b border-white-light dark:border-[#1b2e4b]">
-                            <h5 className="font-semibold text-lg">Last Activities Report</h5>
+                        <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b border-white-light dark:border-[#1b2e4b]">
+                            <h5 className="font-semibold text-lg">Total Leads Agent Wise</h5>
                         </div>
-                        <PerfectScrollbar className="perfect-scrollbar relative h-[360px] ltr:pr-3 rtl:pl-3 ltr:-mr-3 rtl:-ml-3">
-                            <div className="space-y-7">
-                                {leadsData.recent_comments?.map((comment) => (
-                                    <div key={comment.lead_comment_id} className="flex">
-                                        <div className="shrink-0 ltr:mr-2 rtl:ml-2 relative z-10 before:w-[2px] before:h-[calc(100%-24px)] before:bg-white-dark/30 before:absolute before:top-10 before:left-4">
-                                            <div className="bg-primary shadow-primary w-8 h-8 rounded-full flex items-center justify-center text-white">
-                                                <IconChatDots className="w-4 h-4" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h5 className="font-semibold dark:text-white-light"> {comment.lead_comment} </h5>
-                                            <p className="text-white-dark text-xs">
-                                                Lead : {comment.lead.lead_title} | {comment.created_at}
-                                            </p>
-                                            <span className="badge bg-success text-white">
-                                                {comment.agent_id ? (
-                                                    <> {comment?.agents?.client_user_name || 'Null'} </>
-                                                ) : (
-                                                    <span className="badge bg-success text-white">No Agent Assigned</span>
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </PerfectScrollbar>
+                        {/* <ReactApexChart options={uniqueVisitorSeries.options} series={uniqueVisitorSeries.series} type="bar" height={360} className="overflow-hidden" /> */}
+                        <ReactApexChart series={dailySales.series} options={dailySales.options} type="bar" height={160} />
                     </div>
                 </div>
             </div>
