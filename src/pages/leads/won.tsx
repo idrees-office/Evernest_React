@@ -95,21 +95,14 @@ const WonLeads = () => {
             search: newSearchTerm  
         }));
     };
-
+    
     const tableData = leads?.map((lead: any) => ({
         id: lead.lead_id || 'N/A',
         title: lead.lead_title || 'N/A',
         name: lead.customer_name || 'N/A',
         phone: lead.customer_phone || 'N/A',
         status: lead.lead_status || 'N/A',
-        date: lead.updated_at ? new Intl.DateTimeFormat('en-US', {
-            year: 'numeric', 
-            month: '2-digit',
-            day: '2-digit', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit'
-        }).format(new Date(lead.updated_at)) : 'N/A',
+        date: lead.updated_at || 'N/A',
     })) || [];
 
     return (

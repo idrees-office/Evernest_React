@@ -675,7 +675,12 @@ import 'flatpickr/dist/flatpickr.css';
             <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
             <RemarkModal isOpen={isMemark} onClose={() => setIsMemark(false)} data={IsRemarkData} />
             <FileViewerModal isOpen={isFileViewerOpen} onClose={() => setIsFileViewerOpen(false)} files={files} />
-            <CustomSideNav isOpen={isCustomizerOpen}  onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} onSuccess={() => { setSelectedLead(null);  setIsCustomizerOpen(false);  Refresh() }}/>
+            <CustomSideNav isOpen={isCustomizerOpen} onClose={() => setIsCustomizerOpen(false)} leadId={selectedLead?.lead_id} onSuccess={() => { setSelectedLead(null); setIsCustomizerOpen(false); Refresh(); } } onFilterUpdate={function (filters: { agents: string[]; statuses: string[]; }): void {
+                throw new Error('Function not implemented.');
+            } } initialFilters={{
+                agents: [],
+                statuses: []
+            }}/>
     </div>
     );
 }
