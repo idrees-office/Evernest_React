@@ -54,15 +54,19 @@ const Reports = () => {
         comments?: any[]; 
     };
     
-    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices) as {
+    const { leads, loading, agents, statuses, total_leads, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices) as {
         leads: Lead[];
         loading: boolean;
         agents: any[];
+        statuses: any[];
+        total_leads: number;
+        lead_status: any;
         total: number;
         last_page: number;
         current_page: number;
         per_page: number;
     };
+
     const [dateRange, setDateRange] = useState<string>('');
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
@@ -76,11 +80,14 @@ const Reports = () => {
                 sortField: sortStatus.columnAccessor,
                 sortOrder: sortStatus.direction,
                 search: searchTerm,
-                date_range: dateRange 
+                agent_id: selectedAgent,
+                date_range: dateRange,  
+                status_id: selectedStatus
             }));
         };
         if (!combinedRef.current.fetched) {
             fetchData();
+            
             combinedRef.current.fetched = true;
             return;
         } 
@@ -91,7 +98,7 @@ const Reports = () => {
         value: agent?.client_user_id,
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
-    }));
+    }));    
 
     const openLeadModal = () => {
         setIsModalOpen(true);
@@ -118,14 +125,15 @@ const Reports = () => {
             return;
         }
         
-        dispatch(allLeads({ 
+        const response = await dispatch(allLeads({ 
             page: 1, 
             perPage: per_page,
             sortField: sortStatus.columnAccessor,
             sortOrder: sortStatus.direction,
             search: searchTerm,
             date_range: dateRange,
-            agent_id: selectedAgent
+            agent_id: selectedAgent,
+            status_id: selectedStatus
         }));
     }
 
@@ -136,7 +144,7 @@ const Reports = () => {
             toast.error('Please select an agent before taking back leads.');
             return;
         }
-        if (leads.length === 0) {
+        if (total_leads === 0) {
             toast.error('No leads found to take back.');
             return;
         }
@@ -148,10 +156,13 @@ const Reports = () => {
             toast.error('No leads available to take back.');
             return;
         }
-        const response = await dispatch(updateLeadsStatus({ agent_id: selectedAgent })).unwrap();
+        const response = await dispatch(updateLeadsStatus({ agent_id: selectedAgent, status_id: selectedStatus, date_range: dateRange,
+          })).unwrap();
         if (response.status === 'success') {
             toast.success(response.message || 'Leads successfully taken back!');
             setIsConfirmModalOpen(false);
+            console.log(response);
+            
             setSelectedRecords([]);
             setDisable(true);
         } else {
@@ -164,7 +175,8 @@ const Reports = () => {
             sortOrder: sortStatus.direction,
             search: searchTerm,
             date_range: dateRange,
-            agent_id: selectedAgent
+            agent_id: selectedAgent,
+            status_id: SelectStatus
         }));
         
     } catch (error) {
@@ -199,42 +211,45 @@ const Reports = () => {
     }, [leads]);  
 
     const handlePageChange = (page: number) => {
-           dispatch(allLeads({ 
-               page,
-               sortField: sortStatus.columnAccessor,
-               sortOrder: sortStatus.direction,
-               search: searchTerm,
-               agent_id: selectedAgent, 
-               date_range: dateRange
-           }));
-           setSelectedRecords([]);
-           setDisable(true);
-      };
-      const handlePerPageChange = (pageSize: number) => {
-           dispatch(allLeads({ 
-               perPage: pageSize,
-               sortField: sortStatus.columnAccessor,
-               sortOrder: sortStatus.direction,
-               search: searchTerm,
-               agent_id: selectedAgent,  
-              date_range: dateRange  
-           }));
-           setSelectedRecords([]);
-           setDisable(true);
-       };
-       const handleSortChange = (status: DataTableSortStatus) => {
-          setSortStatus(status);
-          dispatch(allLeads({ 
-              page: 1, 
-              perPage: per_page,
-              sortField: sortStatus.columnAccessor,
-              sortOrder: sortStatus.direction,
-              search: searchTerm,
-              agent_id: selectedAgent, 
-              date_range: dateRange   
-          }));
-      };
-      const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(allLeads({ 
+            page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            agent_id: selectedAgent, 
+            date_range: dateRange,
+            status_id: selectedStatus   
+        }));
+        setSelectedRecords([]);
+        setDisable(true);
+    };
+    const handlePerPageChange = (pageSize: number) => {
+        dispatch(allLeads({ 
+                perPage: pageSize,
+                sortField: sortStatus.columnAccessor,
+                sortOrder: sortStatus.direction,
+                search: searchTerm,
+                agent_id: selectedAgent,  
+                date_range: dateRange,
+                status_id: selectedStatus
+        }));
+        setSelectedRecords([]);
+        setDisable(true);
+    };
+    const handleSortChange = (status: DataTableSortStatus) => {
+        setSortStatus(status);
+        dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            agent_id: selectedAgent, 
+            date_range: dateRange   ,
+                status_id: selectedStatus
+        }));
+    };
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
         dispatch(allLeads({ 
@@ -246,7 +261,7 @@ const Reports = () => {
         }));
     };
 
-     const columns = [
+    const columns = [
         { accessor: 'title', title: 'Title', sortable: true },
         { accessor: 'name', title: 'Name', sortable: true },
         { accessor: 'phone', title: 'Phone', sortable: true },
@@ -284,67 +299,100 @@ const Reports = () => {
     ];
     return (
     <div>
-        <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
-        <div className="flex items-center">
-            <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3"> <IconBell /> </div>
-            <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Reports. </span>
-        </div> 
-        <div className="flex items-center space-x-2">
-        <div className="w-[500px]">
-            <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
-            onChange={(selectedOption) =>  { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }} />
-        </div>
-        <Flatpickr 
-            options={{ 
-                mode: 'range', 
-                dateFormat: 'Y-m-d',
-            }} 
-            className="form-input" 
-            placeholder='Y-m-d' 
-            onChange={(dates) => {
-                if (dates.length === 2) {  const startDate = formatDate(dates[0]); const endDate = formatDate(dates[1]); setDateRange(`${startDate},${endDate}`);
-                } else {
-                    setDateRange('');
-                }
-            }} 
-        />
-        <button onClick={() => { Search(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp;Search</button>
-            <button 
-            onClick={() => setIsConfirmModalOpen(true)} 
-            type="button" 
-            className="btn btn-secondary btn-sm"
-        >
-            <IconSearch /> &nbsp; Take-Back
-        </button>
-
-        {/* <button onClick={() => { TakeBack(); }}  type="button" className="btn btn-secondary btn-sm"><IconSearch /> &nbsp; Take-Back</button> */}
-
-    </div>
-    </div>
-       <div className="datatables mt-6"> 
-              <Table title="All Leads" columns={columns}  rows={tableData}  totalRecords={total || 0}  currentPage={current_page} recordsPerPage={per_page} onPageChange={handlePageChange} onRecordsPerPageChange={handlePerPageChange} onSortChange={handleSortChange} sortStatus={sortStatus} isLoading={loading}onSearchChange={onSearchChange}searchValue={searchTerm}noRecordsText="No records found matching your search criteria"
-              />
+        <div className="panel flex flex-col md:flex-row items-start md:items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative gap-4 md:gap-0">
+            <div className="flex items-center mb-4 md:mb-0">
+                <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 mr-3">
+                    <IconBell />
+                </div>
+                <span className="mr-3">Details of Your Agents Reports.</span>
             </div>
-            <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
-            <LeadDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} comments={selectedLead} />
-
-
+            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
+                <div className="w-full md:w-[200px]">
+                    <Select
+                        placeholder="Select an option"
+                        options={transformedAgents}
+                        classNamePrefix="custom-select"
+                        className="custom-multiselect z-10"
+                        onChange={(selectedOption) => {
+                            if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value);
+                        }}
+                    />
+                </div>
+                <div className="w-full md:w-[200px]">
+                    <Select
+                        placeholder="Select a Status"
+                        options={Object.entries(statuses || {}).map(([value, label]) => ({
+                            value: value, // e.g., "2", "3", etc.
+                            label: label, // e.g., "Assigned Lead", "Contacted Lead", etc.
+                        }))}
+                        classNamePrefix="custom-select"
+                        className="custom-multiselect z-10"
+                        onChange={(selectedOption) => {
+                            if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
+                        }}
+                    />
+                </div>
+                <div className="w-full md:w-[200px]">
+                    <Flatpickr
+                        options={{
+                            mode: 'range',
+                            dateFormat: 'Y-m-d',
+                        }}
+                        className="form-input"
+                        placeholder="Y-m-d"
+                        onChange={(dates) => {
+                            if (dates.length === 2) {
+                                const startDate = formatDate(dates[0]);
+                                const endDate = formatDate(dates[1]);
+                                setDateRange(`${startDate},${endDate}`);
+                            } else {
+                                setDateRange('');
+                            }
+                        }}
+                    />
+                </div>
+                <div className="flex gap-2 mt-2 md:mt-0">
+                    <button
+                        onClick={() => {
+                            Search();
+                        }}
+                        type="button"
+                        className="btn btn-secondary btn-sm flex items-center"
+                    >
+                        <IconSearch /> &nbsp;Search
+                    </button>
+                    <button
+                        onClick={() => setIsConfirmModalOpen(true)}
+                        type="button"
+                        className="btn btn-secondary btn-sm flex items-center"
+                    >
+                        <IconSearch /> &nbsp;Take-Back
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div className="datatables mt-6"> 
+            <Table title="All Leads" columns={columns}  rows={tableData}  totalRecords={total || 0}  currentPage={current_page} recordsPerPage={per_page} onPageChange={handlePageChange} onRecordsPerPageChange={handlePerPageChange} onSortChange={handleSortChange} sortStatus={sortStatus} isLoading={loading}onSearchChange={onSearchChange}searchValue={searchTerm}noRecordsText="No records found matching your search criteria"
+            />
+        </div>
+        <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
+        <LeadDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} comments={selectedLead} />
 
         {isConfirmModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-md">
-                        <h3 className="text-lg font-bold mb-4">Confirm Take Back</h3>
-                        <p>Are you sure you want to take back {selectedRecords.length} selected leads?</p>
-                        <div className="flex justify-end mt-4 space-x-2">
-                            <button onClick={() => setIsConfirmModalOpen(false)} className="btn btn-outline-secondary"> Cancel
-                            </button>
-                            <button onClick={handleTakeBackConfirm} className="btn btn-primary">
-                                Confirm
-                            </button>
-                        </div>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg max-w-md">
+                    <h3 className="text-lg font-bold mb-4">Confirm Take Back</h3>
+                    <p>Are you sure you want to take back {total_leads} selected leads?</p>
+                    <div className="flex justify-end mt-4 space-x-2">
+                        <button onClick={() => setIsConfirmModalOpen(false)} className="btn btn-outline-secondary"> Cancel
+                        </button>
+                        <button onClick={handleTakeBackConfirm} className="btn btn-primary">
+                            Confirm
+                        </button>
                     </div>
                 </div>
-            )}        
+            </div>
+        )}        
     </div>
     )
 }

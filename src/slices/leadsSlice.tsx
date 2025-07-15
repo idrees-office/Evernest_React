@@ -22,6 +22,7 @@ import apiClient from '../utils/apiClient';
         cityname?: string;
         date_range?: string;
         agent_id?: any;
+        status_id?: any;
         idsOnly?: boolean;
     }
 
@@ -108,7 +109,7 @@ import apiClient from '../utils/apiClient';
 
     export const allLeads = createAsyncThunk('allLeads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
         try {
-            const { page = 1, perPage = 10, sortField, sortOrder, search, date_range, agent_id  } = params;
+            const { page = 1, perPage = 10, sortField, sortOrder, search, date_range, agent_id, status_id  } = params;
             const effectivePage = search ? 1 : page;
             const response = await apiClient.get(endpoints.allLeadsApi, 
                 { params: { 
@@ -119,12 +120,16 @@ import apiClient from '../utils/apiClient';
                     search: search,
                     date_range: date_range,
                     agent_id : agent_id, 
+                    status_id: status_id
                 },
             });
+            
             return {
                 data: response.data.leads.data, 
                 agents: response.data.agents,  
+                statuses: response.data.statuses,
                 total: response.data.leads.total,
+                total_leads: response.data.total_leads,
                 last_page: response.data.leads.last_page,
                 current_page: response.data.leads.current_page,
                 per_page: response.data.leads.per_page,
@@ -165,7 +170,7 @@ import apiClient from '../utils/apiClient';
 
 
 
-    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number }, { rejectWithValue }) => {
+    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number, status_id: any, date_range: any }, { rejectWithValue }) => {
         try {
            const response = await apiClient.post(endpoints.takebackleads, payload);
             return response.data;
@@ -184,6 +189,8 @@ import apiClient from '../utils/apiClient';
         loading      : false,
         message      : '',
         status       : 0,
+        statuses     : [],
+        total_leads     : 0,
         agent_name   : '',
         total        : 0,
         last_page    : 1,
@@ -246,9 +253,12 @@ import apiClient from '../utils/apiClient';
                 state.loading = true;
             })
             .addCase(allLeads.fulfilled, (state, action) => {
+                
                 state.loading      = false;
                 state.leads        = action.payload.data;
                 state.agents       = action.payload.agents;
+                state.statuses      = action.payload.statuses;
+                state.total_leads   = action.payload.total_leads;
                 state.total        = action.payload.total;
                 state.last_page    = action.payload.last_page;
                 state.current_page = action.payload.current_page;

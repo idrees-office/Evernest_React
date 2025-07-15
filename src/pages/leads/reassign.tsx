@@ -493,6 +493,13 @@ const ReAssign = () => {
                 setBulkSelectedIds(new Set());
                 setDisable(true);
                 setAllSelected(false);
+                dispatch(reassigleads({
+                    page: searchTerm ? 1 : current_page,
+                    perPage: per_page, 
+                    sortField: sortStatus.columnAccessor, 
+                    sortOrder: sortStatus.direction, 
+                    search: searchTerm 
+                }));
             }
         } catch (error) {
             toast.error('Failed to assign leads');
