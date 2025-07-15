@@ -285,8 +285,8 @@ const LeadsAnalysis = () => {
                         <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b border-white-light dark:border-[#1b2e4b]">
                             <h5 className="font-semibold text-lg">Total Leads Agent Wise</h5>
                         </div>
-                        {/* <ReactApexChart options={uniqueVisitorSeries.options} series={uniqueVisitorSeries.series} type="bar" height={360} className="overflow-hidden" /> */}
-                        <ReactApexChart series={dailySales.series} options={dailySales.options} type="bar" height={160} />
+                        <ReactApexChart options={dailySales.options} series={dailySales.series} type="bar" height={360} className="overflow-hidden" />
+                        {/* <ReactApexChart series={dailySales.series} options={dailySales.options} type="bar" height={160} /> */}
                     </div>
                 </div>
             </div>
