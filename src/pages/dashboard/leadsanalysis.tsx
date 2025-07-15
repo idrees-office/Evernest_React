@@ -374,7 +374,7 @@ const LeadsAnalysis = () => {
                 <div className="grid lg:grid-cols-3 gap-6 mb-6">
                     <div className="panel h-full p-0 lg:col-span-2">
                         <div className="flex items-start justify-between dark:text-white-light mb-5 p-5 border-b border-white-light dark:border-[#1b2e4b]">
-                            <h5 className="font-semibold text-lg">Unique Visitors</h5>
+                            <h5 className="font-semibold text-lg">Total leads Agent Wise</h5>
                         </div>
                         <ReactApexChart options={dailySales.options} series={dailySales.series} type="bar" height={360} className="overflow-hidden" />
                     </div>
