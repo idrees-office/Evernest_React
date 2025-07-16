@@ -308,9 +308,7 @@ const Reports = () => {
             </div>
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
                 <div className="w-full md:w-[200px]">
-                    <Select
-                        placeholder="Select an option"
-                        options={transformedAgents}
+                    <Select placeholder="Select an option" options={transformedAgents}
                         classNamePrefix="custom-select"
                         className="custom-multiselect z-10"
                         onChange={(selectedOption) => {
@@ -319,11 +317,9 @@ const Reports = () => {
                     />
                 </div>
                 <div className="w-full md:w-[200px]">
-                    <Select
-                        placeholder="Select a Status"
-                        options={Object.entries(statuses || {}).map(([value, label]) => ({
-                            value: value, // e.g., "2", "3", etc.
-                            label: label, // e.g., "Assigned Lead", "Contacted Lead", etc.
+                    <Select placeholder="Select a Status" options={Object.entries(statuses || {}).map(([value, label]) => ({
+                            value: value,
+                            label: label, 
                         }))}
                         classNamePrefix="custom-select"
                         className="custom-multiselect z-10"

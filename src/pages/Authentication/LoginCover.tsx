@@ -50,7 +50,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                 navigate('/'); 
                 return
             }else if([401, 400].includes(response.payload.status)){
-                toast.error(response.payload.message.message);
+                toast.error(response.payload.message);
                 if (formRef.current) {
                     const emailInput = formRef.current.querySelector('input[name="client_user_email"]') as HTMLInputElement;
                     const passwordInput = formRef.current.querySelector('input[name="password"]') as HTMLInputElement;
@@ -67,7 +67,6 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                 return
             } else {
 
-                console.log(response.payload);
                 setErrors(response.payload.data);
                 if (formRef.current) formRef.current.reset();
             }
@@ -75,11 +74,10 @@ const LoginCover = ({ children }: PropsWithChildren) => {
             Swal.fire('Error:', error.message || error);
         }
     };  
-    
+
     const HandleSoicalLogin = () => {
         toast.error('Work is in progress for the social icon login.');
     }
-
     return (
         <div>
             <div className="absolute inset-0">
