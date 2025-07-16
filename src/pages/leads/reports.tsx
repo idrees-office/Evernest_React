@@ -26,6 +26,7 @@ import IconEye from '../../components/Icon/IconEye';
 import LeadDetailModal from '../../components/LeadDetailModal';
 import { s } from '@fullcalendar/core/internal-common';
 import apiClient from '../../utils/apiClient';
+import AgentSearch from '../../components/AgentSearch';
 
 
 const Reports = () => {
@@ -127,10 +128,8 @@ const Reports = () => {
             agent_id: agentId,
             status_id: selectedStatus
         }));
-
-            
-
       }
+      
       const SelectStatus = (status:any) => {
         setSelectedStatus(status.value);
       }
@@ -360,13 +359,7 @@ const Reports = () => {
                     />
                 </div>
                 <div className="flex gap-2 mt-2 md:mt-0">
-                    <button
-                        onClick={() => {
-                            Search();
-                        }}
-                        type="button"
-                        className="btn btn-secondary btn-sm flex items-center"
-                    >
+                    <button onClick={() => { Search(); }} type="button" className="btn btn-secondary btn-sm flex items-center">
                         <IconSearch /> &nbsp;Search
                     </button>
                     <button
