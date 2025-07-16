@@ -10,7 +10,6 @@ export const useDashboardStates = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { dashboardType } = useParams();
-
     // Static config data
     const TopbarStatuses     = topBarStatus();
     const JobDashboardList   = JobDashboard();
@@ -22,7 +21,6 @@ export const useDashboardStates = () => {
     const colorsarray        = MatchColorList();
     const hrdropdownOption   = HRDropdownOption();
     const toast              = Toast();
-    
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
     const currentStatus   = useSelector((state: IRootState) => state.dashboardslice.lead_status);
