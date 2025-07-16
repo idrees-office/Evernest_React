@@ -25,6 +25,7 @@ import 'flatpickr/dist/flatpickr.css';
 import IconEye from '../../components/Icon/IconEye';
 import LeadDetailModal from '../../components/LeadDetailModal';
 import { s } from '@fullcalendar/core/internal-common';
+import apiClient from '../../utils/apiClient';
 
 
 const Reports = () => {
@@ -112,8 +113,23 @@ const Reports = () => {
           if(selectedRecords.length === 1) { setDisable(true); } 
         }
       };
-      const SelectAgent = (agentId: number) => {
+
+      const SelectAgent = async (agentId: number) => {
+        
         setSelectedAgent(agentId);
+        const response = await dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            date_range: dateRange,
+            agent_id: agentId,
+            status_id: selectedStatus
+        }));
+
+            
+
       }
       const SelectStatus = (status:any) => {
         setSelectedStatus(status.value);
@@ -308,12 +324,8 @@ const Reports = () => {
             </div>
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
                 <div className="w-full md:w-[200px]">
-                    <Select placeholder="Select an option" options={transformedAgents}
-                        classNamePrefix="custom-select"
-                        className="custom-multiselect z-10"
-                        onChange={(selectedOption) => {
-                            if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value);
-                        }}
+                    <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
+                        onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }}
                     />
                 </div>
                 <div className="w-full md:w-[200px]">
