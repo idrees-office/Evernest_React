@@ -62,13 +62,12 @@ const ReAssign = () => {
             search: searchTerm 
         }));
     };
-
     const transformedAgents = agents?.map(agent => ({
         value: agent?.client_user_id,
         label: agent?.client_user_name,
         phone: agent?.client_user_phone,
     })) || [];
-
+    
     const tableData = useMemo(() => {
         return (Array.isArray(leads) ? leads : []).map((lead: any) => ({
             id: lead.lead_id || 'Unknown',

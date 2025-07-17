@@ -26,7 +26,6 @@ import IconEye from '../../components/Icon/IconEye';
 import LeadDetailModal from '../../components/LeadDetailModal';
 import { s } from '@fullcalendar/core/internal-common';
 import apiClient from '../../utils/apiClient';
-import AgentSearch from '../../components/AgentSearch';
 
 
 const Reports = () => {
@@ -44,6 +43,11 @@ const Reports = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+
+     // State for bulk selection
+    const [allSelected, setAllSelected] = useState(false);
+    const [bulkSelectedIds, setBulkSelectedIds] = useState<Set<string>>(new Set());
 
 
     type Lead = {
@@ -159,7 +163,7 @@ const Reports = () => {
             toast.error('Please select an agent before taking back leads.');
             return;
         }
-        if (total_leads === 0) {
+        if (bulkSelectedIds.size === 0) {
             toast.error('No leads found to take back.');
             return;
         }
@@ -276,7 +280,53 @@ const Reports = () => {
         }));
     };
 
+
+    const handleSelectAllCurrentPage = (isChecked: boolean) => {
+        const newSelectedIds = new Set(bulkSelectedIds);
+        
+        if (isChecked) {
+            tableData.forEach(record => newSelectedIds.add(record.id));
+        } else {
+            tableData.forEach(record => newSelectedIds.delete(record.id));
+        }
+        
+        setBulkSelectedIds(newSelectedIds);
+        setDisable(newSelectedIds.size === 0);
+        setAllSelected(isChecked);
+
+        // setSearchAgentSelected(true);
+    };
+
+
     const columns = [
+
+         { 
+            accessor: 'id', 
+            title: (
+                <div className="flex items-center">
+                    <input 
+                        type="checkbox" 
+                        className="form-checkbox mr-2" 
+                        checked={allSelected || (tableData.length > 0 && tableData.every(record => bulkSelectedIds.has(record.id)))}
+                        onChange={(e) => handleSelectAllCurrentPage(e.target.checked)}
+                    />
+                    Select
+                    {bulkSelectedIds.size > 0 && (
+                        <span className="ml-2 text-xs">({bulkSelectedIds.size} selected)</span>
+                    )}
+                </div>
+            ), 
+            sortable: false, 
+            render: (record: any) => (
+                <input 
+                    type="checkbox" 
+                    className="form-checkbox" 
+                    checked={bulkSelectedIds.has(record.id)} 
+                    onChange={(e) => handleCheckboxChange(record, e.target.checked)} 
+                />
+            ),
+        },
+
         { accessor: 'title', title: 'Title', sortable: true },
         { accessor: 'name', title: 'Name', sortable: true },
         { accessor: 'phone', title: 'Phone', sortable: true },
@@ -383,7 +433,7 @@ const Reports = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg max-w-md">
                     <h3 className="text-lg font-bold mb-4">Confirm Take Back</h3>
-                    <p>Are you sure you want to take back {total_leads} selected leads?</p>
+                    <p>Are you sure you want to take back {bulkSelectedIds.size} selected leads?</p>
                     <div className="flex justify-end mt-4 space-x-2">
                         <button onClick={() => setIsConfirmModalOpen(false)} className="btn btn-outline-secondary"> Cancel
                         </button>

@@ -121,7 +121,8 @@ export const STATUSES = [
     {
         value: 9,
         label: 'No-Answer',
-        displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
+        // displayIn: ['sidebar', 'dropdown', 'matchcolorlist', 'commentsarray', 'uniqueDropdown'],
+        displayIn: ['matchcolorlist', 'commentsarray'],
         icon: <IconInfoHexagon className="w-5 h-5 ltr:mr-2 rtl:ml-2" />,
         outlineColor: 'bg-white text-secondary',
         bgColor : 'bg-secondary',
