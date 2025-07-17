@@ -104,15 +104,36 @@ const Reports = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     }
+    
+    // const handleCheckboxChange = (record: any, isChecked: boolean) => {
+    //     if (isChecked) {
+    //       setSelectedRecords((prevSelected) => [...prevSelected, record]);
+    //       setDisable(false);
+    //     } else {
+    //       setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.id !== record.id));
+    //       if(selectedRecords.length === 1) { setDisable(true); } 
+    //     }
+    //   };
+
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
+        const newSelectedIds = new Set(bulkSelectedIds);
+        
         if (isChecked) {
-          setSelectedRecords((prevSelected) => [...prevSelected, record]);
-          setDisable(false);
+            newSelectedIds.add(record.id);
         } else {
-          setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.id !== record.id));
-          if(selectedRecords.length === 1) { setDisable(true); } 
+            newSelectedIds.delete(record.id);
         }
-      };
+        
+        setBulkSelectedIds(newSelectedIds);
+        setDisable(newSelectedIds.size === 0);
+        
+        // Update the allSelected state if needed
+        if (isChecked && newSelectedIds.size === tableData.length) {
+            setAllSelected(true);
+        } else if (!isChecked) {
+            setAllSelected(false);
+        }
+    };
 
       const SelectAgent = async (agentId: number) => {
         
@@ -150,7 +171,7 @@ const Reports = () => {
             status_id: selectedStatus
         }));
     }
-    
+
     const handleTakeBackConfirm = async () => {
         if (!selectedAgent) {
             toast.error('Please select an agent before taking back leads.');
