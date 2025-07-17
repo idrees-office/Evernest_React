@@ -87,14 +87,15 @@ const ReAssign = () => {
         const newSelectedIds = new Set(bulkSelectedIds);
         if (isChecked) {
             newSelectedIds.add(record.id);
+             setSearchAgentSelected(true);
         } else {
             newSelectedIds.delete(record.id);
+             setSearchAgentSelected(false);
         }
         setBulkSelectedIds(newSelectedIds);
         setDisable(newSelectedIds.size === 0);
         setAllSelected(false);
-
-        setSearchAgentSelected(true)
+       
     };
 
     const handleSelectAllCurrentPage = (isChecked: boolean) => {
@@ -102,15 +103,14 @@ const ReAssign = () => {
         
         if (isChecked) {
             tableData.forEach(record => newSelectedIds.add(record.id));
+              setSearchAgentSelected(true);
         } else {
             tableData.forEach(record => newSelectedIds.delete(record.id));
+            setSearchAgentSelected(false);
         }
-        
         setBulkSelectedIds(newSelectedIds);
         setDisable(newSelectedIds.size === 0);
         setAllSelected(isChecked);
-
-        setSearchAgentSelected(true);
     };
 
     const handleSelectAllPages = async (isChecked: boolean) => {

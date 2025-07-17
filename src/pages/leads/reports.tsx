@@ -378,7 +378,7 @@ const Reports = () => {
                     />
                 </div>
                 <div className="w-full md:w-[200px]">
-                    <Select placeholder="Select a Status" options={Object.entries(statuses || {}).map(([value, label]) => ({
+                    {/* <Select placeholder="Select a Status" options={Object.entries(statuses || {}).map(([value, label]) => ({
                             value: value,
                             label: label, 
                         }))}
@@ -387,7 +387,26 @@ const Reports = () => {
                         onChange={(selectedOption) => {
                             if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
                         }}
-                    />
+                    /> */}
+                      <Select placeholder="Select a Status"
+                            options={Object.entries(statuses || {}).map(([value, label]) => ({
+                                value,
+                                label,
+                            }))}
+                            formatOptionLabel={(option) => {
+                                const match = option.label.match(/^(.*?)\s*\((\d+)\)$/);
+                                const statusText = match ? match[1] : option.label; // "New" (if no match, use full label)
+                                const count = match ? match[2] : null; // "5" or null
+                                return (
+                                <div className="flex items-center gap-1"> {statusText} {count && <span className="badge bg-success ms-1">{count}</span>} </div>
+                                );
+                            }}
+                            classNamePrefix="custom-select"
+                            className="custom-multiselect z-10"
+                            onChange={(selectedOption) => {
+                                if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
+                            }}
+                    />    
                 </div>
                 <div className="w-full md:w-[200px]">
                     <Flatpickr

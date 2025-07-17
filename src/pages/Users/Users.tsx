@@ -319,12 +319,7 @@ const Users = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="password">Password</label>
-                                    <input 
-                                        name="password" 
-                                        type="password" 
-                                        placeholder="Password" 
-                                        className="form-input" 
-                                    />
+                                    <input name="password" type="password"  placeholder="Password"  className="form-input" />
                                     {errors.password && ( 
                                         <span className="text-red-500 text-sm">
                                             {errors.password}
