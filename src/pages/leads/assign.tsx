@@ -27,17 +27,16 @@ const Assign = () => {
         direction: 'desc',
     });
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
-    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
-    
+    const loginuser = useSelector((state: IRootState) => state.auth.user || {});
      useEffect(() => {
         dispatch(setPageTitle('New Leads'));
             const fetchData = () => {
                 dispatch(newleads({
-                    page: searchTerm ? 1 : current_page,
-                    perPage : per_page, 
-                    sortField: sortStatus.columnAccessor, 
-                    sortOrder: sortStatus.direction, 
-                    search: searchTerm 
+                    page      : searchTerm ? 1 : current_page,
+                    perPage   : per_page, 
+                    sortField : sortStatus.columnAccessor, 
+                    sortOrder : sortStatus.direction, 
+                    search    : searchTerm 
                 }));
             };
             if (!combinedRef.current.fetched) {

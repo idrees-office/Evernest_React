@@ -168,19 +168,15 @@ import apiClient from '../utils/apiClient';
         }
     });
 
-
-
-    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number, status_id: any, date_range: any }, { rejectWithValue }) => {
+    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number,  lead_ids: any[], status_id: any,  date_range: any }, { rejectWithValue }) => {
         try {
-           const response = await apiClient.post(endpoints.takebackleads, payload);
+            const response = await apiClient.post(endpoints.takebackleads, payload);
             return response.data;
         } catch (error) {
-
-            return rejectWithValue((error as any).response.data);
+            return rejectWithValue((error as any).response?.data);
         }
-    }
-);
-
+    });
+    
     const initialState = {
         leads        : [] as { lead_id: number }[],
         agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],

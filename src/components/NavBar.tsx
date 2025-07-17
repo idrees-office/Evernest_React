@@ -81,12 +81,7 @@ const NavBar = () => {
                     </button>
                 )}
                 <ul className="sub-menu">
-                    {(permissions.includes('create user') || role === 'super admin') && (
-                        <li>
-                            <NavLink to="/pages/users/create">{t('Add-User')}</NavLink>
-                        </li>
-                    )}
-                    {(permissions.includes('create role') || role === 'super admin') && (
+                      {(permissions.includes('create role') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/roles/create">{t('Add-Role')}</NavLink>
                         </li>
@@ -94,6 +89,11 @@ const NavBar = () => {
                     {(permissions.includes('view permission') || role === 'super admin') && (
                         <li>
                             <NavLink to="/pages/permissions/assign">{t('Assign-Permission')}</NavLink>
+                        </li>
+                    )}
+                     {(permissions.includes('create user') || role === 'super admin') && (
+                        <li>
+                            <NavLink to="/pages/users/create">{t('Add-User || TeamHead')}</NavLink>
                         </li>
                     )}
                 </ul>

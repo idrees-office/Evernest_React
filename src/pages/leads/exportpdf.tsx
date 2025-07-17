@@ -19,18 +19,16 @@ import "jspdf-autotable";
 import { DataTableSortStatus } from 'mantine-datatable';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css file
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css'; 
 import { DateRangePicker } from 'react-date-range';
-
-
+import IconSearch from '../../components/Icon/IconSearch';
 
 const ExportPdf = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const toast    = Toast();
     const loader   = Loader();
-        
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const [date, setDate] = useState<any>(null);
     const dropdownOption  = uniqueDropdown();
@@ -42,14 +40,17 @@ const ExportPdf = () => {
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
-    const { leads, loading, agents, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
+    const { leads, loading, agents, statuses, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
     const [showPicker, setShowPicker] = useState(false);
     const [selectionRange, setSelectionRange] = useState({
       startDate: new Date(),
       endDate: new Date(),
       key: 'selection',
     })
-    
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+
+
     useEffect(() => {
       dispatch(setPageTitle('All Leads'));
 
@@ -94,8 +95,20 @@ const ExportPdf = () => {
       const SelectAgent = (agentId: number) => {
         setSelectedAgent(agentId);
       }
-      const SelectStatus = (status:any) => {
+      const SelectStatus = async (status:any) => {
+
         setSelectedStatus(status.value);
+        const response = await dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            date_range: '',
+            agent_id: selectedAgent,
+            status_id: status.value
+        }));
+
       }
 
       const DownloadPdf = async () => {
@@ -308,6 +321,66 @@ const ExportPdf = () => {
         { accessor: 'date', title: 'Date', sortable: true },
     ];
 
+
+   
+
+    const SendToCold = () => {
+
+    }
+    
+
+
+     const handleTakeBackConfirm = async () => {
+        //     if (!selectedAgent) {
+        //         toast.error('Please select an agent before taking back leads.');
+        //         return;
+        //     }
+        //     if (bulkSelectedIds.size === 0) {
+        //         toast.error('No leads found to take back.');
+        //         return;
+        //     }
+    
+        //  try {
+        //     setLoading(true);
+        //     // const leadIds = leads.map(lead => lead.lead_id);
+    
+        //      const leadIds = Array.from(bulkSelectedIds);
+    
+    
+    
+        //     if (leadIds.length === 0) {
+        //         toast.error('No leads available to take back.');
+        //         return;
+        //     }
+        //     const response = await dispatch(updateLeadsStatus({ agent_id: selectedAgent, status_id: selectedStatus, date_range: dateRange, })).unwrap();
+        //     if (response.status === 'success') {
+        //         toast.success(response.message || 'Leads successfully taken back!');
+        //         setIsConfirmModalOpen(false);
+    
+        //         setSelectedRecords([]);
+        //         setDisable(true);
+        //     } else {
+        //         toast.error(response.message || 'Failed to take back leads.');
+        //     }
+        //     dispatch(allLeads({ 
+        //         page: 1, 
+        //         perPage: per_page,
+        //         sortField: sortStatus.columnAccessor,
+        //         sortOrder: sortStatus.direction,
+        //         search: searchTerm,
+        //         date_range: dateRange,
+        //         agent_id: selectedAgent,
+        //         status_id: SelectStatus
+        //     }));
+            
+        // } catch (error) {
+        //     toast.error('Failed to take back leads.');
+        // } finally {
+        //    setLoading(true);;
+        // }
+        }
+
+
     return (
     <div>
       <div className="panel flex items-center justify-between overflow-visible whitespace-nowrap p-3 text-dark relative">
@@ -316,6 +389,22 @@ const ExportPdf = () => {
             <span className="ltr:mr-3 rtl:ml-3"> Details of Your Agents Pdf Reports. </span>
         </div> 
         <div className="flex items-center space-x-2">
+
+          <Select placeholder="Select a Status" options={Object.entries(statuses || {}).map(([value, label]) => ({
+                    value: value,
+                    label: label, 
+                }))}
+                classNamePrefix="custom-select"
+                className="custom-multiselect z-10"
+                onChange={(selectedOption) => {
+                    if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
+                }}
+            />
+
+             <button onClick={() => { SendToCold(); }} type="button" className="btn btn-secondary btn-sm flex items-center">
+                <IconSearch /> &nbsp; Send To Cold
+            </button>
+
           <div className="w-[200px]">
             {/* <Flatpickr value={date} name="meeting_date" options={{ enableTime:true, dateFormat: 'Y-m-d H:i'}} className="form-input" placeholder='Date Filter' />  */}
             <button className="btn btn-secondary" onClick={() => setShowPicker(!showPicker)}>
@@ -367,6 +456,25 @@ const ExportPdf = () => {
               />
             </div>
         <LeadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}  />
+
+
+
+        {isConfirmModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg max-w-md">
+                    <h3 className="text-lg font-bold mb-4">Confirm Take Back</h3>
+                    <p>Are you sure you want to take back {total} selected leads?</p>
+                    <div className="flex justify-end mt-4 space-x-2">
+                        <button onClick={() => setIsConfirmModalOpen(false)} className="btn btn-outline-secondary"> Cancel
+                        </button>
+                        <button onClick={handleTakeBackConfirm} className="btn btn-primary">
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )} 
+
     </div>
     )
 }

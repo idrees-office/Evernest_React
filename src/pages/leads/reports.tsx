@@ -43,13 +43,8 @@ const Reports = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
-
-     // State for bulk selection
     const [allSelected, setAllSelected] = useState(false);
     const [bulkSelectedIds, setBulkSelectedIds] = useState<Set<string>>(new Set());
-
-
     type Lead = {
         lead_id: number;
         lead_title?: string;
@@ -59,7 +54,7 @@ const Reports = () => {
         created_at?: string;
         comments?: any[]; 
     };
-    
+
     const { leads, loading, agents, statuses, total_leads, total, last_page, current_page, per_page } = useSelector((state: IRootState) => state.leadslices) as {
         leads: Lead[];
         loading: boolean;
@@ -155,56 +150,56 @@ const Reports = () => {
             status_id: selectedStatus
         }));
     }
-
-
-
+    
     const handleTakeBackConfirm = async () => {
         if (!selectedAgent) {
             toast.error('Please select an agent before taking back leads.');
             return;
         }
         if (bulkSelectedIds.size === 0) {
-            toast.error('No leads found to take back.');
+            toast.error('Please select the leads you want to take back.');
             return;
         }
-
-    try {
-        setLoading(true);
-        const leadIds = leads.map(lead => lead.lead_id);
-        if (leadIds.length === 0) {
-            toast.error('No leads available to take back.');
-            return;
-        }
-        const response = await dispatch(updateLeadsStatus({ agent_id: selectedAgent, status_id: selectedStatus, date_range: dateRange,
-          })).unwrap();
-        if (response.status === 'success') {
-            toast.success(response.message || 'Leads successfully taken back!');
-            setIsConfirmModalOpen(false);
-            console.log(response);
+        try {
+            setLoading(true);
+            const leadIds = Array.from(bulkSelectedIds);
+            const response = await dispatch(updateLeadsStatus({ 
+                agent_id: selectedAgent, 
+                lead_ids: leadIds, 
+                status_id: selectedStatus, 
+                date_range: dateRange 
+            })).unwrap();
             
-            setSelectedRecords([]);
-            setDisable(true);
-        } else {
-            toast.error(response.message || 'Failed to take back leads.');
+            if (response.status === 'success') {
+                toast.success(response.message || 'Selected leads successfully taken back!');
+                setIsConfirmModalOpen(false);
+                setBulkSelectedIds(new Set());
+                setSelectedRecords([]);
+                setDisable(true);
+                setAllSelected(false);
+                dispatch(allLeads({ 
+                    page: current_page, 
+                    perPage: per_page,
+                    sortField: sortStatus.columnAccessor,
+                    sortOrder: sortStatus.direction,
+                    search: searchTerm,
+                    date_range: dateRange,
+                    agent_id: selectedAgent,
+                    status_id: selectedStatus
+                }));
+            } else {
+                toast.error(response.message || 'Failed to take back leads.');
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to take back leads.');
+        } finally {
+            setLoading(false);
         }
-        dispatch(allLeads({ 
-            page: 1, 
-            perPage: per_page,
-            sortField: sortStatus.columnAccessor,
-            sortOrder: sortStatus.direction,
-            search: searchTerm,
-            date_range: dateRange,
-            agent_id: selectedAgent,
-            status_id: SelectStatus
-        }));
-        
-    } catch (error) {
-        toast.error('Failed to take back leads.');
-    } finally {
-       setLoading(true);;
     }
-}
 
+
+
+  
 
     const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
@@ -293,10 +288,7 @@ const Reports = () => {
         setBulkSelectedIds(newSelectedIds);
         setDisable(newSelectedIds.size === 0);
         setAllSelected(isChecked);
-
-        // setSearchAgentSelected(true);
     };
-
 
     const columns = [
 
@@ -304,12 +296,7 @@ const Reports = () => {
             accessor: 'id', 
             title: (
                 <div className="flex items-center">
-                    <input 
-                        type="checkbox" 
-                        className="form-checkbox mr-2" 
-                        checked={allSelected || (tableData.length > 0 && tableData.every(record => bulkSelectedIds.has(record.id)))}
-                        onChange={(e) => handleSelectAllCurrentPage(e.target.checked)}
-                    />
+                    <input type="checkbox" className="form-checkbox mr-2" checked={allSelected || (tableData.length > 0 && tableData.every(record => bulkSelectedIds.has(record.id)))} onChange={(e) => handleSelectAllCurrentPage(e.target.checked)} />
                     Select
                     {bulkSelectedIds.size > 0 && (
                         <span className="ml-2 text-xs">({bulkSelectedIds.size} selected)</span>
@@ -372,41 +359,11 @@ const Reports = () => {
                 <span className="mr-3">Details of Your Agents Reports.</span>
             </div>
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
+                {/* <div className="w-full md:w-[200px]"></div> */}
                 <div className="w-full md:w-[200px]">
                     <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
                         onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }}
                     />
-                </div>
-                <div className="w-full md:w-[200px]">
-                    {/* <Select placeholder="Select a Status" options={Object.entries(statuses || {}).map(([value, label]) => ({
-                            value: value,
-                            label: label, 
-                        }))}
-                        classNamePrefix="custom-select"
-                        className="custom-multiselect z-10"
-                        onChange={(selectedOption) => {
-                            if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
-                        }}
-                    /> */}
-                      <Select placeholder="Select a Status"
-                            options={Object.entries(statuses || {}).map(([value, label]) => ({
-                                value,
-                                label,
-                            }))}
-                            formatOptionLabel={(option) => {
-                                const match = option.label.match(/^(.*?)\s*\((\d+)\)$/);
-                                const statusText = match ? match[1] : option.label; // "New" (if no match, use full label)
-                                const count = match ? match[2] : null; // "5" or null
-                                return (
-                                <div className="flex items-center gap-1"> {statusText} {count && <span className="badge bg-success ms-1">{count}</span>} </div>
-                                );
-                            }}
-                            classNamePrefix="custom-select"
-                            className="custom-multiselect z-10"
-                            onChange={(selectedOption) => {
-                                if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
-                            }}
-                    />    
                 </div>
                 <div className="w-full md:w-[200px]">
                     <Flatpickr
@@ -431,10 +388,7 @@ const Reports = () => {
                     <button onClick={() => { Search(); }} type="button" className="btn btn-secondary btn-sm flex items-center">
                         <IconSearch /> &nbsp;Search
                     </button>
-                    <button
-                        onClick={() => setIsConfirmModalOpen(true)}
-                        type="button"
-                        className="btn btn-secondary btn-sm flex items-center"
+                    <button onClick={() => setIsConfirmModalOpen(true)} type="button" className="btn btn-secondary btn-sm flex items-center"
                     >
                         <IconSearch /> &nbsp;Take-Back
                     </button>
