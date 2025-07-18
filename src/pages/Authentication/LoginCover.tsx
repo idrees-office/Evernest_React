@@ -93,7 +93,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                         <div className="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"></div>
                         <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
                             <Link to="/" className="w-48 block lg:w-72 ms-10 text-white">
-                                Evernest Real Estate
+                                {/* Evernest Real Estate */}
+                                Test Real Estate
+
                             </Link>
                             <div className="mt-24 hidden w-full max-w-[430px] lg:block">
                                 <img src="/assets/images/auth/login.png" alt="Cover Image" className="w-full" />
@@ -233,7 +235,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                 </Link>
                             </div> */}
                         </div>
-                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.Evernest Real Estate All Rights Reserved.</p>
+                        {/* <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.Evernest Real Estate All Rights Reserved.</p> */}
+
+                         <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.Test Real Estate All Rights Reserved.</p>
                     </div>
                 </div>
             </div>
