@@ -104,30 +104,17 @@ const Reports = () => {
     const openLeadModal = () => {
         setIsModalOpen(true);
     }
-    
-    // const handleCheckboxChange = (record: any, isChecked: boolean) => {
-    //     if (isChecked) {
-    //       setSelectedRecords((prevSelected) => [...prevSelected, record]);
-    //       setDisable(false);
-    //     } else {
-    //       setSelectedRecords((prevSelected) => prevSelected.filter((selected) => selected.id !== record.id));
-    //       if(selectedRecords.length === 1) { setDisable(true); } 
-    //     }
-    //   };
 
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
-        const newSelectedIds = new Set(bulkSelectedIds);
-        
+        const newSelectedIds = new Set(bulkSelectedIds);    
         if (isChecked) {
             newSelectedIds.add(record.id);
         } else {
             newSelectedIds.delete(record.id);
         }
-        
+
         setBulkSelectedIds(newSelectedIds);
         setDisable(newSelectedIds.size === 0);
-        
-        // Update the allSelected state if needed
         if (isChecked && newSelectedIds.size === tableData.length) {
             setAllSelected(true);
         } else if (!isChecked) {
@@ -136,7 +123,6 @@ const Reports = () => {
     };
 
       const SelectAgent = async (agentId: number) => {
-        
         setSelectedAgent(agentId);
         const response = await dispatch(allLeads({ 
             page: 1, 
@@ -149,9 +135,21 @@ const Reports = () => {
             status_id: selectedStatus
         }));
       }
+
       
-      const SelectStatus = (status:any) => {
+      const SelectStatus = async (status:any) => {
         setSelectedStatus(status.value);
+         const response = await dispatch(allLeads({ 
+            page: 1, 
+            perPage: per_page,
+            sortField: sortStatus.columnAccessor,
+            sortOrder: sortStatus.direction,
+            search: searchTerm,
+            date_range: dateRange,
+            agent_id: selectedAgent,
+            status_id: status.value
+        }));
+
       }
 
       const Search = async () => {
@@ -159,7 +157,6 @@ const Reports = () => {
             toast.error('Please select an agent before Search.');
             return;
         }
-        
         const response = await dispatch(allLeads({ 
             page: 1, 
             perPage: per_page,
@@ -217,10 +214,6 @@ const Reports = () => {
             setLoading(false);
         }
     }
-
-
-
-  
 
     const getLeadStatusLabel = (leadStatus: any) => {
         const status = dropdownOption.find(option => option.value === leadStatus);
@@ -380,12 +373,33 @@ const Reports = () => {
                 <span className="mr-3">Details of Your Agents Reports.</span>
             </div>
             <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full md:w-auto">
-                {/* <div className="w-full md:w-[200px]"></div> */}
                 <div className="w-full md:w-[200px]">
                     <Select placeholder="Select an option" options={transformedAgents} classNamePrefix="custom-select" className="custom-multiselect z-10"
                         onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectAgent(selectedOption.value); }}
                     />
                 </div>
+                <div className="w-full md:w-[200px]">
+                      <Select placeholder="Select a Status"
+                            options={Object.entries(statuses || {}).map(([value, label]) => ({
+                                value,
+                                label,
+                            }))}
+                            formatOptionLabel={(option) => {
+                                const match = option.label.match(/^(.*?)\s*\((\d+)\)$/);
+                                const statusText = match ? match[1] : option.label; // "New" (if no match, use full label)
+                                const count = match ? match[2] : null; // "5" or null
+                                return (
+                                <div className="flex items-center gap-1"> {statusText} {count && <span className="badge bg-success ms-1">{count}</span>} </div>
+                                );
+                            }}
+                            classNamePrefix="custom-select"
+                            className="custom-multiselect z-10"
+                            onChange={(selectedOption) => {
+                                if (selectedOption?.value !== undefined) SelectStatus(selectedOption);
+                            }}
+                    />    
+                </div>
+
                 <div className="w-full md:w-[200px]">
                     <Flatpickr
                         options={{
@@ -409,8 +423,7 @@ const Reports = () => {
                     <button onClick={() => { Search(); }} type="button" className="btn btn-secondary btn-sm flex items-center">
                         <IconSearch /> &nbsp;Search
                     </button>
-                    <button onClick={() => setIsConfirmModalOpen(true)} type="button" className="btn btn-secondary btn-sm flex items-center"
-                    >
+                    <button onClick={() => setIsConfirmModalOpen(true)} type="button" className="btn btn-secondary btn-sm flex items-center">
                         <IconSearch /> &nbsp;Take-Back
                     </button>
                 </div>
