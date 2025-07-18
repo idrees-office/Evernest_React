@@ -136,7 +136,6 @@ const Reports = () => {
         }));
       }
 
-      
       const SelectStatus = async (status:any) => {
         setSelectedStatus(status.value);
          const response = await dispatch(allLeads({ 
@@ -310,7 +309,7 @@ const Reports = () => {
             accessor: 'id', 
             title: (
                 <div className="flex items-center">
-                    <input type="checkbox" className="form-checkbox mr-2" checked={allSelected || (tableData.length > 0 && tableData.every(record => bulkSelectedIds.has(record.id)))} onChange={(e) => handleSelectAllCurrentPage(e.target.checked)} />
+                    <input type="checkbox" className="form-checkbox mr-2" checked={allSelected || (tableData.length > 0 && tableData.every(record => bulkSelectedIds.has(record.id)))} onChange={(e) => handleSelectAllCurrentPage(e.target.checked)} disabled={!selectedStatus} />
                     Select
                     {bulkSelectedIds.size > 0 && (
                         <span className="ml-2 text-xs">({bulkSelectedIds.size} selected)</span>
@@ -323,7 +322,7 @@ const Reports = () => {
                     type="checkbox" 
                     className="form-checkbox" 
                     checked={bulkSelectedIds.has(record.id)} 
-                    onChange={(e) => handleCheckboxChange(record, e.target.checked)} 
+                    onChange={(e) => handleCheckboxChange(record, e.target.checked)} disabled={!selectedStatus} 
                 />
             ),
         },
