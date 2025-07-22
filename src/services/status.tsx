@@ -15,7 +15,6 @@ import IconSquareCheck from '../components/Icon/IconSquareCheck';
 import IconUsersGroup from '../components/Icon/IconUsersGroup';
 import { J } from '@fullcalendar/core/internal-common';
 
-
 export const options = [
     { value: 1, label: 'Active' },
     { value: 2, label: 'Inactive' },

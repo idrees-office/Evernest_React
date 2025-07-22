@@ -10,7 +10,9 @@ import apiClient from '../utils/apiClient';
         pdfurl           : 'leads/filter-pdf-data',
         roadshowLeadApi  : 'leads/roadshow-leads',
         assignLeadsApi   : 'leads/assign-multiple-lead',
-        takebackleads   : 'leads/take_back_leads'
+        takebackleads    : 'leads/take_back_leads',
+        moveleadtocold  : 'leads/send_lead_cold',
+
     };
 
     interface FetchLeadsParams {
@@ -123,7 +125,6 @@ import apiClient from '../utils/apiClient';
                     status_id: status_id
                 },
             });
-            
             return {
                 data: response.data.leads.data, 
                 agents: response.data.agents,  
@@ -168,19 +169,24 @@ import apiClient from '../utils/apiClient';
         }
     });
 
-
-
-    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number, status_id: any, date_range: any }, { rejectWithValue }) => {
+    export const updateLeadsStatus = createAsyncThunk('updateStatus', async (payload: { agent_id: number,  lead_ids: any[], status_id: any,  date_range: any }, { rejectWithValue }) => {
         try {
-           const response = await apiClient.post(endpoints.takebackleads, payload);
+            const response = await apiClient.post(endpoints.takebackleads, payload);
             return response.data;
         } catch (error) {
-
-            return rejectWithValue((error as any).response.data);
+            return rejectWithValue((error as any).response?.data);
         }
-    }
-);
+    });
 
+    export const moveleadtocold = createAsyncThunk('moveleadtocold', async (payload: { lead_ids: any[], status_id: any, }, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.post(endpoints.moveleadtocold, payload);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue((error as any).response?.data);
+        }
+    });
+    
     const initialState = {
         leads        : [] as { lead_id: number }[],
         agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
@@ -190,7 +196,7 @@ import apiClient from '../utils/apiClient';
         message      : '',
         status       : 0,
         statuses     : [],
-        total_leads     : 0,
+        total_leads  : 0,
         agent_name   : '',
         total        : 0,
         last_page    : 1,
@@ -298,7 +304,15 @@ import apiClient from '../utils/apiClient';
             })
             .addCase(updateLeadsStatus.rejected, (state) => {
                 state.loading = false;
-            });
+            })
+            .addCase(moveleadtocold.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(moveleadtocold.fulfilled, (state, action) => {
+                state.loading = false;
+                state.leads   = action.payload.data;
+            })
+
 
 
         },
