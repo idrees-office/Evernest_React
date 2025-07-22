@@ -269,7 +269,7 @@ const Users = () => {
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
                         <div className="panel-body">
-                            <div className="grid mb-2">
+                            {/* <div className="grid mb-2">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Team Head</label>
                                     <Select
@@ -295,7 +295,7 @@ const Users = () => {
                                         </span>
                                     )}
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
