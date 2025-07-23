@@ -75,7 +75,9 @@ const ReAssign = () => {
             name: lead.customer_name || 'Unknown',
             phone: lead.customer_phone || 'Unknown',
             source: lead.lead_source || 'Unknown',
-            date: lead.updated_at || 'Unknown',
+            created_at: lead.created_at || 'Unknown',
+            updated_at: lead.updated_at || 'Unknown',
+            assigned_at: lead.assigned_at || 'Unknown',
         }));
     }, [leads]);
 
@@ -283,6 +285,7 @@ const ReAssign = () => {
     const columns = [
         { 
             accessor: 'id', 
+            width: '30px',
             title: (
                 <div className="flex items-center">
                     <input 
@@ -307,8 +310,30 @@ const ReAssign = () => {
                 />
             ),
         },
-        { accessor: 'title', title: 'Title', sortable: true },
-        { accessor: 'name', title: 'Name', sortable: true },
+        {
+            accessor: 'title',
+            title: 'Title',
+            sortable: true,
+            width: 320, // Fixed width in pixels
+            cellsClassName: 'break-all whitespace-normal', // Tailwind classes for word breaking
+            render: (record: any) => (
+                <div className="break-words whitespace-normal max-w-xs truncate">
+                    {record.title}
+                </div>
+            )
+        },
+        {
+            accessor: 'name',
+            title: 'Name',
+            sortable: true,
+            width: 200, // Fixed width in pixels
+            cellsClassName: 'break-all whitespace-normal', // Tailwind classes for word breaking
+            render: (record: any) => (
+                <div className="break-words whitespace-normal max-w-xs truncate">
+                    {record.name}
+                </div>
+            )
+        },
         { accessor: 'phone', title: 'Phone', sortable: true },
         { 
             accessor: 'source', 
@@ -327,7 +352,9 @@ const ReAssign = () => {
                 }
             },
         },
-        { accessor: 'date', title: 'Date', sortable: true },
+        { accessor: 'created_at', title: 'Lead Created', sortable: true },
+        { accessor: 'updated_at', title: 'Last Updated', sortable: true },
+        { accessor: 'assigned_at', title: 'Last Assigned', sortable: true },
     ];
 
     return (

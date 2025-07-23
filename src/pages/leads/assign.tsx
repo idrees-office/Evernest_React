@@ -13,6 +13,7 @@ import LeadModal from '../../components/LeadModal';
 import '../dashboard/dashboard.css'; 
 import Swal from 'sweetalert2';
 import { DataTableSortStatus } from 'mantine-datatable';
+import { CountryList } from '../../services/status';
 
 const Assign = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -27,45 +28,29 @@ const Assign = () => {
         direction: 'desc',
     });
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
-    const loginuser = useSelector((state: IRootState) => state.auth.user || {});
+    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
+    const [selectedCity, setSelectedCity] = useState<string>('');
+    
      useEffect(() => {
         dispatch(setPageTitle('New Leads'));
-            const fetchData = () => {
-                dispatch(newleads({
-                    page      : searchTerm ? 1 : current_page,
-                    perPage   : per_page, 
-                    sortField : sortStatus.columnAccessor, 
-                    sortOrder : sortStatus.direction, 
-                    search    : searchTerm 
-                }));
-            };
+            
             if (!combinedRef.current.fetched) {
                 fetchData();
                 combinedRef.current.fetched = true;
                 return;
             }
-            // combinedRef.current.prevPage = current_page;
-            // combinedRef.current.prevPerPage = per_page;
-            // combinedRef.current.prevSortStatus = sortStatus;
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
-        // const transformedAgents = agents?.map(agent => ({
-        //     value: agent?.client_user_id,
-        //     label: (
-        //         <>
-        //             {agent?.client_user_name}
-        //             {agent?.client_user_designation && (
-        //                 <span style={{ marginLeft: 8 }}>
-        //                     <span className="badge bg-success" style={{ color: '#fff' }}>
-        //                         {agent.client_user_designation}
-        //                     </span>
-        //                 </span>
-        //             )}
-        //         </>
-        //     ),
-        //     phone: agent?.client_user_phone,
-        // })) || [];
-        
+        const fetchData = (cityName?: string) => {
+            dispatch(newleads({
+                page: searchTerm ? 1 : current_page,
+                perPage : per_page, 
+                sortField: sortStatus.columnAccessor, 
+                sortOrder: sortStatus.direction, 
+                search: searchTerm, 
+                cityname: cityName 
+            }));
+        };
 
         const transformedAgents = agents?.map(agent => ({
             value: agent?.client_user_id,
@@ -104,6 +89,13 @@ const Assign = () => {
 
     const openLeadModal = () => {
         setIsModalOpen(true);
+    };
+
+     const SelectCity = (value: any) => {
+         setSelectedRecords([]);
+        setSelectedCity(value?.value || '');
+        fetchData(value?.value);
+        setDisable(true);
     };
 
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
@@ -279,17 +271,13 @@ const Assign = () => {
                     </button>
                 </div> 
                 <div className="flex items-center space-x-2">
-                    {/* <Select 
-                        placeholder="Select an option" 
-                        options={transformedAgents} 
-                        isDisabled={disable} 
-                        className="cursor-pointer custom-multiselect z-10 w-[300px]" 
-                        onChange={(selectedOption) => {  
-                            if (selectedOption?.value !== undefined) { 
-                                AssignLead(selectedOption.value, selectedOption.phone); 
-                            } 
-                        }} 
-                    /> */}
+                        <Select 
+                            placeholder="Choose City.." 
+                            options={CountryList.map(item => ({ value: item.value, label: item.name }))} 
+                            onChange={SelectCity}
+                            className="cursor-pointer custom-multiselect z-10 w-[300px]" 
+                            isClearable
+                        />
                         <Select 
                             placeholder="Select an option" 
                             options={transformedAgents} 

@@ -30,10 +30,10 @@ import apiClient from '../utils/apiClient';
 
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
             try {
-                const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
+                const { page = 1, perPage = 10, sortField, sortOrder, search, cityname  } = params;
                 const effectivePage = search ? 1 : page;
                 const response = await apiClient.get(endpoints.listApi, {
-                    params: { page : effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                    params: { page : effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search, cityname: cityname },
                 });
                 return {
                     data: response.data.data.data,

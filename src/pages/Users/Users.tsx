@@ -27,8 +27,9 @@ const Users = () => {
     const combinedRef = useRef<any>({ userformRef: null });
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState<any | null>(null);
+    const [headId, setHeadId] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [urole, setRoles] = useState<any | null>(null); 
+    const [urole, setRoles] = useState<any | null>(null);
     const [selectedRole, setSelectedRole] = useState<any | null>(null);
     const requestMade = useRef(false);
     const [page, setPage] = useState(1);
@@ -36,6 +37,7 @@ const Users = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'client_user_id', direction: 'asc' });
     const [searchQuery, setSearchQuery] = useState('');
+    const [teamHeads, setTeamHeads] = useState<any[]>([]);
 
     useEffect(() => {
         if (!requestMade.current) {
@@ -77,14 +79,22 @@ const Users = () => {
             };
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                setUsers(response.data.data.data || []); 
+                const allUsers = response.data.data.data || [];
+                setUsers(allUsers);
+
+                const heads = response.data.users.filter((user: any) =>
+                    user.roles?.some((role: any) => role.name === 'Team Head')
+                );
+                console.log(heads);
+
+                setTeamHeads(heads);
                 setTotalRecords(response.data.data.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
                 window.location.href = '/error';
             }
-            showServerError();
+            // showServerError();
         }
     };
 
@@ -94,10 +104,10 @@ const Users = () => {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
                 const userId = formData.get('client_user_id');
-                const response = userId 
-                    ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)  
+                const response = userId
+                    ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)
                     : await apiClient.post(endpoints.createApi, formData);
-                
+
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
@@ -113,7 +123,7 @@ const Users = () => {
             } else if (error.response?.status === 403) {
                 window.location.href = '/error';
             } else {
-                showServerError();
+                // showServerError();
             }
         }
     };
@@ -134,10 +144,10 @@ const Users = () => {
         Swal.fire({
             text: 'Something went wrong on the server',
             icon: 'error',
-            title: 'Server Error',
+            title: 'Server Errors',
         });
     };
-    
+
     const handleEdit = async (user: any) => {
         if (combinedRef.current.userformRef) {
             const form = combinedRef.current.userformRef;
@@ -149,16 +159,16 @@ const Users = () => {
             form.client_user_designation.value = user.client_user_designation || '';
             form.client_sort_order.value = user.client_sort_order || '';
             setStatus(user.client_user_status || '');
-            
+
             const userrole = user.roles && user.roles[0];
             if (userrole) {
                 const selectedRole = {
                     value: userrole.id,
                     label: userrole.name,
                 };
-                setSelectedRole(selectedRole); 
+                setSelectedRole(selectedRole);
             } else {
-                setSelectedRole(null); 
+                setSelectedRole(null);
             }
         }
     };
@@ -177,19 +187,19 @@ const Users = () => {
                 const response = await apiClient.delete(endpoints.destoryApi + `/${user.client_user_id}`);
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast('User deleted successfully');
-                    fetchUserLists(); 
+                    fetchUserLists();
                 }
             } catch (error: any) {
                 if (error.response?.status === 403) {
                     window.location.href = '/error';
                 }
-                showServerError();
+                // showServerError();
             }
         }
     };
 
     const handleRoleChange = (selectedOption: any) => {
-        setSelectedRole(selectedOption); 
+        setSelectedRole(selectedOption);
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,44 +217,44 @@ const Users = () => {
     };
 
     const columns = [
-        { 
-            accessor: 'client_user_id', 
-            title: '#', 
+        {
+            accessor: 'client_user_id',
+            title: '#',
             width: 80,
             key: 'id'
-        }, 
-        { 
-            accessor: 'client_user_name', 
-            title: 'Name', 
-            sortable: true, 
+        },
+        {
+            accessor: 'client_user_name',
+            title: 'Name',
+            sortable: true,
             key: 'client_user_name_column'
         },
-        { 
-            accessor: 'client_user_email', 
-            title: 'Email', 
+        {
+            accessor: 'client_user_email',
+            title: 'Email',
             sortable: true,
-            key: 'email-column' 
+            key: 'email-column'
         },
         {
             accessor: 'actions',
             title: 'Actions',
             width: 120,
-            key: 'actions-column', 
+            key: 'actions-column',
             render: (item: any) => (
                 <div className="flex space-x-2">
-                    <button 
-                        type="button" 
-                        onClick={() => handleEdit(item)} 
-                        className="btn px-1 py-0.5 rounded text-white bg-info" 
-                        key={`edit-${item.client_user_id}`} 
+                    <button
+                        type="button"
+                        onClick={() => handleEdit(item)}
+                        className="btn px-1 py-0.5 rounded text-white bg-info"
+                        key={`edit-${item.client_user_id}`}
                     >
                         <IconPencil />
                     </button>
-                    <button 
-                        type="button" 
-                        onClick={() => handleDelete(item)}  
-                        className="btn px-1 py-0.5 rounded text-white bg-red-600" 
-                        key={`delete-${item.client_user_id}`} 
+                    <button
+                        type="button"
+                        onClick={() => handleDelete(item)}
+                        className="btn px-1 py-0.5 rounded text-white bg-red-600"
+                        key={`delete-${item.client_user_id}`}
                     >
                         <IconTrashLines />
                     </button>
@@ -259,115 +269,142 @@ const Users = () => {
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
                         <div className="panel-body">
+                            {/* <div className="grid mb-2">
+                                <div className="form-group">
+                                    <label htmlFor="client_user_name">Team Head</label>
+                                    <Select
+                                        name="team_head_id"
+                                        placeholder="Select Team Head"
+                                        options={teamHeads.map(head => ({
+                                            value: head.client_user_id,
+                                            label: head.client_user_name
+                                        }))}
+                                        value={teamHeads.find(head => head.client_user_id === headId) 
+                                            ? { 
+                                                value: headId, 
+                                                label: teamHeads.find(head => head.client_user_id === headId).client_user_name 
+                                            } 
+                                            : null
+                                        }
+                                        onChange={(selected) => setHeadId(selected?.value || null)}
+                                        
+                                    />
+                                    {errors.team_head_id && (
+                                        <span className="text-red-500 text-sm">
+                                            {errors.team_head_id}
+                                        </span>
+                                    )}
+                                </div>
+                            </div> */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
-                                    <input 
-                                        name="client_user_name" 
-                                        type="text" 
-                                        placeholder="Username" 
-                                        className="form-input" 
+                                    <input
+                                        name="client_user_name"
+                                        type="text"
+                                        placeholder="Username"
+                                        className="form-input"
                                     />
                                     <input type="hidden" name="client_user_id" id="client_user_id" />
-                                    {errors.client_user_name && ( 
+                                    {errors.client_user_name && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_name}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_phone">Phone</label>
-                                    <input 
-                                        name="client_user_phone" 
-                                        type="tel" 
-                                        placeholder="Phone" 
-                                        className="form-input" 
+                                    <input
+                                        name="client_user_phone"
+                                        type="tel"
+                                        placeholder="Phone"
+                                        className="form-input"
                                     />
-                                    {errors.client_user_phone && ( 
+                                    {errors.client_user_phone && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_phone}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_designation">Designation</label>
-                                    <input 
-                                        name="client_user_designation" 
-                                        type="text" 
-                                        placeholder="Designation" 
-                                        className="form-input" 
+                                    <input
+                                        name="client_user_designation"
+                                        type="text"
+                                        placeholder="Designation"
+                                        className="form-input"
                                     />
-                                    {errors.client_user_designation && ( 
+                                    {errors.client_user_designation && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_designation}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_email">Email</label>
-                                    <input 
-                                        name="client_user_email" 
-                                        type="email" 
-                                        placeholder="Email" 
-                                        className="form-input" 
+                                    <input
+                                        name="client_user_email"
+                                        type="email"
+                                        placeholder="Email"
+                                        className="form-input"
                                     />
-                                    {errors.client_user_email && ( 
+                                    {errors.client_user_email && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_email}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="password">Password</label>
-                                    <input name="password" type="password"  placeholder="Password"  className="form-input" />
-                                    {errors.password && ( 
+                                    <input name="password" type="password" placeholder="Password" className="form-input" />
+                                    {errors.password && (
                                         <span className="text-red-500 text-sm">
                                             {errors.password}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_status">Status</label>
-                                    <Select 
-                                        name="client_user_status" 
-                                        placeholder="Select an option" 
-                                        options={options} 
-                                        value={options.find((option) => option.value === status)} 
+                                    <Select
+                                        name="client_user_status"
+                                        placeholder="Select an option"
+                                        options={options}
+                                        value={options.find((option) => option.value === status)}
                                         onChange={(selected) => setStatus(selected?.value || null)}
                                     />
-                                    {errors.client_user_status && ( 
+                                    {errors.client_user_status && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_status}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_sort_order">Sort Order</label>
-                                    <input 
-                                        name="client_sort_order" 
-                                        type="text" 
-                                        placeholder="Sort Order" 
-                                        className="form-input" 
+                                    <input
+                                        name="client_sort_order"
+                                        type="text"
+                                        placeholder="Sort Order"
+                                        className="form-input"
                                     />
-                                    {errors.client_sort_order && ( 
-                                        <span  className="text-red-500 text-sm">
+                                    {errors.client_sort_order && (
+                                        <span className="text-red-500 text-sm">
                                             {errors.client_sort_order}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
-                                    <Select 
-                                        name="role_id" 
-                                        placeholder="Select an option" 
-                                        options={urole || []} 
-                                        value={selectedRole} 
+                                    <Select
+                                        name="role_id"
+                                        placeholder="Select an option"
+                                        options={urole || []}
+                                        value={selectedRole}
                                         onChange={handleRoleChange}
                                     />
-                                    {errors.role_id && ( 
+                                    {errors.role_id && (
                                         <span className="text-red-500 text-sm">
                                             {errors.role_id}
-                                        </span> 
+                                        </span>
                                     )}
                                 </div>
                                 <div className="sm:col-span-2 flex justify-end">
@@ -380,7 +417,7 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                      <div className="datatables">
+                    <div className="datatables">
                         <Table
                             columns={columns}
                             rows={users}
