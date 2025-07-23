@@ -1,6 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../utils/apiClient';
-import { co } from '@fullcalendar/core/internal-common';
+    interface FetchLeadsParams {
+        page_number?: number;
+        per_page?: number;
+        sortField?: string;
+        sortOrder?: string;
+        search?: string;
+        agent_id?: number;
+        date_range?: string;
+        lead_status?: number | string;
+    }
+
     const endpoints = {
         createApi   : '/leads/store',
         listApi     : '/leads/get_all_leads?page=',
@@ -22,17 +32,54 @@ import { co } from '@fullcalendar/core/internal-common';
             return rejectWithValue(error.response?.data || error.message);
         }
     });
-    export const DashboardLeadslist = createAsyncThunk('DashboardLeadslist', async ({ lead_status, page_number, search, type }: { lead_status?: number, page_number?: number, search?: string, type?: string }, { rejectWithValue }) => {
-        try {
-            const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
-            const response = await apiClient.post(url, {search: search, type: type});
-            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
-                counters: response.data.counters || {}
-            };
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data || error.message);
+    
+    export const DashboardLeadslist = createAsyncThunk(
+    'DashboardLeadslist',
+        async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
+            try {
+                const { 
+                    page_number = 1, 
+                    per_page = 10, 
+                    sortField, 
+                    sortOrder, 
+                    search, 
+                    agent_id, 
+                    date_range,
+                    lead_status 
+                } = params;
+                
+                const effectivePage = search ? 1 : page_number;
+                const url = `${endpoints.listApi}${effectivePage}&lead_status=${lead_status || 0}`;
+                
+                const response = await apiClient.post(url, {
+                    search,
+                    agent_id,
+                    date_range,
+                    lead_status,
+                    per_page,
+                    sort_field: sortField,
+                    sort_order: sortOrder
+                });
+
+                return {
+                    leadsdata: response.data.data || [],
+                    agents: response.data.agents || [],
+                    statuses: response.data.statuses || [],
+                    counters: response.data.counters || {},
+                    meta: response.data.meta || {},
+                    links: response.data.links || {},
+                    total: response.data.meta?.total || 0,
+                    last_page: response.data.meta?.last_page || 1,
+                    current_page: response.data.meta?.current_page || 1,
+                    per_page: response.data.meta?.per_page || 10,
+                    lead_status: response.data.lead_status || 0
+                };
+            } catch (error: any) {
+                return rejectWithValue(error.response?.data || error.message);
+            }
         }
-    });
+    );
+
 
     export const updateSingleLead = createAsyncThunk('updateSingleLead', async ({ formData, id }: { formData: FormData; id?: number }, { rejectWithValue }) => {
         try {
@@ -91,16 +138,23 @@ import { co } from '@fullcalendar/core/internal-common';
     });
 
     const initialState = {
-        leads: [] as { lead_id: number, files?: any[] }[],
-        lead_status : 0,
-        success : false,
-        loading : false,
-        message : '',
-        status  : 0,
-        links  : {},
-        meta  : {},
-        counters : {},
-        files: [] as any[],
+    leads: [] as { 
+        lead_id: number, 
+        files?: any[] }[],
+        agents: [] as any[],
+        statuses: [] as any[],
+        lead_status: 0,
+        success: false,
+        loading: false,
+        message: '',
+        status: 0,
+        total: 0,
+        last_page: 1,
+        current_page: 1,
+        per_page: 10,
+        counters: {},
+        meta: {},
+        links: {}
     };
     
     const DashboardSlice = createSlice({
@@ -123,22 +177,27 @@ import { co } from '@fullcalendar/core/internal-common';
                     state.success = true;                
                     action.payload; 
                 }).addCase(DashboardLeadslist.pending, (state) => {
-                    state.loading = true;  
+                    state.loading = true;
                 })
                 .addCase(DashboardLeadslist.fulfilled, (state, action) => {
-                    state.success = true;
-                    state.leads   = action.payload.leadsdata?.data || [];
-                    state.status  = action.payload.status;
-                    state.links   = action.payload.links;
-                    state.meta    = action.payload.meta || {};
-                    state.lead_status = action.payload.lead_status;
-                    state.counters = action.payload.counters;
                     state.loading = false;
+                    state.leads = action.payload.leadsdata;
+                    state.agents = action.payload.agents;
+                    state.statuses = action.payload.statuses;
+                    state.counters = action.payload.counters;
+                    state.meta = action.payload.meta;
+                    state.links = action.payload.links;
+                    state.total = action.payload.total;
+                    state.last_page = action.payload.last_page;
+                    state.current_page = action.payload.current_page;
+                    state.per_page = action.payload.per_page;
+                    state.lead_status = action.payload.lead_status;
+                    state.success = true;
                 })
                 .addCase(DashboardLeadslist.rejected, (state) => {
+                    state.loading = false;
                     state.success = false;
                 })
-
                 .addCase(updateSingleLead.pending, (state) => {
                     state.loading = true;  
                 })
