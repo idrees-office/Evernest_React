@@ -9,6 +9,7 @@ import apiClient from '../utils/apiClient';
         agent_id?: number;
         date_range?: string;
         lead_status?: number | string;
+        type ?: string;
     }
 
     const endpoints = {
@@ -145,9 +146,8 @@ import apiClient from '../utils/apiClient';
     });
 
     const initialState = {
-    leads: [] as { 
-        lead_id: number, 
-        files?: any[] }[],
+        leads: [] as Array<{ lead_id: number; files: any[]; }>,
+        files: [] as any[],
         agents: [] as any[],
         statuses: [] as any[],
         lead_status: 0,
@@ -243,7 +243,8 @@ import apiClient from '../utils/apiClient';
                         }
                         return lead;
                     });
-                }).addCase(getFiles.fulfilled, (state, action) => {
+                }) 
+                .addCase(getFiles.fulfilled, (state, action) => {
                     state.loading = false;
                     state.files = action.payload;
                 })

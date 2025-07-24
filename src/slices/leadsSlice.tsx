@@ -15,7 +15,11 @@ import apiClient from '../utils/apiClient';
     };
     
     const initialState = {
-        leads        : [] as { lead_id: number }[],
+        // leads        : [] as { lead_id: number }[],
+
+        leads: [] as Array<{ lead_id: number; files: any[]; }>,
+        files: [] as any[],
+
         agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
         lead_status  : 0,
         success      : false,
