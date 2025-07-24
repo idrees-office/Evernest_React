@@ -31,10 +31,7 @@ const Reports = () => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
 
-    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'lead_id',
-        direction: 'desc',
-    });
+    const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
     
     const combinedRef = useRef<any>({
         fetched: false,
@@ -268,6 +265,7 @@ const Reports = () => {
                 setSelectedRecords([]);
                 setDisable(true);
                 setAllSelected(false);
+                
                 dispatch(DashboardLeadslist({ 
                     page_number: current_page, 
                     per_page: per_page,
@@ -343,10 +341,10 @@ const Reports = () => {
             render: (record: any) => {
                 const fullLead = leads.find((l: any) => l.lead_id === record.id);
                 return (
-                    <button type="button" className="btn btn-secondary btn-sm" style={{ height: '23px', borderRadius: '13px' }} onClick={() => {  setIsDetailModalOpen(true); setSelectedLead(fullLead?.comments || []);  }} >
-                        View
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ height: '23px', borderRadius: '13px' }} onClick={() => {  setIsDetailModalOpen(true); setSelectedLead((fullLead as any)?.comments || []); }} >     
                     </button>
                 );
+                 // fullleads as any  this is called Type Assertion
             },
         },
     ];

@@ -9,6 +9,7 @@ import apiClient from '../utils/apiClient';
         agent_id?: number;
         date_range?: string;
         lead_status?: number | string;
+        type ?: string;
     }
 
     const endpoints = {
@@ -72,7 +73,14 @@ import apiClient from '../utils/apiClient';
                     last_page: response.data.meta?.last_page || 1,
                     current_page: response.data.meta?.current_page || 1,
                     per_page: response.data.meta?.per_page || 10,
-                    lead_status: response.data.lead_status || 0
+                    lead_status: response.data.lead_status || 0,
+                    topbarstatuses: response.data.topbar || [],
+                    sidebarstatus: response.data.sidebar || [],
+                    dropdownstatus: response.data.dropdown || [],
+                    hrtopbar: response.data.hrtopbar || [], 
+                    hrsidebar: response.data.hrsidebar || [], 
+                    hrdropdown: response.data.hrdropdown || []
+
                 };
             } catch (error: any) {
                 return rejectWithValue(error.response?.data || error.message);
@@ -138,9 +146,8 @@ import apiClient from '../utils/apiClient';
     });
 
     const initialState = {
-    leads: [] as { 
-        lead_id: number, 
-        files?: any[] }[],
+        leads: [] as Array<{ lead_id: number; files: any[]; }>,
+        files: [] as any[],
         agents: [] as any[],
         statuses: [] as any[],
         lead_status: 0,
@@ -154,7 +161,13 @@ import apiClient from '../utils/apiClient';
         per_page: 10,
         counters: {},
         meta: {},
-        links: {}
+        links: {},
+        topbarleadstatus : [],
+        sidebarstatus : [],
+        dropdownstatus : [], 
+        hrtopbar :  [],
+        hrsidebar : [],
+        hrdropdown : [],
     };
     
     const DashboardSlice = createSlice({
@@ -192,6 +205,14 @@ import apiClient from '../utils/apiClient';
                     state.current_page = action.payload.current_page;
                     state.per_page = action.payload.per_page;
                     state.lead_status = action.payload.lead_status;
+
+                    state.topbarleadstatus  = action.payload.topbarstatuses;
+                    state.sidebarstatus     = action.payload.sidebarstatus;
+                    state.dropdownstatus    = action.payload.dropdownstatus;
+                    state.hrtopbar   = action.payload.hrtopbar;
+                    state.hrsidebar  = action.payload.hrsidebar;
+                    state.hrdropdown = action.payload.hrdropdown;
+
                     state.success = true;
                 })
                 .addCase(DashboardLeadslist.rejected, (state) => {
@@ -222,7 +243,8 @@ import apiClient from '../utils/apiClient';
                         }
                         return lead;
                     });
-                }).addCase(getFiles.fulfilled, (state, action) => {
+                }) 
+                .addCase(getFiles.fulfilled, (state, action) => {
                     state.loading = false;
                     state.files = action.payload;
                 })

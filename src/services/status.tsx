@@ -244,8 +244,7 @@ export const STATUSES = [
         tab     : 'followuptab',
         activeColor: "bg-white-dark/10 text-secondary",
     },
-
-
+    
     // 1 to 50 statuses reserved for future use
     // Above 50 are custom hired statuses
     {
@@ -400,6 +399,12 @@ export const CountryList = [
     { value: 2, label: 'Monthly' },
     { value: 3, label: 'Weekly' },
     { value: 4, label: 'Daily' },
+];
+
+
+export const LeadsOption = [
+    { value: 1, label: 'Agent-Leads' },
+    { value: 2, label: 'HR-Leads' },
 ];
 
 
