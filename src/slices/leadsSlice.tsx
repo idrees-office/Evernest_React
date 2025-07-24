@@ -12,7 +12,23 @@ import apiClient from '../utils/apiClient';
         assignLeadsApi   : 'leads/assign-multiple-lead',
         takebackleads    : 'leads/take_back_leads',
         moveleadtocold  : 'leads/send_lead_cold',
-
+    };
+    
+    const initialState = {
+        leads        : [] as { lead_id: number }[],
+        agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
+        lead_status  : 0,
+        success      : false,
+        loading      : false,
+        message      : '',
+        status       : 0,
+        statuses     : [],
+        total_leads  : 0,
+        agent_name   : '',
+        total        : 0,
+        last_page    : 1,
+        current_page : 1,
+        per_page     : 10
     };
 
     interface FetchLeadsParams {
@@ -30,10 +46,10 @@ import apiClient from '../utils/apiClient';
 
     export const newleads = createAsyncThunk('leads/newleads', async (params: FetchLeadsParams = {}, { rejectWithValue }) => {
             try {
-                const { page = 1, perPage = 10, sortField, sortOrder, search  } = params;
+                const { page = 1, perPage = 10, sortField, sortOrder, search, cityname  } = params;
                 const effectivePage = search ? 1 : page;
                 const response = await apiClient.get(endpoints.listApi, {
-                    params: { page : effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search },
+                    params: { page : effectivePage, per_page: perPage, sort_field: sortField, sort_order: sortOrder, search: search, cityname: cityname },
                 });
                 return {
                     data: response.data.data.data,
@@ -186,23 +202,6 @@ import apiClient from '../utils/apiClient';
             return rejectWithValue((error as any).response?.data);
         }
     });
-    
-    const initialState = {
-        leads        : [] as { lead_id: number }[],
-        agents       : [] as { client_user_designation: JSX.Element; client_user_id: number,  client_user_name: string, client_user_phone: number, }[],
-        lead_status  : 0,
-        success      : false,
-        loading      : false,
-        message      : '',
-        status       : 0,
-        statuses     : [],
-        total_leads  : 0,
-        agent_name   : '',
-        total        : 0,
-        last_page    : 1,
-        current_page : 1,
-        per_page     : 10
-    };
 
     const LeadsSlice = createSlice({
         name: 'Leads',
