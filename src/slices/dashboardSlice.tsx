@@ -26,9 +26,9 @@ import { co } from '@fullcalendar/core/internal-common';
         try {
             const url = `${endpoints.listApi}${page_number}&lead_status=${lead_status}`;
             const response = await apiClient.post(url, {search: search, type: type});
-            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, 
-                counters: response.data.counters || {}
-            };
+            return { leadsdata: response.data, status: response.status, links: response.data.links, meta: response.data.meta, lead_status: response.data.lead_status || 0, counters: response.data.counters || {}, topbarstatuses: response.data.topbar || [], sidebarstatus: response.data.sidebar || [],
+            dropdownstatus: response.data.dropdown || [],   hrtopbar: response.data.hrtopbar || [], hrsidebar: response.data.hrsidebar || [], hrdropdown: response.data.hrdropdown || []
+        };
         } catch (error: any) {
             return rejectWithValue(error.response?.data || error.message);
         }
@@ -101,6 +101,14 @@ import { co } from '@fullcalendar/core/internal-common';
         meta  : {},
         counters : {},
         files: [] as any[],
+        topbarleadstatus : [],
+        sidebarstatus : [],
+        dropdownstatus : [], 
+
+        hrtopbar :  [],
+        hrsidebar : [],
+        hrdropdown : [],
+
     };
     
     const DashboardSlice = createSlice({
@@ -132,8 +140,14 @@ import { co } from '@fullcalendar/core/internal-common';
                     state.links   = action.payload.links;
                     state.meta    = action.payload.meta || {};
                     state.lead_status = action.payload.lead_status;
-                    state.counters = action.payload.counters;
-                    state.loading = false;
+                    state.counters    = action.payload.counters;
+                    state.topbarleadstatus  = action.payload.topbarstatuses;
+                    state.sidebarstatus     = action.payload.sidebarstatus;
+                    state.dropdownstatus    = action.payload.dropdownstatus;
+                    state.hrtopbar   = action.payload.hrtopbar;
+                    state.hrsidebar  = action.payload.hrsidebar;
+                    state.hrdropdown = action.payload.hrdropdown;
+                    state.loading    = false;
                 })
                 .addCase(DashboardLeadslist.rejected, (state) => {
                     state.success = false;

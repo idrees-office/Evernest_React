@@ -83,7 +83,6 @@ const LeadsAnalysis = () => {
                 
                 const response = await apiClient.get(`/leads/leads-analysis?${params.toString()}`);
                 if (response.status === 200) {
-                    console.log(response.data.data);
                     setLeadsData(response.data.data);
                 } else {
                     throw new Error('Failed to fetch data');

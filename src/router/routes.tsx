@@ -38,11 +38,14 @@ const Viewannouncements = lazy(() => import('../pages/announcements/view'));
 // listing
 const CreateListing = lazy(() => import('../pages/listing/createListing'));
 
+const Statuses = lazy(() => import('../pages/statuses/create'));
+
+
 const routes = [
     {
         path: '/',
         type: 'protected',
-        element: <Dashboardanalysis key="default" />,
+        element: <Dashboardanalysis key="default" />, 
     },
     
     {
@@ -153,7 +156,15 @@ const routes = [
         type: 'protected',
         element: <CreateListing />, 
         layout: 'default',
-    },    
+    }, 
+
+    {
+        path: 'pages/statuses/create',
+        type: 'protected',
+        element: <Statuses />, 
+        layout: 'default',
+    }, 
+
 
     {
         path: '/analytics',

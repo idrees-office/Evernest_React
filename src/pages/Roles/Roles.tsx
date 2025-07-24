@@ -134,7 +134,7 @@ const Roles = () => {
             name: role.name,
         });
     };
-
+    
     const handleDelete = async (id: number) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -144,7 +144,6 @@ const Roles = () => {
             confirmButtonText: 'Yes, delete it!',
             cancelButtonText: 'No, cancel!',
         });
-        
         if (result.isConfirmed) {
             try {
                 const response = await apiClient.delete(`${endpoints.destoryApi}/${id}`);
@@ -205,7 +204,6 @@ const Roles = () => {
             ),
         },
     ];
-
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
             <div className="flex flex-wrap -mx-4">

@@ -312,9 +312,7 @@ import apiClient from '../utils/apiClient';
                 state.loading = false;
                 state.leads   = action.payload.data;
             })
-
-
-
+            
         },
     })
 export const { setLeads } = LeadsSlice.actions;

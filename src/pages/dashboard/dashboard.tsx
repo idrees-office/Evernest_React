@@ -25,9 +25,12 @@ import FileViewerModal from '../../components/FileViewerModal';
 import CustomSideNav from '../../components/CustomSideNav';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
+import IconThumbUp from '../../components/Icon/IconThumbUp';
+import { IconOption } from '../../components/Icon';
+
   const DashboardBox = () => {
     const {
-        dispatch, navigate, dashboardType, TopbarStatuses, JobDashboardList, uniqueDropdownList, hrSidebarStatus,
+        dispatch, navigate, dashboardType, TopbarStatuses, HrTopBarStatus, uniqueDropdownList, hrSidebarStatus,
         Statues, loader2, SidebarStatuses, colorsarray, hrdropdownOption, toast,
         loginuser, leads, currentStatus, loading, meta, counters, isRtl, combinedRef, fileInputRef,
         AllLeadList, setAllLeadList, selectedLead, setSelectedLead, selectedTab, setSelectedTab,
@@ -37,7 +40,7 @@ import 'flatpickr/dist/flatpickr.css';
         isCustomizerOpen, setIsCustomizerOpen
     } = useDashboardStates();
 
-    useEffect(() => {
+    useEffect(() => {        
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
             dispatch(DashboardLeadslist({search: searchText, type: dashboardType || 'all'}));
@@ -50,7 +53,6 @@ import 'flatpickr/dist/flatpickr.css';
             const delayDebounceFn = setTimeout(() => {
                 dispatch(DashboardLeadslist({search: searchText, type: dashboardType || 'all'}));
             }, 500);
-
             return () => clearTimeout(delayDebounceFn);
         }
     }, [searchText, loginuser?.client_user_id]);
@@ -205,11 +207,8 @@ import 'flatpickr/dist/flatpickr.css';
     const AssignToAgent = async (leadId: any) => {
         try {
             // dispatch(setLoading(true));
-
             // alert(leadId);
             setIsCustomizerOpen(true);
-
-
             // const resultAction = await dispatch(getFiles(leadId));
             // const fetchedFiles = getFiles.fulfilled.match(resultAction) ? resultAction.payload : [];
             // setFiles(fetchedFiles);
@@ -228,40 +227,52 @@ import 'flatpickr/dist/flatpickr.css';
                 <div className={`overlay bg-black/60 z-[5] w-full h-full rounded-md absolute hidden ${isShowMailMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowMailMenu(!isShowMailMenu)}
                 ></div>
                 <div className={`panel xl:block p-4 dark:gray-50 w-[250px] max-w-full flex-none space-y-3 xl:relative absolute z-10 xl:h-auto h-full hidden ltr:xl:rounded-r-md ltr:rounded-r-none rtl:xl:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowMailMenu ? '!block' : '' }`}>
-                    <div className="flex flex-col h-full pb-16">
+                    <div className="flex flex-col h-full">
                             <div className="pb-5"> 
                                 <button className="btn btn-success w-full btn-sm" type="button" onClick={openLeadModal}> Add Lead </button> 
-                                <br />
+                                <br/>
                                 <Link to="/">
                                     <button className="btn btn-info w-full btn-sm" type="button"> Leads Analytics </button> 
                                 </Link>
-                            </div>
+                            </div> 
                             <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
-                                <div className="space-y-1">
-                                    {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? hrSidebarStatus : SidebarStatuses).map((sidebarstatus) => { 
-                                    // {SidebarStatuses.map((sidebarstatus) => {
-                                        const counterKey = sidebarstatus.tab || '';
-                                        const sidebarcount = counters[counterKey] || 0;
-                                        return (
-                                            <button key={sidebarstatus?.value} onClick={() => LeadsTabs(sidebarstatus?.value)} type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 ${selectedTab === sidebarstatus.value ? sidebarstatus.activeColor : sidebarstatus.outlineColor}`}>
-                                                <div className="flex items-center"> {sidebarstatus.icon}
-                                                    <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.label}</div>
-                                                </div>
-                                                <div className="bg-primary-light dark:bg-[#060818] rounded-md py-0.5 px-2 font-semibold whitespace-nowrap"> {sidebarcount} </div>
-                                            </button>
-                                        );
-                                    })}
-                                    <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                    <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
-                                        <div className="flex items-center">
-                                            <IconVideo className="shrink-0" />
-                                            <div className="ltr:ml-3 rtl:mr-3">
-                                                <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link>
-                                            </div>    
-                                        </div>
-                                    </button>
-                                </div>
-                            </PerfectScrollbar>                   
+                            <div className="space-y-1">
+                                {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? hrSidebarStatus : SidebarStatuses).map((sidebarstatus:any) => { 
+                                    const counterKey = sidebarstatus.id || '';
+                                    const sidebarcount = counters[counterKey] || 0;
+                                    return (
+                                        <button key={sidebarstatus?.id} onClick={() => LeadsTabs(sidebarstatus?.id)} 
+                                            type="button" className={`w-full flex justify-between items-center p-2 font-medium h-10 rounded-md text-secondary ${
+                                                selectedTab == sidebarstatus.id ? 'bg-[#eaf1ff] text-secondary' 
+                                                    : `hover:bg-white-dark/10 dark:hover:bg-[#181F32] ${sidebarstatus.outlineColor}`
+                                            }`}
+                                        >  
+                                            <div className="flex items-center">
+                                                <span className="w-5 h-5 ltr:mr-2 rtl:ml-2">  
+                                                    {IconOption.find((icon) => icon.value == sidebarstatus.icon)?.label}
+                                                </span>
+
+                                                <div className="ltr:ml-3 rtl:mr-3">{sidebarstatus?.name}</div>
+                                            </div>
+                                            <div className={`text-secondary ${ selectedTab == sidebarstatus.id ? 'bg-white/20 text-secondary':'bg-primary-light dark:bg-[#060818]'
+                                                } rounded-md py-0.5 px-2 font-semibold whitespace-nowrap`}
+                                            >
+                                                {sidebarcount}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                                <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10`}>
+                                    <div className="flex items-center">
+                                        <IconVideo className="shrink-0" />
+                                        <div className="ltr:ml-3 rtl:mr-3">
+                                            <Link to="https://meet.google.com/landing" target="_blank"> New meeting </Link>
+                                        </div>    
+                                    </div>
+                                </button>
+                            </div>
+                         </PerfectScrollbar>
                     </div>
                 </div>
                 <div className="panel p-0 flex-1 overflow-x-hidden h-full">
@@ -294,9 +305,7 @@ import 'flatpickr/dist/flatpickr.css';
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
-                                        <div className="text-sm whitespace-nowrap">
-                                            {meta.from + '-' + (meta.to) + ' of ' + meta.total}
-                                        </div>
+                                        <div className="text-sm whitespace-nowrap"> {meta.from + '-' + (meta.to) + ' of ' + meta.total} </div>
                                         <div className="flex gap-1">
                                             <button onClick={() => handlePageChange(meta.current_page - 1)} type="button" disabled={meta.current_page === 1}className="bg-[#f4f4f4] rounded-md p-1.5 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed"
                                             > <IconCaretDown className="w-4 h-4 rtl:-rotate-90 rotate-90" /> </button>
@@ -307,26 +316,36 @@ import 'flatpickr/dist/flatpickr.css';
                             </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                             <div className="flex flex-wrap flex-col md:flex-row xl:w-auto justify-between items-center px-2 sm:px-4 pb-4">
-                                <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
-                                    {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? JobDashboardList : TopbarStatuses).map((status) => { 
-                                        const counterKey = status.tab || '';
-                                        const topcounter = counters[counterKey] || 0;
-                                        return (
-                                        <button key={status.value} onClick={() => LeadsTabs(status.value)} type="button" 
-                                            className={`btn ${status.outlineColor} ${selectedTab === status.value ? status.activeColor : status.outlineColor} flex items-start justify-start text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm  px-1 sm:px-2 lg:px-3
-                                            relative transition-all duration-300 whitespace-nowrap overflow-hidden`}> 
-                                            <span className="flex items-center space-x-0">
-                                            {status.icon}
-                                            <span className="sm:inline text-sm" style={{ fontSize: '13px' }}>{status.label}</span>
-                                            </span>
-                                            <span className={`badge absolute -top-2 -right-1 text-x p-0.5 px-1.5 ${status.bgColor} rounded-full`}> 
-                                            {topcounter} 
-                                            </span>
-                                        </button>
-                                        )
-                                    })}
-                                </div>
-                            </div> 
+                            <div className="w-full grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-7 gap-1.5 sm:gap-2 mt-4">
+                                {(loginuser?.roles[0].name === 'HR' || dashboardType == 'hr' ? HrTopBarStatus : TopbarStatuses).map((status: any) => { 
+                                const counterKey = status.id || '';
+                                const topcounter = counters[counterKey] || 0;
+                                return (
+                                <button key={status.id} onClick={() => LeadsTabs(status.id)} type="button" 
+                                    className={`btn shadow-none flex items-start justify-start text-sm sm:text-xs lg:text-sm md:text-sm xl:text-sm px-1 sm:px-2 lg:px-3 relative duration-300 whitespace-nowrap overflow-hidden ${selectedTab === status.id ? 'text-white' : 'border'}`}
+                                    style={{
+                                        borderColor: selectedTab === status.id ? status.color : status.color,
+                                        backgroundColor: selectedTab === status.id ? status.color : 'transparent',
+                                        color: selectedTab === status.id ? '#fff' : status.color
+                                    }}
+                                    > 
+                                    <span className="flex items-center space-x-0"> 
+                                        <span className="w-5 h-5 ltr:mr-2 rtl:ml-2">  
+                                            {IconOption.find((icon) => icon.value == status.icon)?.label}
+                                        </span>
+                                        <span className="sm:inline text-sm" style={{ fontSize: '13px' }}>{status.name}</span>
+                                    </span>
+                                    <span 
+                                        className="badge absolute -top-2 -right-1 text-x p-0.5 px-1.5 rounded-full text-white"
+                                        style={{ backgroundColor: status.color }}
+                                    > 
+                                        {topcounter} 
+                                    </span>
+                                    </button>
+                                )
+                                })}
+                            </div>
+                            </div>
                             <div className="h-px border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 {loading ? (
                                     <Loader3 />
@@ -499,7 +518,7 @@ import 'flatpickr/dist/flatpickr.css';
                                                     <div className="w-full cursor-pointer">
                                                         <div className="mt-3 items-center">
                                                         <Select placeholder="Move Lead...." options={ 
-                                                            loginuser?.roles[0].name === 'HR' ? hrdropdownOption : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
+                                                        loginuser?.roles[0].name === 'HR' ? Object.values(hrdropdownOption) : uniqueDropdownList }  name="lead_status" className="cursor-pointer" onChange={handleSelectChange} />
                                                         <input type="hidden" name="lead_id" className="form-input" defaultValue={selectedLead?.lead_id} />
                                                         <input type="hidden" name="agent_id" className="form-input" defaultValue={selectedLead?.agent_id} />
                                                         <input type="hidden" name="login_user_id" className="form-input" defaultValue={loginuser?.client_user_id}/>

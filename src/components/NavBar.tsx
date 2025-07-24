@@ -153,7 +153,7 @@ const NavBar = () => {
                         </ul>
                 </li>
             )}
-
+            
             <li className="menu nav-item relative">
                 <button type="button" className="nav-link">
                 <div className="flex items-center">
@@ -179,6 +179,33 @@ const NavBar = () => {
                 </li>
                 </ul>
             </li>
+
+            <li className="menu nav-item relative">
+                <button type="button" className="nav-link">
+                <div className="flex items-center">
+                    <IconMenuElements className="shrink-0" />
+                    <span className="px-1">{t('Leads Stages')}</span>
+                </div>
+                <div className="right_arrow">
+                    <IconCaretDown />
+                </div>
+                </button>
+                <ul className="sub-menu">
+                {/* {(permissions.includes('create stages') || role === 'super admin' || role === 'HR' || role === 'receptionist') && (
+                    <li>
+                    <NavLink to="/pages/announcements/create">
+                        <span>{t('Add Announcements')}</span>
+                    </NavLink>
+                    </li>
+                )} */}
+                <li>
+                    <NavLink to="/pages/statuses/create">
+                        <span>{t('Add Lead Stages')}</span>
+                    </NavLink>
+                </li>
+                </ul>
+            </li>
+
         </>
     );
 };

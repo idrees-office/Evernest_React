@@ -6,28 +6,26 @@ import { topBarStatus, SidebarStatus, MatchColorList, HRDropdownOption, statues,
 import Toast from '../services/toast';
 import Loader2 from '../services/loader2';
 
+
 export const useDashboardStates = () => {
-    const dispatch = useDispatch<AppDispatch>();
-    const navigate = useNavigate();
-    const { dashboardType } = useParams();
-    // Static config data
-    const TopbarStatuses     = topBarStatus();
-    const JobDashboardList   = JobDashboard();
-    const uniqueDropdownList = uniqueDropdown();
-    const hrSidebarStatus    = HrSidebarStatus();
+    const dispatch           = useDispatch<AppDispatch>();
+    const navigate           = useNavigate();
+    const { dashboardType }  = useParams();
     const Statues            = statues();
     const loader2            = Loader2();
-    const SidebarStatuses    = SidebarStatus();
     const colorsarray        = MatchColorList();
-    const hrdropdownOption   = HRDropdownOption();
     const toast              = Toast();
-    const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
-    const leads           = useSelector((state: IRootState) => state.dashboardslice.leads);
-    const currentStatus   = useSelector((state: IRootState) => state.dashboardslice.lead_status);
+    const loginuser          = useSelector((state: IRootState) => state.auth.user || {});
+    const leads              = useSelector((state: IRootState) => state.dashboardslice.leads);
+    const currentStatus      = useSelector((state: IRootState) => state.dashboardslice.lead_status);
+    const TopbarStatuses     = useSelector((state: IRootState) => state.dashboardslice.topbarleadstatus);
+    const SidebarStatuses    = useSelector((state: IRootState) => state.dashboardslice.sidebarstatus);
+    const uniqueDropdownList = useSelector((state: IRootState) => state.dashboardslice.dropdownstatus);
+    const HrTopBarStatus = useSelector((state: IRootState) => state.dashboardslice.hrtopbar);
+    const hrSidebarStatus = useSelector((state: IRootState) => state.dashboardslice.hrsidebar);
+    const hrdropdownOption = useSelector((state: IRootState) => state.dashboardslice.hrdropdown);
     const { loading, meta, counters } = useSelector((state: any) => state.dashboardslice);
-
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
-
     const combinedRef = useRef<any>({ fetched: false, form: null, topbarButtonRefs: {}, addleadform: null, ishideshow: false });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +52,7 @@ export const useDashboardStates = () => {
         navigate,
         dashboardType,
         TopbarStatuses,
-        JobDashboardList,
+        HrTopBarStatus,
         uniqueDropdownList,
         hrSidebarStatus,
         Statues,
