@@ -16,12 +16,10 @@ import '../dashboard/dashboard.css';
 import { LeadsOption } from '../../services/status';
 import { IconOption } from '../../components/Icon';
 
-
 const endpoints = {
     createApi: `${getBaseUrl()}/statuses/create`,
     listApi: `${getBaseUrl()}/statuses/show`,
     destoryApi: `${getBaseUrl()}/statuses/delete`,
-    // updateApi: `${getBaseUrl()}/users/update_user`,
 };
 
 const Create = () => {
@@ -72,45 +70,49 @@ const Create = () => {
         }
     };
 
-        const handleSubmit = async (e: React.FormEvent) => {
-            e.preventDefault();
-            try {
-                if (combinedRef.current.userformRef) {
-                    const formData = new FormData(combinedRef.current.userformRef);
-                    const ststusId = formData.get('id');
-                    const response = ststusId ? await apiClient.post(`${endpoints.createApi}/${ststusId}`, formData) : await apiClient.post(endpoints.createApi, formData);
-                    if (response.status === 200 || response.status === 201) {
-                        showSuccessToast(response.data.message);
-                        fetchStatusLists();
-                        setErrors({});
-                        combinedRef.current.userformRef.reset();
-                        setSelectedRole(null);
-                        setStatus(null);
-                        setStatusFor(null); 
-                        setIconState(null);
-                    }
-                }
-            } catch (error: any) {
-                if (error.response?.data?.errors) {
-                    setErrors(error.response.data.errors);
-                } else if (error.response?.status === 403) {
-                    // window.location.href = '/error';
-                } else {
-                    showServerError();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        let stageName: any = null;
+        try {
+            if (combinedRef.current.userformRef) {
+                const formData = new FormData(combinedRef.current.userformRef);
+                const ststusId = formData.get('id');
+                stageName = formData.get('name');
+                const response = ststusId ? await apiClient.post(`${endpoints.createApi}/${ststusId}`, formData) : await apiClient.post(endpoints.createApi, formData);
+                if (response.status === 200 || response.status === 201) {
+                    showSuccessToast(response.data.message);
+                    fetchStatusLists();
+                    setErrors({});
+                    combinedRef.current.userformRef.reset();
+                    setSelectedRole(null);
+                    setStatus(null);
+                    setStatusFor(null); 
+                    setIconState(null);
                 }
             }
-        };
-        const showSuccessToast = (message: string) => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                title: message,
-                icon: 'success',
-            });
-        };
+        } catch (error: any) {
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            } else if (error.response?.status === 403) {
+            } else if (error.response?.status === 422) {
+
+                    Swal.fire({ title: ``+error.response.data.message+``, icon : 'error',  text: `Total ${stageName} : ${error.response.data.count}`});
+            }else {
+                showServerError();
+            }
+        }
+    };
+    const showSuccessToast = (message: string) => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            title: message,
+            icon: 'success',
+        });
+    };
     const showServerError = () => {
             Swal.fire({
                 text: 'Something went wrong on the server',
