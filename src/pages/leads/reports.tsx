@@ -89,9 +89,9 @@ const Reports = () => {
     const handleCheckboxChange = (record: any, isChecked: boolean) => {
         const newSelectedIds = new Set(bulkSelectedIds);    
         if (isChecked) {
-            newSelectedIds.add(record.lead_id);
+            newSelectedIds.add(record.id);
         } else {
-            newSelectedIds.delete(record.lead_id);
+            newSelectedIds.delete(record.id);
         }
 
         setBulkSelectedIds(newSelectedIds);
@@ -310,7 +310,7 @@ const Reports = () => {
                 <input 
                     type="checkbox" 
                     className="form-checkbox" 
-                    checked={bulkSelectedIds.has(record.lead_id)} 
+                    checked={bulkSelectedIds.has(record.id)} 
                     onChange={(e) => handleCheckboxChange(record, e.target.checked)} 
                     disabled={!selectedStatus} 
                 />
@@ -337,29 +337,6 @@ const Reports = () => {
             },
         },
         { accessor: 'date', title: 'Date', sortable: true },
-        // {
-        //     accessor: 'actions', 
-        //     title: 'Actions',
-        //     render: (record: any) => {
-        //         const fullLead = leads.find((l: any) => l.lead_id === record.id);
-        //         console.log(fullLead);
-                
-        //         return (
-        //             <button 
-        //                 type="button" 
-        //                 className="btn btn-secondary btn-sm" 
-        //                 style={{ height: '23px', borderRadius: '13px' }} 
-        //                 onClick={() => {  
-        //                     setIsDetailModalOpen(true); 
-        //                     setSelectedLead(fullLead?.comments || []);  
-        //                 }}
-        //             >
-        //                 View
-        //             </button>
-        //         );
-        //     },
-        // },
-
         {
             accessor: 'actions', 
             title: 'Actions',
