@@ -31,7 +31,7 @@ import apiClient from '../utils/apiClient';
         current_page : 1,
         per_page     : 10
     };
-
+    
     interface FetchLeadsParams {
         page?: number;
         perPage?: number;
