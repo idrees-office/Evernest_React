@@ -30,9 +30,7 @@ const Reports = () => {
     const [dateRange, setDateRange] = useState<string>('');
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState<any>(null);
-
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'lead_id', direction: 'desc', });
-    
     const combinedRef = useRef<any>({
         fetched: false,
         form: null,
@@ -232,7 +230,6 @@ const Reports = () => {
         } else {
             tableData.forEach(record => newSelectedIds.delete(record.id));
         }
-        
         setBulkSelectedIds(newSelectedIds);
         setDisable(newSelectedIds.size === 0);
         setAllSelected(isChecked);
@@ -257,7 +254,7 @@ const Reports = () => {
                 status_id: selectedStatus, 
                 date_range: dateRange 
             })).unwrap();
-            
+
             if (response.status === 'success') {
                 toast.success(response.message || 'Selected leads successfully taken back!');
                 setIsConfirmModalOpen(false);
@@ -265,7 +262,6 @@ const Reports = () => {
                 setSelectedRecords([]);
                 setDisable(true);
                 setAllSelected(false);
-                
                 dispatch(DashboardLeadslist({ 
                     page_number: current_page, 
                     per_page: per_page,
@@ -341,10 +337,9 @@ const Reports = () => {
             render: (record: any) => {
                 const fullLead = leads.find((l: any) => l.lead_id === record.id);
                 return (
-                    <button type="button" className="btn btn-secondary btn-sm" style={{ height: '23px', borderRadius: '13px' }} onClick={() => {  setIsDetailModalOpen(true); setSelectedLead((fullLead as any)?.comments || []); }} >     
-                    </button>
+                    <button type="button" className="btn btn-secondary btn-sm" style={{ height: '23px', borderRadius: '13px' }} onClick={() => {  setIsDetailModalOpen(true); setSelectedLead((fullLead as any)?.comments || []); }} > View </button>
+                    // fullleads as any  this is called Type Assertion
                 );
-                 // fullleads as any  this is called Type Assertion
             },
         },
     ];

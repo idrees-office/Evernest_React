@@ -16,12 +16,13 @@ import '../dashboard/dashboard.css';
 import { LeadsOption } from '../../services/status';
 import { IconOption } from '../../components/Icon';
 
-
 const endpoints = {
     createApi: `${getBaseUrl()}/statuses/create`,
     listApi: `${getBaseUrl()}/statuses/show`,
     destoryApi: `${getBaseUrl()}/statuses/delete`,
-    // updateApi: `${getBaseUrl()}/users/update_user`,
+    updateStatusApi: `${getBaseUrl()}/statuses/update_stage`,
+
+
 };
 
 const Create = () => {
@@ -72,45 +73,48 @@ const Create = () => {
         }
     };
 
-        const handleSubmit = async (e: React.FormEvent) => {
-            e.preventDefault();
-            try {
-                if (combinedRef.current.userformRef) {
-                    const formData = new FormData(combinedRef.current.userformRef);
-                    const ststusId = formData.get('id');
-                    const response = ststusId ? await apiClient.post(`${endpoints.createApi}/${ststusId}`, formData) : await apiClient.post(endpoints.createApi, formData);
-                    if (response.status === 200 || response.status === 201) {
-                        showSuccessToast(response.data.message);
-                        fetchStatusLists();
-                        setErrors({});
-                        combinedRef.current.userformRef.reset();
-                        setSelectedRole(null);
-                        setStatus(null);
-                        setStatusFor(null); 
-                        setIconState(null);
-                    }
-                }
-            } catch (error: any) {
-                if (error.response?.data?.errors) {
-                    setErrors(error.response.data.errors);
-                } else if (error.response?.status === 403) {
-                    // window.location.href = '/error';
-                } else {
-                    showServerError();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        let stageName: any = null;
+        try {
+            if (combinedRef.current.userformRef) {
+                const formData = new FormData(combinedRef.current.userformRef);
+                const ststusId = formData.get('id');
+                stageName = formData.get('name');
+                const response = ststusId ? await apiClient.post(`${endpoints.createApi}/${ststusId}`, formData) : await apiClient.post(endpoints.createApi, formData);
+                if (response.status === 200 || response.status === 201) {
+                    showSuccessToast(response.data.message);
+                    fetchStatusLists();
+                    setErrors({});
+                    combinedRef.current.userformRef.reset();
+                    setSelectedRole(null);
+                    setStatus(null);
+                    setStatusFor(null); 
+                    setIconState(null);
                 }
             }
-        };
-        const showSuccessToast = (message: string) => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                title: message,
-                icon: 'success',
-            });
-        };
+        } catch (error: any) {
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            } else if (error.response?.status === 403) {
+            } else if (error.response?.status === 422) {
+                    Swal.fire({ title: ``+error.response.data.message+``, icon : 'error',  text: `Total ${stageName} : ${error.response.data.count}`});
+            }else {
+                showServerError();
+            }
+        }
+    };
+    const showSuccessToast = (message: string) => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            title: message,
+            icon: 'success',
+        });
+    };
     const showServerError = () => {
             Swal.fire({
                 text: 'Something went wrong on the server',
@@ -163,7 +167,7 @@ const Create = () => {
             }
         }
     };
-
+    
     const handleRoleChange = (selectedOption: any) => {
         setSelectedRole(selectedOption); 
     };
@@ -181,6 +185,28 @@ const Create = () => {
         setPageSize(size);
         setPage(1);
     };
+
+
+    const handleCheckbox = async (item: any) => {
+        if (!item || !item.id) { console.error('Invalid item or item ID not found'); return; }
+        const newStatus = item.status == 1 ? 2 : 1;
+
+        try {
+            const formData = new FormData();
+            formData.append('id', item.id ? item.id : '');
+            formData.append('status', newStatus.toString());
+            const response = await apiClient.post(endpoints.updateStatusApi, formData);
+              if (response.status === 200 || response.status === 201) {
+                showSuccessToast('Update status successfully');
+                setUsers((prevUsers:any) => prevUsers.map((user:any) => user.id === item.id ? {...user, status: newStatus} : user )
+            );
+            }
+        } catch (error: any) {
+            if (error.response?.status === 422) {
+                Swal.fire({ title: ``+error.response.data.message+``, icon : 'error',  text: `Total ${item.name} : ${error.response.data.count}`});
+        }
+        }
+    }
 
     const columns = [
         { 
@@ -228,6 +254,25 @@ const Create = () => {
                 </div>
             ),
         },
+
+
+        {
+            accessor: 'status',
+            title: 'Hide | Show',
+            width: 120,
+            key: 'actions-column2', 
+            render: (item: any) => (
+                <div className="flex space-x-1">
+                     <label className="w-12 h-6 relative">
+                        <input 
+                        onChange={() => handleCheckbox(item)}
+                        checked={item.status === 1}
+                        type="checkbox" className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer" id="custom_switch_checkbox1" />
+                        <span className="bg-[#ebedf2] dark:bg-dark block h-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 peer-checked:before:left-7 peer-checked:bg-success before:transition-all before:duration-300 "></span>
+                    </label>
+                </div>
+            ),
+        },
         {
             accessor: 'actions',
             title: 'Actions',
@@ -235,18 +280,11 @@ const Create = () => {
             key: 'actions-column', 
             render: (item: any) => (
                 <div className="flex space-x-2">
-                    <button 
-                        type="button" 
-                        onClick={() => handleEdit(item)} 
-                        className="btn px-1 py-0.5 rounded text-white bg-info" 
-                        key={`edit-${item.client_user_id}`} 
+                    <button type="button" onClick={() => handleEdit(item)} className="btn px-1 py-0.5 rounded text-white bg-info" key={`edit-${item.client_user_id}`} 
                     >
-                        <IconPencil />
+                    <IconPencil />
                     </button>
-                    <button type="button" 
-                        onClick={() => handleDelete(item)}  
-                        className="btn px-1 py-0.5 rounded text-white bg-red-600" 
-                        key={`delete-${item.client_user_id}`} 
+                    <button type="button" onClick={() => handleDelete(item)} className="btn px-1 py-0.5 rounded text-white bg-red-600" key={`delete-${item.client_user_id}`} 
                     >
                         <IconTrashLines />
                     </button>

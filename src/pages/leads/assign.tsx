@@ -22,11 +22,14 @@ const Assign = () => {
     const [disable, setDisable] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10, prevSortStatus: { columnAccessor: 'id', direction: 'desc' } });
+    // prevSortStatus: { columnAccessor: 'id', direction: 'desc' } 
+    const combinedRef = useRef<any>({  fetched: false,  form: null, prevPage: 1, prevPerPage: 10});
+
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-        columnAccessor: 'id',
+        columnAccessor: 'id',  // Correct spelling
         direction: 'desc',
     });
+
     const { leads, loading, agents, total, current_page, per_page } = useSelector((state: IRootState) => state.leadslices);
     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
     const [selectedCity, setSelectedCity] = useState<string>('');
@@ -42,10 +45,12 @@ const Assign = () => {
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
         const fetchData = (cityName?: string) => {
+
             dispatch(newleads({
                 page: searchTerm ? 1 : current_page,
                 perPage : per_page, 
-                sortField: sortStatus.columnAccessor, 
+                // sortField: sortStatus.columnAccessor, 
+                sortField: sortStatus.columnAccessor === 'date' ? 'created_at' : sortStatus.columnAccessor,
                 sortOrder: sortStatus.direction, 
                 search: searchTerm, 
                 cityname: cityName 
@@ -91,7 +96,7 @@ const Assign = () => {
         setIsModalOpen(true);
     };
 
-     const SelectCity = (value: any) => {
+    const SelectCity = (value: any) => {
          setSelectedRecords([]);
         setSelectedCity(value?.value || '');
         fetchData(value?.value);
@@ -200,10 +205,12 @@ const Assign = () => {
          dispatch(newleads({ 
             page: 1, 
             perPage: per_page,
-            sortField: sortStatus.columnAccessor,
-            sortOrder: sortStatus.direction,
+            sortField: status.columnAccessor === 'date' ? 'created_at' : status.columnAccessor,
+            sortOrder: status.direction,
             search: searchTerm  
         }));
+        setSelectedRecords([]);
+        setDisable(true);
     };
 
      const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +226,6 @@ const Assign = () => {
     
         };
 
-        
     const columns = [
         { 
             accessor: 'id', 
@@ -266,9 +272,7 @@ const Assign = () => {
                         <IconBell /> 
                     </div>
                     <span className="ltr:mr-3 rtl:ml-3">Details of Your New Leads: </span>
-                    <button onClick={openLeadModal} className="btn btn-success btn-sm"> 
-                        <IconPlus /> Add Lead 
-                    </button>
+                    <button onClick={openLeadModal} className="btn btn-success btn-sm"><IconPlus />Add Lead </button>
                 </div> 
                 <div className="flex items-center space-x-2">
                         <Select 
@@ -284,7 +288,7 @@ const Assign = () => {
                             isDisabled={disable} 
                             className="cursor-pointer custom-multiselect z-10 w-[300px]" 
                             formatOptionLabel={formatOptionLabel}
-                            getOptionLabel={option => option.label} // This ensures searching works
+                            getOptionLabel={option => option.label} 
                             getOptionValue={option => option.value}
                             onChange={(selectedOption) => {  
                                 if (selectedOption?.value !== undefined) { 

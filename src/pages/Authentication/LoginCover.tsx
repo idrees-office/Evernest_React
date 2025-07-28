@@ -12,6 +12,7 @@ import IconGoogle from '../../components/Icon/IconGoogle';
 import { loginUser } from '../../slices/authSlice';
 import Toast from '../../services/toast';
 import Swal from 'sweetalert2';
+import IconEye from '../../components/Icon/IconEye';
 
 const LoginCover = ({ children }: PropsWithChildren) => {
     const isAuthenticatedd = useSelector((state: IRootState) => state.auth.isAuthenticated);
@@ -21,6 +22,8 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+    const [showPassword, setShowPassword] = useState(false);
+    
     const toast = Toast();
     useEffect(() => {
         dispatch(setPageTitle('Login Cover'));
@@ -156,14 +159,13 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                     <div className="relative text-white-dark">
                                         <input id="Email" type="email" name="client_user_email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark"
                                         />
-
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
                                     </div>
                                     {errors?.client_user_email && <p className="text-danger error">{errors.client_user_email[0]}</p>}
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
                                         <input id="Password" type="password" name="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark"
@@ -173,13 +175,40 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                         </span>
                                     </div>
                                     {errors?.password && <p className="text-danger error">{errors.password[0]}</p>}
-                                </div>
-                                {/* <div>
-                                    <label className="flex cursor-pointer items-center">
-                                        <input type="checkbox" className="form-checkbox bg-white dark:bg-black" />
-                                        <span className="text-white-dark">Subscribe to weekly newsletter</span>
-                                    </label>
                                 </div> */}
+
+                                <div>
+                                <label htmlFor="Password">Password</label>
+                                <div className="relative text-white-dark">
+                                    <input 
+                                        id="Password" 
+                                        type={showPassword ? "text" : "password"} 
+                                        name="password" 
+                                        placeholder="Enter Password" 
+                                        className="form-input ps-10 placeholder:text-white-dark pr-10" 
+                                    />
+                                    <span className="absolute start-4 top-1/2 -translate-y-1/2">
+                                        <IconLockDots fill={true} />
+                                    </span>
+                                    <button 
+                                        type="button" 
+                                        className="absolute end-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 focus:outline-none"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                    >
+                                        <div className="relative h-5 w-5">
+                                            <IconEye className={`h-5 w-5 transition-opacity ${showPassword ? 'opacity-100' : 'opacity-100'}`} />
+                                            {!showPassword && (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="h-px w-5 bg-gray-400 rotate-45 transform origin-center"></div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </button>
+                                </div>
+                                {errors?.password && <p className="text-danger error">{errors.password[0]}</p>}
+                            </div>
+
                                 <button className="btn btn-primary !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">Sign in</button>
                             </form>
                             <div className="relative my-7 text-center md:mb-9">
