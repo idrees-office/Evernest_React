@@ -272,7 +272,7 @@ const Assign = () => {
                         <IconBell /> 
                     </div>
                     <span className="ltr:mr-3 rtl:ml-3">Details of Your New Leads: </span>
-                    <button onClick={openLeadModal} className="btn btn-success btn-sm"><IconPlus /> Add Lead </button>
+                    <button onClick={openLeadModal} className="btn btn-success btn-sm"><IconPlus />Add Lead </button>
                 </div> 
                 <div className="flex items-center space-x-2">
                         <Select 

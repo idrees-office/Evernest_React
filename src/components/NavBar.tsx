@@ -178,7 +178,6 @@ const NavBar = () => {
                 </li>
                 </ul>
             </li>
-
             {(permissions.includes('create stages') || role === 'super admin') && (
                 <li className="menu nav-item relative">
                     <button type="button" className="nav-link">
