@@ -6,12 +6,19 @@ import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
 import { DataTable, DataTableSortStatus } from 'mantine-datatable';
 import Loader from '../../services/loader';
-import { options } from '../../services/status';
+import { options, employeeType, documentTypes } from '../../services/status';
 import Select from 'react-select';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import IconPencil from '../../components/Icon/IconPencil';
 import Table from '../../components/Table';
 import { AppDispatch } from '../../store';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/flatpickr.css';
+import '../dashboard/dashboard.css'; 
+import IconX from '../../components/Icon/IconX';
+
+import '../../../src/assets/css/file-upload-preview.css';
+import { setDate } from 'date-fns';
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
@@ -38,6 +45,17 @@ const Users = () => {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'client_user_id', direction: 'asc' });
     const [searchQuery, setSearchQuery] = useState('');
     const [teamHeads, setTeamHeads] = useState<any[]>([]);
+    const [type, setType] = useState<any | null>(null);
+
+
+    const [birthdaydate, setDateOfBirthday] = useState<any | null>(null);
+    const [joindate, SetJoingDate] = useState<any | null>(null);
+
+
+
+    
+
+
 
     useEffect(() => {
         if (!requestMade.current) {
@@ -70,13 +88,7 @@ const Users = () => {
 
     const fetchUserLists = async () => {
         try {
-            const params = {
-                page,
-                per_page: pageSize,
-                sort_field: sortStatus.columnAccessor,
-                sort_order: sortStatus.direction,
-                search: searchQuery
-            };
+            const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery };
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
                 const allUsers = response.data.data.data || [];
@@ -103,10 +115,14 @@ const Users = () => {
         try {
             if (combinedRef.current.userformRef) {
                 const formData = new FormData(combinedRef.current.userformRef);
+                    items.forEach((item:any, index:number) => {
+                        if (item.file) {
+                            formData.append(`user_files[]`, item.file);
+                            formData.append(`documentType[]`, item.documentType || '');
+                        }
+                    });
                 const userId = formData.get('client_user_id');
-                const response = userId
-                    ? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData)
-                    : await apiClient.post(endpoints.createApi, formData);
+                const response = userId? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData) : await apiClient.post(endpoints.createApi, formData);
 
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
@@ -193,7 +209,6 @@ const Users = () => {
                 if (error.response?.status === 403) {
                     window.location.href = '/error';
                 }
-                // showServerError();
             }
         }
     };
@@ -204,7 +219,7 @@ const Users = () => {
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        setPage(1); // Reset to first page when searching
+        setPage(1); 
     };
 
     const handlePageChange = (p: number) => {
@@ -214,6 +229,32 @@ const Users = () => {
     const handlePageSizeChange = (size: number) => {
         setPageSize(size);
         setPage(1);
+    };
+
+    const [items, setItems] = useState<any>([ { id: 1, file : null, documentType: null, }, ]);
+    const addItem = () => {
+        const lastItem = items[items.length - 1];
+        if (items.length === 0) { setItems([{ id: 1, file: null, documentType: null }]); return; }
+        if (!lastItem?.file || !lastItem?.documentType) {
+            Swal.fire({ 
+                icon: 'warning', 
+                title: 'Incomplete Row', 
+                text: 'Please upload a file and select a document type before adding a new row.'
+            });
+            return;
+        }
+        const maxId = items.reduce((max: number, item: any) => item.id > max ? item.id : max, 0);
+        setItems([...items, { id: maxId + 1, file: null, documentType: null }]);
+    };
+
+    const removeItem = (item: any = null) => {
+        setItems(items.filter((d: any) => d.id !== item.id));
+    };
+
+
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: number) => {
+    const file = e.target.files?.[0];
+        if (file) { setItems(items.map((item:any) =>  item.id === itemId ? { ...item, file } : item )); }
     };
 
     const columns = [
@@ -269,43 +310,11 @@ const Users = () => {
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
                         <div className="panel-body">
-                            {/* <div className="grid mb-2">
-                                <div className="form-group">
-                                    <label htmlFor="client_user_name">Team Head</label>
-                                    <Select
-                                        name="team_head_id"
-                                        placeholder="Select Team Head"
-                                        options={teamHeads.map(head => ({
-                                            value: head.client_user_id,
-                                            label: head.client_user_name
-                                        }))}
-                                        value={teamHeads.find(head => head.client_user_id === headId) 
-                                            ? { 
-                                                value: headId, 
-                                                label: teamHeads.find(head => head.client_user_id === headId).client_user_name 
-                                            } 
-                                            : null
-                                        }
-                                        onChange={(selected) => setHeadId(selected?.value || null)}
-                                        
-                                    />
-                                    {errors.team_head_id && (
-                                        <span className="text-red-500 text-sm">
-                                            {errors.team_head_id}
-                                        </span>
-                                    )}
-                                </div>
-                            </div> */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
-                                    <input
-                                        name="client_user_name"
-                                        type="text"
-                                        placeholder="Username"
-                                        className="form-input"
-                                    />
-                                    <input type="hidden" name="client_user_id" id="client_user_id" />
+                                    <input name="client_user_name" type="text" placeholder="Username" className="form-input" />
+                                    <input type="text" name="client_user_id" id="client_user_id" />
                                     {errors.client_user_name && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_name}
@@ -328,12 +337,7 @@ const Users = () => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_designation">Designation</label>
-                                    <input
-                                        name="client_user_designation"
-                                        type="text"
-                                        placeholder="Designation"
-                                        className="form-input"
-                                    />
+                                    <input name="client_user_designation" type="text" placeholder="Designation" className="form-input" />
                                     {errors.client_user_designation && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_designation}
@@ -407,12 +411,94 @@ const Users = () => {
                                         </span>
                                     )}
                                 </div>
-                                <div className="sm:col-span-2 flex justify-end">
-                                    <button type="submit" className="btn btn-primary">
-                                        Submit
-                                    </button>
                                 </div>
-                            </div>
+                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+                                    <div className="form-group">
+                                    <label htmlFor="client_user_dob">Date of Birth</label>
+                                    <Flatpickr name="client_user_dob" options={{ dateFormat: 'Y-m-d'}} className="form-input" placeholder="Y-m-d" onChange={(dates) => { setDateOfBirthday(dates[0]); }}
+                                        />
+                                    {errors.client_user_dob && ( <span className="text-red-500 text-sm"> {errors.client_user_dob} </span> )}
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="client_user_joing_date">Joing Date</label>
+                                    <Flatpickr options={{ dateFormat: 'Y-m-d'}} name="client_user_joing_date" className="form-input" placeholder="Y-m-d" onChange={(dates) => SetJoingDate(dates[0])}/>
+                                    {errors.client_user_joing_date && (
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_joing_date}
+                                        </span>
+                                    )}
+                                </div>
+                                 <div className="form-group">
+                                    <label htmlFor="client_user_type">Type</label>
+                                    <Select name="client_user_type" placeholder="Employee Type" options={employeeType} value={employeeType.find((option) => option.value === type)} onChange={(selected) => setType(selected?.value || null)}
+                                    />
+                                    {errors.client_user_type && (
+                                        <span className="text-red-500 text-sm">
+                                            {errors.client_user_type}
+                                        </span>
+                                    )}
+                                </div>
+                              </div>
+                                <div className="mt-8">
+                                    <div className="table-responsive">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>File</th>
+                                                    <th className="w-1">File Name</th>
+                                                    <th className="w-1"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {items.length <= 0 && (
+                                                    <tr> <td colSpan={5} className="!text-center font-semibold"> No Item Available </td> </tr>
+                                                )}
+                                                {items.map((item: any) => {
+                                                    return (
+                                                        <tr className="align-top" key={item.id}>
+                                                           <td>
+                                                                <div className="relative inline-block">
+                                                                    <label className="cursor-pointer inline-block bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2 rounded-md shadow hover:bg-gray-300 transition min-w-[200px]">
+                                                                    Upload File
+                                                                    <input  type="file"  className="hidden"  onChange={(e) => handleFileChange(e, item.id)} /> 
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div className="relative z-[100]">
+                                                                    <Select placeholder="Document Type" options={documentTypes} value={documentTypes.find(opt => opt.value === item.documentType)}
+                                                                        onChange={(selected) => setItems(items.map((itm: any) => 
+                                                                            itm.id === item.id 
+                                                                            ? { ...itm, documentType: selected?.value || null } 
+                                                                            : itm
+                                                                        ))}
+                                                                        className="min-w-[200px]"
+                                                                        menuPortalTarget={document.body}
+                                                                        styles={{
+                                                                            menuPortal: base => ({ ...base, zIndex: 9999 }),
+                                                                            menu: base => ({ ...base, zIndex: 9999 })
+                                                                        }}
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                <button type="button" onClick={() => removeItem(item)}> <IconX className="w-5 h-5" /> </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="flex justify-between sm:flex-row flex-col mt-6 px-4">
+                                        <div className="sm:mb-0 mb-6">
+                                            <button type="button" className="btn btn-secondary btn-sm" onClick={() => addItem()}> + </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-2 flex justify-end mt-4">
+                                    <button type="submit" className="btn btn-primary"> Submit </button>
+                                </div> 
                         </div>
                     </div>
                 </div>

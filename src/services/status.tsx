@@ -20,6 +20,21 @@ export const options = [
     { value: 2, label: 'Inactive' },
 ];
 
+
+export const employeeType = [
+    { value: 1, label: 'Sales Agent' },
+    { value: 2, label: 'Salaried' },
+];
+
+
+export const documentTypes = [
+    { value: 1, label: 'EID' },
+    { value: 2, label: 'Passport' },
+    { value: 3, label: 'Contract' },
+    { value: 4, label: 'Offer Letter' }
+];
+
+
 export const STATUSES = [
     {
         value: 1,
@@ -406,6 +421,10 @@ export const LeadsOption = [
     { value: 1, label: 'Agent-Leads' },
     { value: 2, label: 'HR-Leads' },
 ];
+
+
+
+
 
 
 

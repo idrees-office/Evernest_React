@@ -73,7 +73,7 @@ const NavBar = () => {
                     <button type="button" className="nav-link">
                         <div className="flex items-center">
                             <IconMenuElements className="shrink-0" />
-                            <span className="px-1">{t('Manage Team')}</span>
+                            <span className="px-1">{t('Manage Employee')}</span>
                         </div>
                         <div className="right_arrow">
                             <IconCaretDown />
@@ -93,7 +93,7 @@ const NavBar = () => {
                     )}
                      {(permissions.includes('create user') || role === 'super admin') && (
                         <li>
-                            <NavLink to="/pages/users/create">{t('Add-User || TeamHead')}</NavLink>
+                            <NavLink to="/pages/users/create">{t('Add Employee')}</NavLink>
                         </li>
                     )}
                 </ul>
