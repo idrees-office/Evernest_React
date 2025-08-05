@@ -52,6 +52,7 @@ const Users = () => {
     const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [birthdaydate, setDateOfBirthday] = useState<any | null>(null);
     const [joindate, SetJoingDate] = useState<any | null>(null);
+   
 
     useEffect(() => {
         if (!requestMade.current) {
@@ -82,18 +83,52 @@ const Users = () => {
         }
     };
 
-    const fetchUserLists = async () => {
+    // const fetchUserLists = async (teamId = null) => {
+    //     try {
+    //         const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery,  team_id: teamId };
+    //         const response = await apiClient.get(endpoints.listApi, { params });
+    //         if (response.data) {
+
+    //             const allUsers = response.data.users || [];
+    //             setUsers(allUsers);
+    //             setTotalRecords(response.data.total || 0);
+    //             const heads = response.data.heads || [];
+    //             const headOptions = heads.map((head: any) => ({ value: head.client_user_id, label: head.client_user_name + ' (' + head.client_user_designation + ')', }));
+    //             setTeamHeads(headOptions);
+
+    //         }
+    //     } catch (error: any) {
+    //         if (error.response?.status === 403) {
+    //             window.location.href = '/error';
+    //         }
+    //         // showServerError();
+    //     }
+    // };
+
+
+    const fetchUserLists = async (teamId = null) => {
         try {
-            const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery };
+            const params = {
+                page,
+                per_page: pageSize,
+                sort_field: sortStatus.columnAccessor,
+                sort_order: sortStatus.direction,
+                search: searchQuery,
+                team_id: teamId
+            };
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                const allUsers = response.data.data || [];
+                const allUsers = response.data.data.data || [];
                 setUsers(allUsers);
-                setTotalRecords(response.data.total || 0);
-                const heads = response.data.users.filter((user: any) =>
-                    user.roles?.some((role: any) => role.name === 'Team Head')
-                );
-                setTeamHeads(heads);
+                
+                const heads = response.data.heads || [];
+                const headOptions = heads.map((head: any) => ({
+                    value: head.client_user_id,
+                    label: head.client_user_name + ' (' + head.client_user_designation + ')',
+                }));
+                setTeamHeads(headOptions);
+
+                setTotalRecords(response.data.data.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -175,8 +210,6 @@ const Users = () => {
             setDateOfBirthday(user.client_user_dob || null);
             SetJoingDate(user.client_user_joing_date || null);
             setType(user.client_user_type ? Number(user.client_user_type) : null);
-
-
             const userrole = user.roles && user.roles[0];
             if (userrole) {
                 const selectedRole = {
@@ -187,6 +220,20 @@ const Users = () => {
             } else {
                 setSelectedRole(null);
             }
+            const userTeam = user.team;
+            let headOptions = [];
+            if (userTeam) {
+                headOptions = [{
+                    value: userTeam.client_user_id,
+                    label: userTeam.client_user_name + ' (' + userTeam.client_user_designation + ')',
+                }];
+            } else {
+                headOptions = [{ value: null,
+                    label: 'No Team Head',
+                }];
+            }
+            setHeadId(headOptions); 
+
         }
     };
 
@@ -256,10 +303,14 @@ const Users = () => {
 
 
     const Detail = async (user: any) => {
+        setSelectedUser(user);
+        setIsDetailModalOpen(true);
+    };
 
-    setSelectedUser(user);
-    setIsDetailModalOpen(true);
-};
+    const handleTeamHeadChange = (selectedOption: any) => {
+        setHeadId(selectedOption);
+        fetchUserLists(selectedOption.value); 
+    };
 
 
     const columns = [
@@ -269,6 +320,13 @@ const Users = () => {
             width: 80,
             key: 'id'
         },
+        {
+            accessor: 'team.client_user_name',
+            title: 'Team Head',
+            sortable: true,
+            key: 'team_id_column'
+        },
+
         {
             accessor: 'client_user_name',
             title: 'Name',
@@ -323,6 +381,17 @@ const Users = () => {
                 <div className="w-full lg:w-1/3 px-4">
                     <div className="panel">
                         <div className="panel-body">
+                              <div className="grid mb-2">
+                                <div className="form-group">
+                                    <label htmlFor="team_head_id">Assign Team Head</label>
+                                    <Select name="team_head_id" placeholder="Select an Team" options={teamHeads || []} value={headId} onChange={handleTeamHeadChange} isClearable={true}/>
+                                    {errors.team_head_id && (
+                                        <span className="text-red-500 text-sm">
+                                            {errors.team_head_id}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
@@ -500,6 +569,38 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
+                    <div className="mb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {teamHeads.map((head) => {
+                                const userCount = users.filter((user:any) => user.team?.client_user_id === head.value
+                                ).length;
+                                const designationCounts = users.reduce((acc: {[key: string]: number}, user) => {
+                                    if (user.team?.client_user_id === head.value) {
+                                        const designation = user?.client_user_designation;
+                                        acc[designation] = (acc[designation] || 0) + 1;
+                                    }
+                                    return acc;
+                                }, {});
+
+                                return (
+                                    <div key={head.value} className="panel">
+                                        <div className="panel-body">
+                                            <h5 className="font-semibold mb-2">{head.label}</h5>
+                                            <div className="text-sm">
+                                                <p className="mb-2">Total Members: {userCount}</p>
+                                                {Object.entries(designationCounts).map(([designation, count]) => (
+                                                    <span key={designation} className="badge badge-info mr-2 mb-2">
+                                                        {designation}: {count}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     <div className="datatables">
                         <Table
                             columns={columns}
