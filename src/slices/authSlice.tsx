@@ -69,7 +69,7 @@ const authSlice = createSlice({
                 state.error = null;
                 state.status =  action.payload.status
                 state.message = action.payload?.message;
-
+                
                 localStorage.setItem('authToken', action.payload.data.token);
                 localStorage.setItem('authUser', JSON.stringify(action.payload.data.user));
                 localStorage.setItem('permissions', JSON.stringify(action.payload.permissions));
