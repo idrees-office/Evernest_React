@@ -309,32 +309,20 @@ const Users = () => {
                         <div className="panel-body">
                             <div className="grid mb-2">
                                 <div className="form-group">
-                                <label htmlFor="team_head_select">Assign Team Head</label>
-                                <Select
-                                    id="team_head_select" // Added for accessibility
-                                    name="team_head_id"
-                                    placeholder="Select a Team Head"
-                                    options={teamHeads}
-                                    value={headId}
-                                    onChange={handleTeamHeadChange}
-                                    isClearable={true}
-                                    formatOptionLabel={({ label }: teamHeads) => {
-                                    const [name, designation] = label.split(' (');
-                                    return (
-                                        <div className="flex items-center">
-                                        <span>{name}</span>
-                                        {designation && (
-                                            <span className="ml-2 px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">
-                                            {designation.replace(')', '')}
-                                            </span>
-                                        )}
-                                        </div>
-                                    );
-                                    }}
-                                />
-                                {errors?.team_head_id && (
-                                    <span className="text-red-500 text-sm">{errors.team_head_id}</span>
-                                )}
+                                    <label htmlFor="team_head_id">Assign Team Head</label>
+                                    <Select
+                                        name="team_head_id"
+                                        placeholder="Select an Team"
+                                        options={teamHeads || []}
+                                        value={headId}
+                                        onChange={handleTeamHeadChange}
+                                        isClearable={true}
+                                    />
+                                    {errors.team_head_id && (
+                                        <span className="text-red-500 text-sm">
+                                            {errors.team_head_id}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
