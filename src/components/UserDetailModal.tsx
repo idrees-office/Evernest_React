@@ -1,6 +1,12 @@
 import { Dialog, Transition, Tab } from '@headlessui/react';
-import { Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { options, employeeType, documentTypes } from '../services/status';
+import apiClient from '../utils/apiClient';
+import { getBaseUrl } from './BaseUrl';
+
+const endpoints = {
+    pullFileApi: `${getBaseUrl()}/users/pull_file`,
+};
 
 interface UserDetailModalProps {
     isOpen: boolean;
@@ -9,6 +15,31 @@ interface UserDetailModalProps {
 }
 
 const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
+    const [files, userFiles] = useState<any | null>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchFiles();
+        }
+    }, [isOpen]);
+
+    const fetchFiles = async () => {
+        try {
+            const response = await apiClient.post(endpoints.pullFileApi, { user_id: user?.client_user_id });
+            if (response.data) {
+                const roleOptions = response.data.map((role: any) => ({
+                    value: role.id,
+                    label: role.name,
+                }));
+                userFiles(roleOptions);
+            }
+        } catch (error: any) {
+            if (error.response?.status === 403) {
+                window.location.href = '/error';
+            }
+        }
+    }
+
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" open={isOpen} onClose={onClose} className="relative z-50">
@@ -144,9 +175,9 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                                         </Tab.Panel>
 
                                         <Tab.Panel className="rounded-xl bg-white p-3">
-                                            {user?.media && user.media.length > 0 ? (
+                                            {files?.media && files.media.length > 0 ? (
                                                 <div className="space-y-4">
-                                                    {user.media.map((file:any, index:any) => (
+                                                    {files.media.map((file:any, index:any) => (
                                                         <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                                                             <div className="flex justify-between items-center">
                                                                 <div>
