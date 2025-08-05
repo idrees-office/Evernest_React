@@ -170,6 +170,7 @@ const Users = () => {
             form.client_user_phone.value = user.client_user_phone || '';
             form.client_user_designation.value = user.client_user_designation || '';
             form.client_sort_order.value = user.client_sort_order || '';
+            form.client_user_allow_leave.value = user.client_user_allow_leave || '';
             setStatus(user.client_user_status || '');
             setDateOfBirthday(user.client_user_dob || null);
             SetJoingDate(user.client_user_joing_date || null);
