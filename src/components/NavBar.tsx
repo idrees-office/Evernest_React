@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import IconCaretDown from './Icon/IconCaretDown';
 import IconMenuDashboard from './Icon/Menu/IconMenuDashboard';
 import { NavLink } from 'react-router-dom';
@@ -92,9 +92,14 @@ const NavBar = () => {
                         </li>
                     )}
                      {(permissions.includes('create user') || role === 'super admin') && (
+                        <React.Fragment>
                         <li>
                             <NavLink to="/pages/users/create">{t('Add Employee')}</NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/pages/users/leave-request">{t('Leave Request')}</NavLink>
+                        </li>
+                        </React.Fragment>
                     )}
                 </ul>
             </li>

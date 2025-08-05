@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { IRootState } from '../../store';
+import { AppDispatch, IRootState } from '../../store';
 import { toggleRTL, toggleTheme, toggleSidebar } from '../../slices/themeConfigSlice';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
@@ -26,6 +26,8 @@ import IconInfoCircle from '../Icon/IconInfoCircle';
 import IconBellBing from '../Icon/IconBellBing';
 import { getBaseUrl } from '../BaseUrl';
 import apiClient from '../../utils/apiClient';
+import { logoutUser } from '../../slices/authSlice';
+
 
 const endpoints = {
     notificationApi    : `${getBaseUrl()}/leads/lead_notifications`,
@@ -59,7 +61,7 @@ const Header = () => {
 
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     function createMarkup(messages: any) {
         return { __html: messages };
@@ -113,10 +115,18 @@ const Header = () => {
         }
     };
     const [flag, setFlag] = useState(themeConfig.locale);
-    const { t } = useTranslation();
-    const handleLogout = () => {
-        dispatch(logout()); // Dispatch the logout action
-        navigate('/auth/cover-login'); // Redirect to login page
+    const { t } = useTranslation(); 
+
+    const handleLogout = async () => {
+        try {
+            const login_user_id = user?.client_user_id; 
+            await dispatch(logoutUser({ login_user_id })).unwrap();
+             dispatch(logout()); 
+            navigate('/auth/cover-login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            navigate('/auth/cover-login');
+        }
     };
     
     const handleNotificationClick = async (e: React.FormEvent) => {
@@ -143,8 +153,7 @@ const Header = () => {
                             <img className="w-8 ltr:-ml-1 rtl:-mr-1 inline" src="https://evernest.ae/assets/img/homepage/larger_logo1.png" alt="logo" />
                             <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5  font-semibold  align-middle hidden md:inline dark:text-white-light transition-all duration-300">Evernest Real Estate</span>
                         </Link>
-                        <button
-                            type="button"
+                        <button type="button"
                             className="collapse-icon flex-none dark:text-[#d0d2d6] hover:text-primary dark:hover:text-primary flex lg:hidden ltr:ml-2 rtl:mr-2 p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:bg-white-light/90 dark:hover:bg-dark/60"
                             onClick={() => {
                                 dispatch(toggleSidebar());
@@ -197,7 +206,6 @@ const Header = () => {
                                 <IconSearch className="w-4.5 h-4.5 mx-auto dark:text-[#d0d2d6]" />
                             </button>
                         </div>
-
 
                         <div className="dropdown shrink-0">
                             <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
@@ -321,13 +329,15 @@ const Header = () => {
                                             <img className="rounded-md w-10 h-10 object-cover" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                    {user.client_user_name || 'john'} 
+                                                    {user?.client_user_name || 'john'} 
                                                 </h4>
-                                                <h4 className="text-base">
-                                                    <span className="text-xs bg-success-light rounded text-success">{ user.roles[0].name }</span>
+                                                <h4 className="text-base">    
+                                                    <span className="text-xs bg-success-light rounded text-success">
+                                                        {user.roles.length > 0 ? user.roles[0].name : 'Guest'}
+                                                    </span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                                {user.client_user_email || 'no@gmail.com'} 
+                                                {user?.client_user_email || 'no@gmail.com'} 
                                                 </button> 
                                             </div>
                                         </div>

@@ -20,19 +20,18 @@ export const options = [
     { value: 2, label: 'Inactive' },
 ];
 
-
 export const employeeType = [
     { value: 1, label: 'Sales Agent' },
     { value: 2, label: 'Salaried' },
 ];
 
-
 export const documentTypes = [
-    { value: 1, label: 'EID' },
+    { value: 1, label: 'Emirates-ID' },  
     { value: 2, label: 'Passport' },
-    { value: 3, label: 'Contract' },
+    { value: 3, label: 'Label Contract' },
     { value: 4, label: 'Offer Letter' }
 ];
+
 
 
 export const STATUSES = [
@@ -416,10 +415,32 @@ export const CountryList = [
     { value: 4, label: 'Daily' },
 ];
 
-
 export const LeadsOption = [
     { value: 1, label: 'Agent-Leads' },
     { value: 2, label: 'HR-Leads' },
+];
+
+export const leaveTypes = [
+  { value: 1, label: 'Annual Leave' },
+  { value: 2, label: 'Sick Leave' },
+  { value: 3, label: 'Maternity Leave' },
+  { value: 4, label: 'Paternity Leave' },
+  { value: 5, label: 'Unpaid Leave' },
+  { value: 6, label: 'Compensatory Leave' },
+  { value: 7, label: 'Bereavement Leave' },      
+  { value: 8, label: 'Marriage Leave' },        
+  { value: 9, label: 'Casual Leave' },          
+  { value: 10, label: 'Study Leave' },       
+  { value: 11, label: 'Sabbatical Leave' },      
+  { value: 12, label: 'Public Holiday' },       
+  { value: 13, label: 'Voting Leave' },          
+];
+
+export const approvalStatusOptions = [
+    { value: 0, label: 'InActive' },
+    { value: 1, label: 'Pending to Approval' },
+    { value: 2, label: 'Leave Approved' },
+    { value: 3, label: 'Leave Rejected' },
 ];
 
 

@@ -32,6 +32,7 @@ const Activities = () => {
     const combinedRef = useRef<any>({ fetched: false, form: null});
     const [transformedAgents, setTransformedAgents] = useState<any[]>([]);
     const [selectedAgent, setSelectedAgent] = useState<any>({}); 
+     const [errors, setErrors] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         if (!combinedRef.current.fetched) {
@@ -101,12 +102,12 @@ const Activities = () => {
                 setIsAddEventModal(false);
                 const data = response.data.data;
                 const updatedEvent = {
-                    id: data.id,
-                    title: data.title,
-                    start: data.start_date,
-                    end: data.end_date,
-                    description: data.description,
-                    className: 'info',
+                    id    : data.id,
+                    title : data.title,
+                    start : data.start_date,
+                    end   : data.end_date,
+                    description : data.description,
+                    className   : 'info',
                 };
                 setEvents((prevEvents:any) =>
                     isEditing ? prevEvents.map((event:any) => (event.id === data.id ? updatedEvent : event))  : [...prevEvents, updatedEvent] 
@@ -115,7 +116,10 @@ const Activities = () => {
         } catch (error: any) {
             if (error.response?.status === 403) {
                 // window.location.href = '/error';
-            } else {
+            } else if(error.status === 422){
+                setErrors(error.response.data)
+            }   
+            else  {
                 toast.error('Failed to save event. Please try again.');
                 console.error('Error saving event:', error);
             }
@@ -211,12 +215,7 @@ const Activities = () => {
         setTimeout(() => setSelectedAgent(null), 0);
     };
     const editDate = (data: any) => {
-        let obj = {
-            event: {
-                start: data.start,
-                end: data.end,
-            },
-        };
+        let obj = { event: { start: data.start, end: data.end, }, };
         handleEventClick(obj);
     };
 
@@ -226,17 +225,11 @@ const Activities = () => {
     };
     const handleEventDrag = async (dropInfo: any) => {
         const { event } = dropInfo;
-        const updatedEvent = {
-            id: event.id,
-            start_date: formatDateForMySQL(event.startStr),
-            end_date: formatDateForMySQL(event.endStr), 
-        };
+        const updatedEvent = { id: event.id, start_date: formatDateForMySQL(event.startStr), end_date: formatDateForMySQL(event.endStr), };
         setEvents((prevEvents: any) => prevEvents.map((ev: any) => (ev.id === event.id ? { ...ev, start: event.startStr, end: event.endStr } : ev)));
         try {
             const response = await apiClient.post(`${endpoints.updateApi}/${event.id}`, updatedEvent);
-            if (response.status === 200 || response.status === 201) {
-                toast.success('Event updated successfully');
-            }
+            if (response.status === 200 || response.status === 201) { toast.success('Event updated successfully'); }
         } catch (error) {
             console.error("Error updating event:", error);
             toast.error("Failed to update event. Please try again.");
@@ -251,7 +244,6 @@ const Activities = () => {
                         <button type="button" className="btn btn-info btn-sm" onClick={() => handleModal()}> Create Activities </button></div>
                     <div className="flex gap-2">
                         <Select id="agentDropdown" value={transformedAgents.find(agent => agent.value === selectedAgent?.agent_id) || null} placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectSingleAgent(selectedOption.value, selectedOption.label); }}/>
-                        
                         <button type="button" className="btn btn-info btn-sm" onClick={exportPDF}> Export PDF </button>
                     </div>
                 </div>
@@ -293,27 +285,34 @@ const Activities = () => {
                                         <form className="space-y-5" ref={(el) => (combinedRef.current.form = el)} onSubmit={saveActivities}>
                                             <div>
                                                 <label htmlFor="title">Activities Title</label>
-                                                <input id="title" type="text" name="title" className="form-input" placeholder="Activities Title" required />
-                                                <div className="text-danger mt-2" id="titleErr"></div>
+                                                <input id="title" type="text" name="title" className="form-input" placeholder="Activities Title" />
+                                                <div className="text-danger" id="titleErr"></div>
+                                                {errors?.title && <p className="text-danger error">{errors.title[0]}</p>}
+                                            </div>
+                                             <div>
+                                                <Select id="agentDropdown" name='agnets[]' isMulti placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10" isSearchable={true} />
+                                                {errors?.["agnets.0"] && (
+                                                <p className="text-danger error">{errors["agnets.0"][0]}</p>
+                                                )}
                                             </div>
                                             <div>
                                                 <label htmlFor="dateStart">From</label>
-                                                <input id="start" type="datetime-local" name="start_date" className="form-input" placeholder="Event Start Date" required />
-                                                <div className="text-danger mt-2" id="startDateErr"></div>
+                                                <input id="start" type="datetime-local" name="start_date" className="form-input" placeholder="Event Start Date" />
+                                                <div className="text-danger" id="startDateErr"></div>
+                                                {errors?.start_date && <p className="text-danger error">{errors.start_date[0]}</p>}
                                             </div>
                                             <div>
                                                 <label htmlFor="dateend">To, <small className='text-primary'>optional</small> </label>
                                                 <input id="dateend" type="datetime-local" name="end_date" className="form-input" placeholder="Event End Date"/>
-                                                <div className="text-danger mt-2" id="startDateErr"></div>
+                                                <div className="text-danger" id="startDateErr"></div>
                                             </div>
                                             <div>
                                                 <label htmlFor="description1">Activities Description</label>
                                                 <textarea id="description1" name="description" className="form-textarea min-h-[130px]" placeholder="Activities Description" ></textarea>
+                                                 {errors?.description && <p className="text-danger error">{errors.description[0]}</p>}
                                             </div>
-                                            <div className="flex justify-end items-center !mt-8">
-                                                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setIsAddEventModal(false)}>
-                                                    Cancel
-                                                </button>
+                                            <div className="flex justify-end items-center">
+                                                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setIsAddEventModal(false)}> Cancel </button>
                                                 <button type="submit" className="btn btn-info btn-sm ltr:ml-4 rtl:mr-4">
                                                      {params ? 'Update' : 'Submit'}
                                                 </button>

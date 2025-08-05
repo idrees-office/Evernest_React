@@ -45,7 +45,6 @@ const Assign = () => {
         }, [dispatch, current_page, per_page, sortStatus, searchTerm]);
 
         const fetchData = (cityName?: string) => {
-
             dispatch(newleads({
                 page: searchTerm ? 1 : current_page,
                 perPage : per_page, 

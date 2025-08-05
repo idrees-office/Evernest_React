@@ -319,7 +319,6 @@ const View = () => {
                                                 </div>
                                                 <div>
                                                     <h4 className="font-semibold mt-4">{note.title}</h4>
-                                                    {/* <p className="text-white-dark mt-2">{note.description}</p> */}
                                                      <p className="text-white-dark mt-2">
                                                         {truncateDescription(note.description)}
                                                         {note.description && note.description.split(' ').length > 20 && (
@@ -405,10 +404,8 @@ const View = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px] font-semibold text-lg h-full">No data available</div>
+                        <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px] font-semibold text-lg h-full">There is no new announcement.</div>
                     )}
-
-                    
 
                     {/* <Transition appear show={isDeleteNoteModal} as={Fragment}>
                         <Dialog as="div" open={isDeleteNoteModal} onClose={() => setIsDeleteNoteModal(false)} className="relative z-[51]">

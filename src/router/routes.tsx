@@ -16,10 +16,10 @@ const ListAmenities = lazy(() => import('../pages/amenities/list'));
 const DashboardBox = lazy(() => import('../pages/dashboard/dashboard'));
 const Users = lazy(() => import('../pages/Users/Users'));
 const Roles = lazy(() => import('../pages/Roles/roles'));
+const Leaves = lazy(() => import('../pages/Users/Leaves'));
 const Dashboardanalysis = lazy(() => import('../pages/dashboard/leadsanalysis'));
 import ProtectedRoute from '../components/ProtectedRoute';
 import AssignPermission from '../pages/Permissions/AssignPermission';
-// import Roles from '../pages/Roles/roles';
 const Assign = lazy(() => import('../pages/leads/assign'));
 const ReAssign = lazy(() => import('../pages/leads/reassign'));
 const WonLeads = lazy(() => import('../pages/leads/won'));
@@ -38,8 +38,9 @@ const Createannouncements = lazy(() => import('../pages/announcements/create'));
 const Viewannouncements = lazy(() => import('../pages/announcements/view'));
 // listing
 const CreateListing = lazy(() => import('../pages/listing/createListing'));
-
 const Statuses = lazy(() => import('../pages/statuses/create'));
+
+
 
 
 const routes = [
@@ -253,6 +254,14 @@ const routes = [
         element : <Roles/>,
         layout: 'default',
     },
+
+    {
+        path: 'pages/users/leave-request',
+        type: 'protected',
+        element : <Leaves/>,
+        layout: 'default',
+    },
+
 
     {
         path: 'pages/users/profile',

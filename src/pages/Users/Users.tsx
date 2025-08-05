@@ -16,16 +16,18 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import '../dashboard/dashboard.css'; 
 import IconX from '../../components/Icon/IconX';
-
 import '../../../src/assets/css/file-upload-preview.css';
-import { setDate } from 'date-fns';
+import { set, setDate } from 'date-fns';
+import IconEye from '../../components/Icon/IconEye';
+import UserDetailModal from '../../components/UserDetailModal';
+
 
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
     roleApi: `${getBaseUrl()}/users/get_user_role?for_select=1`,
     listApi: `${getBaseUrl()}/users/user_list`,
     destoryApi: `${getBaseUrl()}/users/delete_user`,
-    updateApi: `${getBaseUrl()}/users/update_user`,
+    updateApi: `${getBaseUrl()}/users/update_user`, 
 };
 
 const Users = () => {
@@ -46,16 +48,10 @@ const Users = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [teamHeads, setTeamHeads] = useState<any[]>([]);
     const [type, setType] = useState<any | null>(null);
-
-
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any | null>(null);
     const [birthdaydate, setDateOfBirthday] = useState<any | null>(null);
     const [joindate, SetJoingDate] = useState<any | null>(null);
-
-
-
-    
-
-
 
     useEffect(() => {
         if (!requestMade.current) {
@@ -91,16 +87,13 @@ const Users = () => {
             const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery };
             const response = await apiClient.get(endpoints.listApi, { params });
             if (response.data) {
-                const allUsers = response.data.data.data || [];
+                const allUsers = response.data.data || [];
                 setUsers(allUsers);
-
+                setTotalRecords(response.data.total || 0);
                 const heads = response.data.users.filter((user: any) =>
                     user.roles?.some((role: any) => role.name === 'Team Head')
                 );
-                console.log(heads);
-
                 setTeamHeads(heads);
-                setTotalRecords(response.data.data.total || 0);
             }
         } catch (error: any) {
             if (error.response?.status === 403) {
@@ -122,8 +115,7 @@ const Users = () => {
                         }
                     });
                 const userId = formData.get('client_user_id');
-                const response = userId? await apiClient.post(`${endpoints.updateApi}/${userId}`, formData) : await apiClient.post(endpoints.createApi, formData);
-
+                const response = userId? await apiClient.post(`${endpoints.createApi}/${userId}`, formData) : await apiClient.post(endpoints.createApi, formData);
                 if (response.status === 200 || response.status === 201) {
                     showSuccessToast(response.data.message);
                     fetchUserLists();
@@ -131,6 +123,10 @@ const Users = () => {
                     combinedRef.current.userformRef.reset();
                     setSelectedRole(null);
                     setStatus(null);
+                    setDateOfBirthday(null);
+                    SetJoingDate(null);
+                    setType(null);
+
                 }
             }
         } catch (error: any) {
@@ -175,6 +171,10 @@ const Users = () => {
             form.client_user_designation.value = user.client_user_designation || '';
             form.client_sort_order.value = user.client_sort_order || '';
             setStatus(user.client_user_status || '');
+            setDateOfBirthday(user.client_user_dob || null);
+            SetJoingDate(user.client_user_joing_date || null);
+            setType(user.client_user_type ? Number(user.client_user_type) : null);
+
 
             const userrole = user.roles && user.roles[0];
             if (userrole) {
@@ -243,19 +243,23 @@ const Users = () => {
             });
             return;
         }
-        const maxId = items.reduce((max: number, item: any) => item.id > max ? item.id : max, 0);
-        setItems([...items, { id: maxId + 1, file: null, documentType: null }]);
-    };
-
-    const removeItem = (item: any = null) => {
-        setItems(items.filter((d: any) => d.id !== item.id));
-    };
-
-
-   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: number) => {
-    const file = e.target.files?.[0];
+        const maxId = items.reduce((max: number, item: any) => item.id > max ? item.id : max, 0); 
+        setItems([...items, { id: maxId + 1, file: null, documentType: null }]);   };
+        const removeItem = (item: any = null) => { 
+            setItems(items.filter((d: any) => d.id !== item.id)); 
+        };
+        const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, itemId: number) => {
+        const file = e.target.files?.[0];
         if (file) { setItems(items.map((item:any) =>  item.id === itemId ? { ...item, file } : item )); }
     };
+
+
+    const Detail = async (user: any) => {
+
+    setSelectedUser(user);
+    setIsDetailModalOpen(true);
+};
+
 
     const columns = [
         {
@@ -283,6 +287,11 @@ const Users = () => {
             key: 'actions-column',
             render: (item: any) => (
                 <div className="flex space-x-2">
+                    <button type="button" onClick={() => Detail(item)} className="btn px-1 py-0.5 rounded text-white bg-green-600" key={`view-${item.client_user_id}`}
+                    >
+                        <IconEye />
+                    </button>
+
                     <button
                         type="button"
                         onClick={() => handleEdit(item)}
@@ -299,6 +308,9 @@ const Users = () => {
                     >
                         <IconTrashLines />
                     </button>
+
+                     
+
                 </div>
             ),
         },
@@ -314,7 +326,7 @@ const Users = () => {
                                 <div className="form-group">
                                     <label htmlFor="client_user_name">Username</label>
                                     <input name="client_user_name" type="text" placeholder="Username" className="form-input" />
-                                    <input type="text" name="client_user_id" id="client_user_id" />
+                                    <input type="hidden" name="client_user_id" id="client_user_id" />
                                     {errors.client_user_name && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_name}
@@ -377,51 +389,30 @@ const Users = () => {
                                         onChange={(selected) => setStatus(selected?.value || null)}
                                     />
                                     {errors.client_user_status && (
-                                        <span className="text-red-500 text-sm">
-                                            {errors.client_user_status}
-                                        </span>
+                                        <span className="text-red-500 text-sm"> {errors.client_user_status} </span>
                                     )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_sort_order">Sort Order</label>
-                                    <input
-                                        name="client_sort_order"
-                                        type="text"
-                                        placeholder="Sort Order"
-                                        className="form-input"
-                                    />
-                                    {errors.client_sort_order && (
-                                        <span className="text-red-500 text-sm">
-                                            {errors.client_sort_order}
-                                        </span>
-                                    )}
+                                    <input name="client_sort_order" type="text" placeholder="Sort Order" className="form-input" />
+                                    {errors.client_sort_order && ( <span className="text-red-500 text-sm"> {errors.client_sort_order} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="role_id">Role</label>
-                                    <Select
-                                        name="role_id"
-                                        placeholder="Select an option"
-                                        options={urole || []}
-                                        value={selectedRole}
-                                        onChange={handleRoleChange}
-                                    />
-                                    {errors.role_id && (
-                                        <span className="text-red-500 text-sm">
-                                            {errors.role_id}
-                                        </span>
-                                    )}
+                                    <Select name="role_id" placeholder="Select an option" options={urole || []} value={selectedRole} onChange={handleRoleChange} />
+                                    {errors.role_id && ( <span className="text-red-500 text-sm"> {errors.role_id} </span> )}
                                 </div>
                                 </div>
                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
                                     <div className="form-group">
                                     <label htmlFor="client_user_dob">Date of Birth</label>
-                                    <Flatpickr name="client_user_dob" options={{ dateFormat: 'Y-m-d'}} className="form-input" placeholder="Y-m-d" onChange={(dates) => { setDateOfBirthday(dates[0]); }}
+                                    <Flatpickr name="client_user_dob" value={birthdaydate}   options={{ dateFormat: 'Y-m-d'}} className="form-input" placeholder="Y-m-d" onChange={(dates) => { setDateOfBirthday(dates[0]); }}
                                         />
                                     {errors.client_user_dob && ( <span className="text-red-500 text-sm"> {errors.client_user_dob} </span> )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="client_user_joing_date">Joing Date</label>
-                                    <Flatpickr options={{ dateFormat: 'Y-m-d'}} name="client_user_joing_date" className="form-input" placeholder="Y-m-d" onChange={(dates) => SetJoingDate(dates[0])}/>
+                                    <Flatpickr value={joindate} options={{ dateFormat: 'Y-m-d'}} name="client_user_joing_date" className="form-input" placeholder="Y-m-d" onChange={(dates) => SetJoingDate(dates[0])}/>
                                     {errors.client_user_joing_date && (
                                         <span className="text-red-500 text-sm">
                                             {errors.client_user_joing_date}
@@ -438,6 +429,11 @@ const Users = () => {
                                         </span>
                                     )}
                                 </div>
+                                <div className="form-group sm:col-span-3 mt-2">
+                                    <input name="client_user_allow_leave" type="number" placeholder="Allow Leave" className="form-input" />
+                                    {errors.client_user_allow_leave && ( <span className="text-red-500 text-sm"> {errors.client_user_allow_leave} </span> )}
+                                </div>
+
                               </div>
                                 <div className="mt-8">
                                     <div className="table-responsive">
@@ -525,6 +521,8 @@ const Users = () => {
                     </div>
                 </div>
             </div>
+            <UserDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)}  user={selectedUser}/>
+
         </form>
     );
 };

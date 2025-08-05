@@ -4,7 +4,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 const endpoints = {
     loginApi: '/auth/login',
     register: '/auth/register',
-    logout: 'auth/logout',
+    logoutApi: 'auth/logout',
 };
 
 export const loginUser = createAsyncThunk('auth/cover-login', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
@@ -21,8 +21,26 @@ export const signupUser = createAsyncThunk('auth/signupUser', async (userData) =
     return response.data;
 });
 
-const savedUser = localStorage.getItem('authUser');
 
+export const logoutUser = createAsyncThunk('auth/logoutUser', async ({ login_user_id }: { login_user_id: number }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await apiClient.post(endpoints.logoutApi, {
+                login_user_id: login_user_id,
+            });
+            return response;
+        } catch (err) {
+            console.error('Logout failed', err);
+            return rejectWithValue(err);
+        } finally {
+            dispatch(logout()); // clear localStorage & state
+        }
+    }
+);
+
+
+
+
+const savedUser = localStorage.getItem('authUser');
 let parsedUser = null;
 if (savedUser) {
     try {
@@ -85,6 +103,16 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
                 state.user = action.payload;
                 state.token = action.payload.token;
+            })
+            .addCase(logoutUser.fulfilled, (state, action) => {
+                state.isAuthenticated = true;
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
+                console.error('Logout failed:', action.error);
+                // Still clear the local state even if backend logout failed
+                state.isAuthenticated = false;
+                state.user = null;
+                state.token = null;
             });
     },
 });
