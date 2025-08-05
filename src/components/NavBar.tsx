@@ -103,19 +103,19 @@ const NavBar = () => {
                     )}
                 </ul>
             </li>
-            {(permissions.includes('view activities') || role === 'super admin') && (
+            {(permissions.includes('create activities') || role === 'super admin') && (
                 <li className="menu nav-item relative">
                         <button type="button" className="nav-link">
                             <div className="flex items-center">
                                 <IconMenuDatatables className="shrink-0" />
-                                <span className="px-1">{t('Activities')}</span>
+                                <span className="px-1">{t('Agent Diary')}</span>
                             </div>
                             <div className="right_arrow">
                                 <IconCaretDown />
                             </div>
                         </button>
                         <ul className="sub-menu">
-                            <li> <NavLink to="/pages/activities/activities">{t('Add-Activity')}</NavLink> </li>
+                            <li> <NavLink to="/pages/activities/activities">{t('Meeting Request')}</NavLink> </li>
                         </ul>
                 </li>   
             )}

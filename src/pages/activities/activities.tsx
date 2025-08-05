@@ -5,11 +5,11 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import Swal from 'sweetalert2';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setPageTitle } from '../../slices/themeConfigSlice';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconX from '../../components/Icon/IconX';
-import { AppDispatch } from '../../store';
+import { AppDispatch, IRootState } from '../../store';
 import '../dashboard/dashboard.css'; 
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
@@ -32,7 +32,12 @@ const Activities = () => {
     const combinedRef = useRef<any>({ fetched: false, form: null});
     const [transformedAgents, setTransformedAgents] = useState<any[]>([]);
     const [selectedAgent, setSelectedAgent] = useState<any>({}); 
-     const [errors, setErrors] = useState<Record<string, string[]>>({});
+    const [errors, setErrors] = useState<Record<string, string[]>>({});
+    const loginuser = useSelector((state:IRootState) => state.auth.user)
+
+
+    
+    console.log(loginuser?.client_user_id);
 
     useEffect(() => {
         if (!combinedRef.current.fetched) {
@@ -241,7 +246,7 @@ const Activities = () => {
             <div className="panel mb-5">
                 <div className="mb-4 flex justify-between items-center">
                     <div className="text-lg font-semibold">
-                        <button type="button" className="btn btn-info btn-sm" onClick={() => handleModal()}> Create Activities </button></div>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleModal()}>Request</button></div>
                     <div className="flex gap-2">
                         <Select id="agentDropdown" value={transformedAgents.find(agent => agent.value === selectedAgent?.agent_id) || null} placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectSingleAgent(selectedOption.value, selectedOption.label); }}/>
                         <button type="button" className="btn btn-info btn-sm" onClick={exportPDF}> Export PDF </button>
@@ -279,22 +284,46 @@ const Activities = () => {
                                 <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
                                     <button type="button" className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none" onClick={() => setIsAddEventModal(false)} > <IconX /> </button>
                                     <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                        {params ? 'Edit Activities' : 'Add Activities'}
+                                        {params ? 'Edit Activities' : 'Meeting Request'}
                                     </div>
                                     <div className="p-5">
                                         <form className="space-y-5" ref={(el) => (combinedRef.current.form = el)} onSubmit={saveActivities}>
                                             <div>
-                                                <label htmlFor="title">Activities Title</label>
-                                                <input id="title" type="text" name="title" className="form-input" placeholder="Activities Title" />
+                                                <label htmlFor="title">Title</label>
+                                                <input id="title" type="text" name="title" className="form-input" placeholder="Title" />
                                                 <div className="text-danger" id="titleErr"></div>
                                                 {errors?.title && <p className="text-danger error">{errors.title[0]}</p>}
                                             </div>
-                                             <div>
-                                                <Select id="agentDropdown" name='agnets[]' isMulti placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10" isSearchable={true} />
-                                                {errors?.["agnets.0"] && (
-                                                <p className="text-danger error">{errors["agnets.0"][0]}</p>
+                                            {loginuser?.roles[0].name === 'super admin' ? (
+                                            <div>
+                                                <label htmlFor="agentDropdown">Agent</label>
+                                                <Select 
+                                                    id="agentDropdown" 
+                                                    name='agents[]' 
+                                                    isMulti 
+                                                    placeholder="Select agents" 
+                                                    options={transformedAgents}  
+                                                    className="cursor-pointer custom-multiselect z-10" 
+                                                    isSearchable={true} 
+                                                />
+                                                {errors?.["agents.0"] && (
+                                                    <p className="text-danger error">{errors["agents.0"][0]}</p>
                                                 )}
                                             </div>
+                                        ) : (
+                                            <div>
+                                                <label htmlFor="agentDropdown">Agent</label>
+                                                <Select 
+                                                    id="agentDropdown" 
+                                                    name='agents[]' 
+                                                    placeholder="Agent" 
+                                                    options={transformedAgents.filter(agent => agent.value === loginuser?.client_user_id )}  
+                                                    className="cursor-pointer custom-multiselect z-10" 
+                                                    isSearchable={false}
+                                                    value={transformedAgents.filter(agent => agent.value === loginuser?.client_user_id )}
+                                                />
+                                            </div>
+                                        )}
                                             <div>
                                                 <label htmlFor="dateStart">From</label>
                                                 <input id="start" type="datetime-local" name="start_date" className="form-input" placeholder="Event Start Date" />
@@ -307,13 +336,13 @@ const Activities = () => {
                                                 <div className="text-danger" id="startDateErr"></div>
                                             </div>
                                             <div>
-                                                <label htmlFor="description1">Activities Description</label>
-                                                <textarea id="description1" name="description" className="form-textarea min-h-[130px]" placeholder="Activities Description" ></textarea>
+                                                <label htmlFor="description1">Description</label>
+                                                <textarea id="description1" name="description" className="form-textarea min-h-[130px]" placeholder="Description" ></textarea>
                                                  {errors?.description && <p className="text-danger error">{errors.description[0]}</p>}
                                             </div>
                                             <div className="flex justify-end items-center">
                                                 <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setIsAddEventModal(false)}> Cancel </button>
-                                                <button type="submit" className="btn btn-info btn-sm ltr:ml-4 rtl:mr-4">
+                                                <button type="submit" className="btn btn-secondary btn-sm ltr:ml-4 rtl:mr-4">
                                                      {params ? 'Update' : 'Submit'}
                                                 </button>
                                             </div>

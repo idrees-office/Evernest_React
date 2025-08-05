@@ -15,8 +15,7 @@ interface UserDetailModalProps {
 }
 
 const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
-    const [files, userFiles] = useState<any | null>(null);
-
+    const [files, setFiles] = useState<any[]>([]);
     useEffect(() => {
         if (isOpen) {
             fetchFiles();
@@ -24,21 +23,22 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
     }, [isOpen]);
 
     const fetchFiles = async () => {
-        try {
-            const response = await apiClient.post(endpoints.pullFileApi, { user_id: user?.client_user_id });
-            if (response.data) {
-                const roleOptions = response.data.map((role: any) => ({
-                    value: role.id,
-                    label: role.name,
-                }));
-                userFiles(roleOptions);
-            }
-        } catch (error: any) {
-            if (error.response?.status === 403) {
-                window.location.href = '/error';
+    try {
+        const response = await apiClient.post(endpoints.pullFileApi, { user_id: user?.client_user_id });
+        if (response.data) {
+            if ((response.data)) {
+                setFiles(response.data.media || []);
+            } else {
+                setFiles([]);
             }
         }
+    } catch (error: any) {
+        if (error.response?.status === 403) {
+            window.location.href = '/error';
+        }
+        setFiles([]); 
     }
+}
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -82,8 +82,7 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                                         >
                                             Personal Information
                                         </Tab>
-                                        <Tab
-                                            className={({ selected }) =>
+                                        <Tab className={({ selected }) =>
                                                 `w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700
                                                 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2
                                                 ${selected ? 'bg-white shadow' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'}`
@@ -155,17 +154,12 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                                                                     <span className="badge bg-info">
                                                                          {employeeType.find(opt => opt.value === user.client_user_type)?.label || 'Unknown'}
                                                                     </span>
-
-                                                                     {/* <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-
-                                                                      
-                                                                    </span> */}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">Allowed Leave Days</td>
                                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                                    <span className="badge bg-secondary">{user.client_user_allow_leave || 0}</span>
+                                                                <span className="badge bg-secondary">{user.client_user_allow_leave || 0}</span>
                                                                     </td>
                                                             </tr>
                                                         </tbody>
@@ -173,11 +167,10 @@ const UserDetailModal = ({ isOpen, onClose, user }: UserDetailModalProps) => {
                                                 </div>
                                             )}
                                         </Tab.Panel>
-
                                         <Tab.Panel className="rounded-xl bg-white p-3">
-                                            {files?.media && files.media.length > 0 ? (
+                                            {files && files.length > 0 ? (
                                                 <div className="space-y-4">
-                                                    {files.media.map((file:any, index:any) => (
+                                                    {files.map((file:any, index:any) => (
                                                         <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                                                             <div className="flex justify-between items-center">
                                                                 <div>

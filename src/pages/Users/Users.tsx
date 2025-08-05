@@ -82,30 +82,7 @@ const Users = () => {
             }
         }
     };
-
-    // const fetchUserLists = async (teamId = null) => {
-    //     try {
-    //         const params = { page, per_page: pageSize, sort_field: sortStatus.columnAccessor, sort_order: sortStatus.direction, search: searchQuery,  team_id: teamId };
-    //         const response = await apiClient.get(endpoints.listApi, { params });
-    //         if (response.data) {
-
-    //             const allUsers = response.data.users || [];
-    //             setUsers(allUsers);
-    //             setTotalRecords(response.data.total || 0);
-    //             const heads = response.data.heads || [];
-    //             const headOptions = heads.map((head: any) => ({ value: head.client_user_id, label: head.client_user_name + ' (' + head.client_user_designation + ')', }));
-    //             setTeamHeads(headOptions);
-
-    //         }
-    //     } catch (error: any) {
-    //         if (error.response?.status === 403) {
-    //             window.location.href = '/error';
-    //         }
-    //         // showServerError();
-    //     }
-    // };
-
-
+    
     const fetchUserLists = async (teamId = null) => {
         try {
             const params = {
