@@ -97,14 +97,12 @@ const Users = () => {
             if (response.data) {
                 const allUsers = response.data.data.data || [];
                 setUsers(allUsers);
-                
                 const heads = response.data.heads || [];
                 const headOptions = heads.map((head: any) => ({
                     value: head.client_user_id,
-                    label: head.client_user_name + ' (' + head.client_user_designation + ')',
+                    label: ( <> {head.client_user_name}{' '}<span className='badge bg-success rounded-full text-white ml-2'>{head.client_user_designation}</span></>)
                 }));
                 setTeamHeads(headOptions);
-
                 setTotalRecords(response.data.data.total || 0);
             }
         } catch (error: any) {
@@ -560,19 +558,23 @@ const Users = () => {
                                 }, {});
 
                                 return (
-                                    <div key={head.value} className="panel">
-                                        <div className="panel-body">
-                                            <h5 className="font-semibold mb-2">{head.label}</h5>
-                                            <div className="text-sm">
-                                                <p className="mb-2">Total Members: {userCount}</p>
-                                                {Object.entries(designationCounts).map(([designation, count]) => (
-                                                    <span key={designation} className="badge badge-info mr-2 mb-2">
-                                                        {designation}: {count}
-                                                    </span>
-                                                ))}
+                                        <div key={head.value} className="panel">
+                                            <div className="panel-body flex flex-col justify-between min-h-[120px]">
+                                                <h5 className="font-semibold mb-2">{head.label}</h5>
+                                                <div className="text-sm flex-grow">
+                                                    <div className="flex flex-wrap gap-2 min-h-[40px]">
+                                                        {Object.entries(designationCounts).map(([designation, count]) => (
+                                                            <span key={designation} className="badge badge-info">
+                                                                {designation}: {count}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm text-right mt-2">
+                                                    Total Members: <span className="bg-secondary badge">{userCount}</span>
+                                                </p>
                                             </div>
                                         </div>
-                                    </div>
                                 );
                             })}
                         </div>
