@@ -34,11 +34,6 @@ const Activities = () => {
     const [selectedAgent, setSelectedAgent] = useState<any>({}); 
     const [errors, setErrors] = useState<Record<string, string[]>>({});
     const loginuser = useSelector((state:IRootState) => state.auth.user)
-
-
-    
-    console.log(loginuser?.client_user_id);
-
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('Agents Activites'));

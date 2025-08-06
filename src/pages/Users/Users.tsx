@@ -21,7 +21,6 @@ import { set, setDate } from 'date-fns';
 import IconEye from '../../components/Icon/IconEye';
 import UserDetailModal from '../../components/UserDetailModal';
 
-
 const endpoints = {
     createApi: `${getBaseUrl()}/users/create_user`,
     roleApi: `${getBaseUrl()}/users/get_user_role?for_select=1`,
@@ -30,11 +29,12 @@ const endpoints = {
     updateApi: `${getBaseUrl()}/users/update_user`, 
 };
 
+
 const Users = () => {
     const dispatch = useDispatch<AppDispatch>();
     const loader = Loader();
     const combinedRef = useRef<any>({ userformRef: null });
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<any | null>([]);
     const [status, setStatus] = useState<any | null>(null);
     const [headId, setHeadId] = useState<any | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -203,9 +203,7 @@ const Users = () => {
                     label: userTeam.client_user_name + ' (' + userTeam.client_user_designation + ')',
                 }];
             } else {
-                headOptions = [{ value: null,
-                    label: 'No Team Head',
-                }];
+                headOptions = [{ value: null, label: 'No Team Head', }];
             }
             setHeadId(headOptions); 
 
@@ -544,42 +542,43 @@ const Users = () => {
                     </div>
                 </div>
                 <div className="w-full lg:w-2/3 px-2 mt-6 lg:mt-0 md-mt-0">
-                    <div className="mb-6">
+                     <div className="mb-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {teamHeads.map((head) => {
-                                const userCount = users.filter((user:any) => user.team?.client_user_id === head.value
-                                ).length;
-                                const designationCounts = users.reduce((acc: {[key: string]: number}, user) => {
-                                    if (user.team?.client_user_id === head.value) {
-                                        const designation = user?.client_user_designation;
-                                        acc[designation] = (acc[designation] || 0) + 1;
-                                    }
-                                    return acc;
-                                }, {});
-
+                                const userCount = users.filter((user:any) => user.team?.client_user_id === head.value).length;
+                                const designationCounts = users.reduce((acc: { [key: string]: number }, user: { team?: { client_user_id?: number }, client_user_designation: string }) => {
+                                if (user.team?.client_user_id === head.value) {
+                                    const designation = user.client_user_designation;
+                                    acc[designation] = (acc[designation] || 0) + 1;
+                                }
+                                return acc;
+                            }, {});
+                                // const designationCounts = users.reduce((acc: {[key: string]: number}, user) => {
+                                //     if (user.team?.client_user_id === head.value) { const designation = user?.client_user_designation;
+                                //         acc[designation] = (acc[designation] || 0) + 1;
+                                //     }
+                                //     return acc;
+                                // }, {});
                                 return (
-                                        <div key={head.value} className="panel">
-                                            <div className="panel-body flex flex-col justify-between min-h-[120px]">
-                                                <h5 className="font-semibold mb-2">{head.label}</h5>
-                                                <div className="text-sm flex-grow">
-                                                    <div className="flex flex-wrap gap-2 min-h-[40px]">
-                                                        {Object.entries(designationCounts).map(([designation, count]) => (
-                                                            <span key={designation} className="badge badge-info">
-                                                                {designation}: {count}
-                                                            </span>
-                                                        ))}
-                                                    </div>
+                                    <div key={head.value} className="panel">
+                                        <div className="panel-body flex flex-col justify-between min-h-[120px]">
+                                            <h5 className="font-semibold mb-2">{head.label}</h5>
+                                            <div className="text-sm flex-grow">
+                                                <div className="flex flex-wrap gap-2 min-h-[40px]">
+                                                    {(Object.entries(designationCounts) as [string, number][]).map(([designation, count]) => (
+                                                        <span key={designation} className="badge badge-info">
+                                                            {designation} : {count || 0}
+                                                        </span>
+                                                    ))}
                                                 </div>
-                                                <p className="text-sm text-right mt-2">
-                                                    Total Members: <span className="bg-secondary badge">{userCount}</span>
-                                                </p>
                                             </div>
+                                            <p className="text-sm text-right mt-2"> Total Members: <span className="bg-secondary badge">{userCount}</span></p>
                                         </div>
+                                    </div>
                                 );
                             })}
                         </div>
-                    </div>
-
+                    </div> 
                     <div className="datatables">
                         <Table
                             columns={columns}

@@ -116,6 +116,7 @@ const NavBar = () => {
                         </button>
                         <ul className="sub-menu">
                             <li> <NavLink to="/pages/activities/activities">{t('Meeting Request')}</NavLink> </li>
+                             <li> <NavLink to="/pages/activities/activities_request">{t('Check Requests')}</NavLink> </li>
                         </ul>
                 </li>   
             )}
@@ -171,16 +172,10 @@ const NavBar = () => {
                 <ul className="sub-menu">
                 {(permissions.includes('create announcements') || role === 'super admin' || role === 'HR' || role === 'receptionist') && (
                     <li>
-                    <NavLink to="/pages/announcements/create">
-                        <span>{t('Add Announcements')}</span>
-                    </NavLink>
+                    <NavLink to="/pages/announcements/create"> <span>{t('Add Announcements')}</span> </NavLink>
                     </li>
                 )}
-                <li>
-                    <NavLink to="/pages/announcements/view">
-                        <span>{t('View Announcements')}</span>
-                    </NavLink>
-                </li>
+                <li> <NavLink to="/pages/announcements/view"> <span>{t('View Announcements')}</span> </NavLink> </li>
                 </ul>
             </li>
             {(permissions.includes('create stages') || role === 'super admin') && (

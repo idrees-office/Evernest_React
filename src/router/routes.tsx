@@ -29,6 +29,7 @@ const Reports = lazy(() => import('../pages/leads/reports'));
 const Profile = lazy(() => import('../pages/Users/profile'));
 const Error404 = lazy(() => import('../pages/errors/error404'));
 const Activities = lazy(() => import('../pages/activities/activities'));
+const ActivitiesRequest = lazy(() => import('../pages/activities/Activities_Request'));
 const EmailTemplate = lazy(() => import('../pages/emails/template'));
 const EmailPreview = lazy(() => import('../pages/emails/preview'));
 const EmailSubscriber = lazy(() => import('../pages/emails/subscriber'));
@@ -39,9 +40,6 @@ const Viewannouncements = lazy(() => import('../pages/announcements/view'));
 // listing
 const CreateListing = lazy(() => import('../pages/listing/createListing'));
 const Statuses = lazy(() => import('../pages/statuses/create'));
-
-
-
 
 const routes = [
     {
@@ -106,6 +104,14 @@ const routes = [
         element : <Activities/>,
         layout: 'default',
     },
+
+    {
+        path: 'pages/activities/activities_request',
+        type: 'protected',
+        element : <ActivitiesRequest/>,
+        layout: 'default',
+    },
+
     // Email Template
     {
         path: 'pages/email/template',
