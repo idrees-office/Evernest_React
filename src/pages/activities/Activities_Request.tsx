@@ -92,23 +92,25 @@ const ActivitiesRequest = () => {
          setIsLoading(true);
           try {
             const response = await apiClient.delete(`${endpoints.deleteApi}/${selectedActivies.id}`);
+            console.log(response)
             if(response.status == 200 || response.status === 201){  
                 
                 setIsDeleteNoteModal(false);
                 fetchActivities(selectedTab);
-                // const data = response.data;
-                // setActivitiesList(data);
+                showMessage('Activity has been deleted successfully.');
+                setIsDeleteNoteModal(false);
             }
         } catch (error) {
             console.error('Error fetching activities:', error);
-            toast.error('Failed to fetch activities');
+            toast.error(error.message);
         } finally {
+            console.log('sdds');
+            
             setIsLoading(false);
         }
 
         // setActivitiesList(activitiesList.filter((d: any) => d.id !== deletedNote.id));
-        showMessage('Activity has been deleted successfully.');
-        setIsDeleteNoteModal(false);
+        
     };
 
     const showMessage = (msg = '', type = 'success') => {
