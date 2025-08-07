@@ -92,25 +92,25 @@ const ActivitiesRequest = () => {
          setIsLoading(true);
           try {
             const response = await apiClient.delete(`${endpoints.deleteApi}/${selectedActivies.id}`);
-            console.log(response)
             if(response.status == 200 || response.status === 201){  
-                
-                setIsDeleteNoteModal(false);
                 fetchActivities(selectedTab);
                 showMessage('Activity has been deleted successfully.');
                 setIsDeleteNoteModal(false);
             }
-        } catch (error) {
-            console.error('Error fetching activities:', error);
-            toast.error(error.message);
+        } catch (error:any) {
+            if(error.status === 404){
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Incomplete Activity Request', 
+                    text: `` + error.response.data.message+``,
+                });
+                setIsDeleteNoteModal(false);
+                return
+            }
         } finally {
-            console.log('sdds');
-            
             setIsLoading(false);
         }
 
-        // setActivitiesList(activitiesList.filter((d: any) => d.id !== deletedNote.id));
-        
     };
 
     const showMessage = (msg = '', type = 'success') => {
