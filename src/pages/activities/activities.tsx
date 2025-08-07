@@ -241,7 +241,7 @@ const Activities = () => {
             <div className="panel mb-5">
                 <div className="mb-4 flex justify-between items-center">
                     <div className="text-lg font-semibold">
-                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleModal()}>Request</button></div>
+                        <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleModal()}>Add-Request</button></div>
                     <div className="flex gap-2">
                         <Select id="agentDropdown" value={transformedAgents.find(agent => agent.value === selectedAgent?.agent_id) || null} placeholder="Select an option" options={transformedAgents}  className="cursor-pointer custom-multiselect z-10 w-[300px]" onChange={(selectedOption) => { if (selectedOption?.value !== undefined) SelectSingleAgent(selectedOption.value, selectedOption.label); }}/>
                         <button type="button" className="btn btn-info btn-sm" onClick={exportPDF}> Export PDF </button>

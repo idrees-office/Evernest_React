@@ -1,6 +1,442 @@
+// import PerfectScrollbar from 'react-perfect-scrollbar';
+// import { Dialog, Transition } from '@headlessui/react';
+// import { Fragment, useState, useEffect, useRef } from 'react';
+// import Swal from 'sweetalert2';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { IRootState } from '../../store';
+// import Dropdown from '../../components/Dropdown';
+// import { setPageTitle } from '../../slices/themeConfigSlice';
+// import IconNotes from '../../components/Icon/IconNotes';
+// import IconNotesEdit from '../../components/Icon/IconNotesEdit';
+// import IconStar from '../../components/Icon/IconStar';
+// import IconSquareRotated from '../../components/Icon/IconSquareRotated';
+// import IconPlus from '../../components/Icon/IconPlus';
+// import IconMenu from '../../components/Icon/IconMenu';
+// import IconUser from '../../components/Icon/IconUser';
+// import IconHorizontalDots from '../../components/Icon/IconHorizontalDots';
+// import IconPencil from '../../components/Icon/IconPencil';
+// import IconTrashLines from '../../components/Icon/IconTrashLines';
+// import IconEye from '../../components/Icon/IconEye';
+// import IconX from '../../components/Icon/IconX';
+// import { getBaseUrl } from '../../components/BaseUrl';
+// import apiClient from '../../utils/apiClient';
+// import IconCalendar from '../../components/Icon/IconCalendar';
+// import ApprovalLeaveModal from '../../components/ApprovalModal';
+// import ApprovalModal from '../../components/ApprovalModal';
+// import { useNavigate } from 'react-router-dom';
+// import Toast from '../../services/toast';
+
+// const endpoints = {
+//     listApi: `${getBaseUrl()}/activities/agents_activities`,
+//     aprovalActivitesApi: `${getBaseUrl()}/activities/aproval_activities`,
+// };
+
+// const ActivitiesRequest = () => {
+//     const dispatch = useDispatch();
+//     const [ActivitiesList, setActivitiesList] = useState([]);
+//     const useReff = useRef(false);
+//     const [isDeleteNoteModal, setIsDeleteNoteModal] = useState<any>(false);
+//     const [isShowNoteMenu, setIsShowNoteMenu] = useState<any>(false);
+//     const [isViewNoteModal, setIsViewNoteModal] = useState<any>(false);
+//     const [selectedTab, setSelectedTab] = useState<any>('all');
+//     const [deletedNote, setDeletedNote] = useState<any>(null);
+//     const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+//     const [selectedActivites, setselectedActivites] = useState<any>(null);
+//     const loginuser       = useSelector((state: IRootState) => state.auth.user || {});
+//     const [errors, setErrors] = useState<Record<string, string>>({});
+//     const [isLoading, setIsLoading] = useState(false);
+
+//      const navigate = useNavigate();
+//     const toast = Toast();
+//     useEffect(() => {
+//         if(!useReff.current){
+//             dispatch(setPageTitle('Notes'));
+//             fetchActivities();
+//         }
+//         useReff.current = true
+//     });
+
+//     const fetchActivities = async (filter = 'all') => {
+//         setIsLoading(true);
+//         try {
+//             const response = await apiClient.get(endpoints.listApi, {
+//                 params: { filter }
+//             });
+//             if(response.status == 200 || response.status === 201){  
+//                 const data = response.data;
+//                 setActivitiesList(data);
+//             }
+//         } catch (error) {
+//             console.error('Error fetching activities:', error);
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     }
+
+//     const deleteNoteConfirm = (note: any) => {
+//         setDeletedNote(note);
+//         setIsDeleteNoteModal(true);
+//     };
+    
+//     const deleteNote = () => {
+//         setActivitiesList(ActivitiesList.filter((d: any) => d.id !== deletedNote.id));
+//         // searchNotes();
+//         showMessage('Note has been deleted successfully.');
+//         setIsDeleteNoteModal(false);
+//     };
+
+//     const showMessage = (msg = '', type = 'success') => {
+//         const toast: any = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000, customClass: { container: 'toast' }, });
+//         toast.fire({ icon: type, title: msg, padding: '10px 20px', });
+//     };
+
+//     useEffect(() => {
+//         // searchNotes();
+//     }, [selectedTab, ActivitiesList]);
+//     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
+//     const Approve = (activites:any) => {
+//         if(activites.status == 2){
+//             toast.warning('Your Request Already Aproved, (Thanks)');
+//             return;
+//         }else if(activites.status == 3){
+//              toast.warning('Your Request Already Rejected');
+//               return;
+//         }
+//         setselectedActivites(activites);
+//         setIsApprovalModalOpen(true);
+//     }
+
+//     const handleApprovalSubmit = async (formValues: { 
+//             action: string; 
+//             approved_start_date?: string; 
+//             approved_end_date?: string; 
+//             response: string 
+//         }) => {
+//             try {
+//                 const formData = new FormData();
+//                 formData.append('id', selectedActivites.id);
+//                 formData.append('approved_by', loginuser.client_user_id);
+//                 formData.append('action', formValues.action);
+//                 if (formValues.action === 'approve') {
+//                     if (formValues.approved_start_date) {
+//                         formData.append('approved_start_date', formValues.approved_start_date);
+//                     }
+//                     if (formValues.approved_end_date) {
+//                         formData.append('approved_end_date', formValues.approved_end_date);
+//                     }
+//                 }
+//                 formData.append('response', formValues.response);
+//                 const response = await apiClient.post(endpoints.aprovalActivitesApi, formData);
+//                 if (response.status === 200 || response.status === 201) {
+//                     fetchActivities();
+//                     setErrors({});
+//                     Swal.fire('Success!', response.data.message, 'success');
+//                     setIsApprovalModalOpen(false); 
+//                 }
+//             } catch (error: any) {
+//                 if (error.response?.status === 422) {
+//                     Swal.fire('Error', error.response.data.message || 'Validation failed.', 'error');
+//                 } else {
+//                     Swal.fire('Error', 'Something went wrong.', 'error');
+//                 }
+//                 setIsApprovalModalOpen(false);
+//             }
+//     };
+
+
+//     const handleAddActivites = () => {
+//          navigate('/pages/activities/activities');
+//     }
+
+
+//     return (
+//         <div>
+//             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
+//                 <div className={`bg-black/60 z-10 w-full h-full rounded-md absolute hidden ${isShowNoteMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}></div>
+//                 <div className={`panel
+//                     p-4
+//                     flex-none
+//                     w-[240px]
+//                     absolute
+//                     xl:relative
+//                     z-10
+//                     space-y-4
+//                     h-full
+//                     xl:h-auto
+//                     hidden
+//                     xl:block
+//                     ltr:lg:rounded-r-md ltr:rounded-r-none
+//                     rtl:lg:rounded-l-md rtl:rounded-l-none
+//                     overflow-hidden ${isShowNoteMenu ? '!block h-full ltr:left-0 rtl:right-0' : 'hidden shadow'}`}
+//                 >
+//                     <div className="flex flex-col h-full pb-16">
+//                         <div className="flex text-center items-center">
+//                             <div className="shrink-0">
+//                                 <IconNotes />
+//                             </div>
+//                             <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Request</h3>
+//                         </div>
+
+//                         <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-4"></div>
+//                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
+//                             <div className="space-y-1">
+//                                 <button
+//                                     type="button"
+//                                     className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
+//                                         selectedTab === 'all' && 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]'
+//                                     }`}
+//                                 >
+//                                     <div className="flex items-center">
+//                                         <IconNotesEdit className="shrink-0" />
+//                                         <div className="ltr:ml-3 rtl:mr-3">All Requests</div>
+//                                     </div>
+//                                 </button>
+//                                  <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
+//                                 <div className="px-1 py-3 text-white-dark">Tags</div>
+
+//                                 <button type="button" className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'personal' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`} >
+//                                     <IconSquareRotated className="fill-primary shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Today Request</div>
+//                                 </button>
+//                                 <button type="button"
+//                                     className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
+//                                         selectedTab === 'work' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`}>
+//                                     <IconSquareRotated className="fill-warning shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Yesterday Request</div>
+//                                 </button>
+//                                 <button
+//                                     type="button"
+//                                     className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
+//                                         selectedTab === 'social' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`}>
+//                                     <IconSquareRotated className="fill-info shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Last 1 Week Requests</div>
+//                                 </button>
+
+                                
+
+//                                 <button
+//                                     type="button"
+//                                     className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
+//                                         selectedTab === 'important' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`}>
+//                                     <IconSquareRotated className="fill-danger shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Last Month Requests</div>
+//                                 </button> 
+
+
+//                                 <button type="button" className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'personal' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`}>
+//                                     <IconSquareRotated className="fill-primary shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Last 3 Month Requests</div>
+//                                 </button>
+//                                 <button
+//                                     type="button"
+//                                     className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
+//                                         selectedTab === 'important' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
+//                                     }`}
+//                                 >
+//                                     <IconSquareRotated className="fill-danger shrink-0" />
+//                                     <div className="ltr:ml-3 rtl:mr-3">Last 6 Month Requests</div>
+//                                 </button>
+//                             </div>
+//                         </PerfectScrollbar>
+//                     </div>
+//                     <div className="ltr:left-0 rtl:right-0 absolute bottom-0 p-4 w-full">
+//                         <button className="btn btn-primary w-full"  type="button" onClick={handleAddActivites}>
+//                             <IconPlus className="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0" /> Add New Request
+//                         </button>
+//                     </div>
+//                 </div>
+//                 <div className="panel flex-1 overflow-auto h-full">
+//                     <div className="pb-5">
+//                         <button type="button" className="xl:hidden hover:text-primary" onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}>
+//                             <IconMenu />
+//                         </button>
+//                     </div>
+//                     {ActivitiesList.length ? (
+//                         <div className="sm:min-h-[300px] min-h-[400px]">
+//                             <div className="grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5">
+//                                 {ActivitiesList.map((activities: any) => {
+//                                     return (
+//                                         <div className={`panel pb-5 ${activities.tag === 'personal' ? 'bg-primary-light shadow-primary' : activities.tag === 'work'
+//                                                     ? 'bg-warning-light shadow-warning'
+//                                                     : activities.tag === 'social'
+//                                                     ? 'bg-info-light shadow-info'
+//                                                     : activities.tag === 'important'
+//                                                     ? 'bg-danger-light shadow-danger'
+//                                                     : 'dark:shadow-dark'
+//                                             }`} key={activities.id}>
+//                                             <div className="flex flex-col h-full">
+//                                                 <div className="flex justify-between items-start mb-4">
+//                                                 <div className="flex items-center space-x-3">
+//                                                   {activities.thumb ? (
+//                                                     <div className="p-1 bg-white rounded-full shadow-sm">
+//                                                         <img className="h-10 w-10 rounded-full object-cover border-2 border-white" alt="User thumbnail" src={`/assets/images/${activities.thumb}`} />
+//                                                     </div>
+//                                                     ) : activities.user ? (
+//                                                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white font-semibold shadow-sm">
+//                                                         {activities.user.charAt(0) + activities.user.split(' ')[1]?.charAt(0) || ''}
+//                                                     </div>
+//                                                     ) : (
+//                                                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300">
+//                                                         <IconUser className="w-5 h-5" />
+//                                                     </div>
+//                                                     )}
+//                                                     <div>
+//                                                     <h3 className="font-semibold text-gray-800 dark:text-gray-100">{activities.title}</h3>
+//                                                     <div className="flex flex-wrap gap-2 mt-1">
+//                                                         {activities.agents.length === 1 ? (
+//                                                         <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+//                                                             {activities.agents[0].client_user_name}
+//                                                         </span>
+//                                                         ) : (
+//                                                         activities.agents.map((agent: any) => (
+//                                                         <span key={agent.client_user_id} className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+//                                                             > {agent.client_user_name} </span> ))
+//                                                         )}
+//                                                     </div>
+//                                                     </div>
+//                                                 </div>
+//                                                 <div className="dropdown">
+//                                                     <button onClick={() => Approve(activities)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
+//                                                       <IconHorizontalDots className="w-5 h-5 opacity-70 hover:opacity-100" />
+//                                                     </button>
+//                                                 </div>
+//                                                 </div>
+//                                                 <div className="flex-grow mb-6">
+//                                                 <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{activities.title}</h4>
+//                                                 <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+//                                                     {activities.description}
+//                                                 </p>
+//                                                 </div>
+//                                                <div className="flex items-center justify-end mt-auto mb-2">
+//                                                     <span
+//                                                         className={`text-xs font-medium px-2.5 py-0.5 rounded ${
+//                                                         activities.status === 1
+//                                                             ? 'bg-secondary text-white'
+//                                                             : activities.status === 2
+//                                                             ? 'bg-success text-white'
+//                                                             : activities.status === 3
+//                                                             ? 'bg-danger text-white'
+//                                                             : ''
+//                                                         }`}
+//                                                     >
+//                                                         {activities.status === 1
+//                                                         ? 'Pending to Approve'
+//                                                         : activities.status === 2
+//                                                         ? 'Approved'
+//                                                         : activities.status === 3
+//                                                         ? 'Rejected'
+//                                                         : ''}
+//                                                     </span>
+//                                                     </div>
+
+
+//                                                 <div className="flex items-center justify-between mt-auto pt-3 border-t">
+//                                                 <div className="flex items-center text-sm">
+//                                                     <IconCalendar className="w-4 h-4 mr-1 text-primary" />
+//                                                     <span className='text-primary ml-2'>{activities.start_date}</span>
+//                                                 </div>
+//                                                 <button type="button" onClick={() => deleteNoteConfirm(activities)} className="p-1 text-red-500 hover:text-red dark:hover:text-red-400 transition-colors">
+//                                                     <IconTrashLines className="w-5 h-5" />
+//                                                 </button>
+//                                                 </div>
+//                                             </div>
+//                                         </div>
+//                                     );
+//                                 })}
+//                             </div>
+//                         </div>
+//                     ) : (
+//                         <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px] font-semibold text-lg h-full">No data available</div>
+//                     )}
+
+                
+//                     <Transition appear show={isDeleteNoteModal} as={Fragment}>
+//                         <Dialog as="div" open={isDeleteNoteModal} onClose={() => setIsDeleteNoteModal(false)} className="relative z-[51]">
+//                             <Transition.Child
+//                                 as={Fragment}
+//                                 enter="ease-out duration-300"
+//                                 enterFrom="opacity-0"
+//                                 enterTo="opacity-100"
+//                                 leave="ease-in duration-200"
+//                                 leaveFrom="opacity-100"
+//                                 leaveTo="opacity-0"
+//                             >
+//                                 <div className="fixed inset-0 bg-[black]/60" />
+//                             </Transition.Child>
+
+//                             <div className="fixed inset-0 overflow-y-auto">
+//                                 <div className="flex min-h-full items-center justify-center px-4 py-8">
+//                                     <Transition.Child
+//                                         as={Fragment}
+//                                         enter="ease-out duration-300"
+//                                         enterFrom="opacity-0 scale-95"
+//                                         enterTo="opacity-100 scale-100"
+//                                         leave="ease-in duration-200"
+//                                         leaveFrom="opacity-100 scale-100"
+//                                         leaveTo="opacity-0 scale-95"
+//                                     >
+//                                         <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
+//                                             <button
+//                                                 type="button"
+//                                                 onClick={() => setIsDeleteNoteModal(false)}
+//                                                 className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none"
+//                                             >
+//                                                 <IconX />
+//                                             </button>
+//                                             <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">Delete Notes</div>
+//                                             <div className="p-5 text-center">
+//                                                 <div className="text-white bg-danger ring-4 ring-danger/30 p-4 rounded-full w-fit mx-auto">
+//                                                     <IconTrashLines className="w-7 h-7 mx-auto" />
+//                                                 </div>
+//                                                 <div className="sm:w-3/4 mx-auto mt-5">Are you sure you want to delete Notes?</div>
+
+//                                                 <div className="flex justify-center items-center mt-8">
+//                                                     <button type="button" className="btn btn-outline-danger" onClick={() => setIsDeleteNoteModal(false)}>
+//                                                         Cancel
+//                                                     </button>
+//                                                     <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={deleteNote}>
+//                                                         Delete
+//                                                     </button>
+//                                                 </div>
+//                                             </div>
+//                                         </Dialog.Panel>
+//                                     </Transition.Child>
+//                                 </div>
+//                             </div>
+//                         </Dialog>
+//                     </Transition>
+//                 </div>
+//             </div>
+//             {selectedActivites && (
+//                 <ApprovalModal 
+//                     request={selectedActivites}
+//                     isOpen={isApprovalModalOpen}
+//                     onClose={() => setIsApprovalModalOpen(false)}
+//                     onSubmit={handleApprovalSubmit}
+//                     modalType="activities"
+//                     title="Process Activity Request"
+//                     descriptionField="description"
+//                     requireDateRange={true}
+//                 />
+//             )}
+//         </div>
+//     );
+// };
+
+// export default ActivitiesRequest;
+
+
+
+
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
@@ -20,189 +456,155 @@ import IconEye from '../../components/Icon/IconEye';
 import IconX from '../../components/Icon/IconX';
 import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
+import IconCalendar from '../../components/Icon/IconCalendar';
+import ApprovalLeaveModal from '../../components/ApprovalModal';
+import ApprovalModal from '../../components/ApprovalModal';
+import { useNavigate } from 'react-router-dom';
+import Toast from '../../services/toast';
 
 const endpoints = {
     listApi: `${getBaseUrl()}/activities/agents_activities`,
+    aprovalActivitesApi: `${getBaseUrl()}/activities/aproval_activities`,
 };
 
 const ActivitiesRequest = () => {
     const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(setPageTitle('Notes'));
-        fetchActivities();
-    });
-
-
-
-    const fetchActivities = async () => {
-        const response = await apiClient.get(endpoints.listApi);
-        if(response.status == 200 || response.status === 201){  
-            const data = response.data;
-
-            console.log(data);
-        }
-    }
-
-    const [notesList, setNoteList] = useState([]);
-
-   
-
-    const defaultParams = { id: null, title: '', description: '', tag: '', user: '', thumb: '' };
-    const [params, setParams] = useState<any>(JSON.parse(JSON.stringify(defaultParams)));
-    const [addContactModal, setAddContactModal] = useState<any>(false);
+    const [activitiesList, setActivitiesList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const useReff = useRef(false);
     const [isDeleteNoteModal, setIsDeleteNoteModal] = useState<any>(false);
     const [isShowNoteMenu, setIsShowNoteMenu] = useState<any>(false);
     const [isViewNoteModal, setIsViewNoteModal] = useState<any>(false);
-    const [filterdNotesList, setFilterdNotesList] = useState<any>([]);
     const [selectedTab, setSelectedTab] = useState<any>('all');
     const [deletedNote, setDeletedNote] = useState<any>(null);
-
-    // const searchNotes = () => {
-    //     if (selectedTab !== 'fav') {
-    //         if (selectedTab !== 'all' || selectedTab === 'delete') {
-    //             setFilterdNotesList(notesList.filter((d) => d.tag === selectedTab));
-    //         } else {
-    //             setFilterdNotesList(notesList);
-    //         }
-    //     } else {
-    //         setFilterdNotesList(notesList.filter((d) => d.isFav));
-    //     }
-    // };
-
-    // const saveNote = () => {
-    //     if (!params.title) {
-    //         showMessage('Title is required.', 'error');
-    //         return false;
-    //     }
-    //     if (params.id) {
-    //         //update task
-    //         let note: any = notesList.find((d: any) => d.id === params.id);
-    //         note.title = params.title;
-    //         note.user = params.user;
-    //         note.description = params.description;
-    //         note.tag = params.tag;
-    //     } else {
-    //         //add note
-    //         let maxNoteId = notesList.reduce((max: any, character: any) => (character.id > max ? character.id : max), notesList[0].id);
-    //         if (!maxNoteId) {
-    //             maxNoteId = 0;
-    //         }
-    //         let dt = new Date();
-    //         let note = {
-    //             id: maxNoteId + 1,
-    //             title: params.title,
-    //             user: params.user,
-    //             thumb: 'profile-21.jpeg',
-    //             description: params.description,
-    //             date: dt.getDate() + '/' + Number(dt.getMonth()) + 1 + '/' + dt.getFullYear(),
-    //             isFav: false,
-    //             tag: params.tag,
-    //         };
-
-    //         notesList.splice(0, 0, note);
-    //         searchNotes();
-    //     }
-    //     showMessage('Note has been saved successfully.');
-    //     setAddContactModal(false);
-    //     searchNotes();
-    // };
-
-    const tabChanged = (type: string) => {
-        setSelectedTab(type);
-        setIsShowNoteMenu(false);
-        // searchNotes();
-    };
-
-    const setFav = (note: any) => {
-        let list = filterdNotesList;
-        let item = list.find((d: any) => d.id === note.id);
-        item.isFav = !item.isFav;
-
-        setFilterdNotesList([...list]);
-        if (selectedTab !== 'all' || selectedTab === 'delete') {
-            // searchNotes();
+    const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+    const [selectedActivites, setselectedActivites] = useState<any>(null);
+    const loginuser = useSelector((state: IRootState) => state.auth.user || {});
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const navigate = useNavigate();
+    const toast = Toast();
+    
+    useEffect(() => {
+        if(!useReff.current){
+            dispatch(setPageTitle('Activities Request'));
+            fetchActivities(selectedTab);
         }
-    };
+        useReff.current = true
+    }, []);
 
-    const setTag = (note: any, name: string = '') => {
-        let list = filterdNotesList;
-        let item = filterdNotesList.find((d: any) => d.id === note.id);
-        item.tag = name;
-        setFilterdNotesList([...list]);
-        if (selectedTab !== 'all' || selectedTab === 'delete') {
-            // searchNotes();
+    // Add useEffect to watch for selectedTab changes
+    useEffect(() => {
+        if (useReff.current) {
+            fetchActivities(selectedTab);
         }
-    };
+    }, [selectedTab]);
 
-    const changeValue = (e: any) => {
-        const { value, id } = e.target;
-        setParams({ ...params, [id]: value });
-    };
+    const fetchActivities = async (filter = 'all') => {
+        setIsLoading(true);
+        try {
+            const response = await apiClient.get(endpoints.listApi, {
+                params: { filter }
+            });
+            if(response.status == 200 || response.status === 201){  
+                const data = response.data;
+                setActivitiesList(data);
+            }
+        } catch (error) {
+            console.error('Error fetching activities:', error);
+            toast.error('Failed to fetch activities');
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     const deleteNoteConfirm = (note: any) => {
         setDeletedNote(note);
         setIsDeleteNoteModal(true);
     };
-
-    const viewNote = (note: any) => {
-        setParams(note);
-        setIsViewNoteModal(true);
-    };
-
-    const editNote = (note: any = null) => {
-        setIsShowNoteMenu(false);
-        const json = JSON.parse(JSON.stringify(defaultParams));
-        setParams(json);
-        if (note) {
-            let json1 = JSON.parse(JSON.stringify(note));
-            setParams(json1);
-        }
-        setAddContactModal(true);
-    };
-
+    
     const deleteNote = () => {
-        setNoteList(notesList.filter((d: any) => d.id !== deletedNote.id));
-        // searchNotes();
-        showMessage('Note has been deleted successfully.');
+        setActivitiesList(activitiesList.filter((d: any) => d.id !== deletedNote.id));
+        showMessage('Activity has been deleted successfully.');
         setIsDeleteNoteModal(false);
     };
 
     const showMessage = (msg = '', type = 'success') => {
-        const toast: any = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000, customClass: { container: 'toast' }, });
-        toast.fire({
-            icon: type,
-            title: msg,
-            padding: '10px 20px',
+        const toast: any = Swal.mixin({ 
+            toast: true, 
+            position: 'top', 
+            showConfirmButton: false, 
+            timer: 3000, 
+            customClass: { container: 'toast' }, 
         });
+        toast.fire({ icon: type, title: msg, padding: '10px 20px', });
     };
 
-    useEffect(() => {
-        // searchNotes();
-    }, [selectedTab, notesList]);
-
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+
+    const Approve = (activites:any) => {
+        if(activites.status == 2){
+            toast.warning('This request has already been approved');
+            return;
+        } else if(activites.status == 3){
+             toast.warning('This request has already been rejected');
+              return;
+        }
+        setselectedActivites(activites);
+        setIsApprovalModalOpen(true);
+    }
+
+    const handleApprovalSubmit = async (formValues: { 
+            action: string; 
+            approved_start_date?: string; 
+            approved_end_date?: string; 
+            response: string 
+        }) => {
+            try {
+                const formData = new FormData();
+                formData.append('id', selectedActivites.id);
+                formData.append('approved_by', loginuser.client_user_id);
+                formData.append('action', formValues.action);
+                if (formValues.action === 'approve') {
+                    if (formValues.approved_start_date) {
+                        formData.append('approved_start_date', formValues.approved_start_date);
+                    }
+                    if (formValues.approved_end_date) {
+                        formData.append('approved_end_date', formValues.approved_end_date);
+                    }
+                }
+                formData.append('response', formValues.response);
+                
+                const response = await apiClient.post(endpoints.aprovalActivitesApi, formData);
+                if (response.status === 200 || response.status === 201) {
+                    fetchActivities(selectedTab);
+                    setErrors({});
+                    Swal.fire('Success!', response.data.message, 'success');
+                    setIsApprovalModalOpen(false); 
+                }
+            } catch (error: any) {
+                if (error.response?.status === 422) {
+                    Swal.fire('Error', error.response.data.message || 'Validation failed.', 'error');
+                } else {
+                    Swal.fire('Error', 'Something went wrong.', 'error');
+                }
+                setIsApprovalModalOpen(false);
+            }
+    };
+
+    const handleAddActivites = () => {
+         navigate('/pages/activities/activities');
+    }
+
+    const handleTabChange = (tab: string) => {
+        setSelectedTab(tab);
+        // No need to call fetchActivities here because useEffect will handle it
+    }
 
     return (
         <div>
             <div className="flex gap-5 relative sm:h-[calc(100vh_-_150px)] h-full">
                 <div className={`bg-black/60 z-10 w-full h-full rounded-md absolute hidden ${isShowNoteMenu ? '!block xl:!hidden' : ''}`} onClick={() => setIsShowNoteMenu(!isShowNoteMenu)}></div>
-                <div
-                    className={`panel
-                    p-4
-                    flex-none
-                    w-[240px]
-                    absolute
-                    xl:relative
-                    z-10
-                    space-y-4
-                    h-full
-                    xl:h-auto
-                    hidden
-                    xl:block
-                    ltr:lg:rounded-r-md ltr:rounded-r-none
-                    rtl:lg:rounded-l-md rtl:rounded-l-none
-                    overflow-hidden ${isShowNoteMenu ? '!block h-full ltr:left-0 rtl:right-0' : 'hidden shadow'}`}
-                >
+                <div className={`panel p-4 flex-none w-[240px] absolute xl:relative z-10 space-y-4 h-full xl:h-auto hidden xl:block ltr:lg:rounded-r-md ltr:rounded-r-none rtl:lg:rounded-l-md rtl:rounded-l-none overflow-hidden ${isShowNoteMenu ? '!block h-full ltr:left-0 rtl:right-0' : 'hidden shadow'}`}>
                     <div className="flex flex-col h-full pb-16">
                         <div className="flex text-center items-center">
                             <div className="shrink-0">
@@ -216,64 +618,87 @@ const ActivitiesRequest = () => {
                             <div className="space-y-1">
                                 <button
                                     type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${
-                                        selectedTab === 'all' && 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]'
-                                    }`}
-                                    onClick={() => tabChanged('all')}
+                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${selectedTab === 'all' && 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('all')}
                                 >
                                     <div className="flex items-center">
                                         <IconNotesEdit className="shrink-0" />
                                         <div className="ltr:ml-3 rtl:mr-3">All Requests</div>
                                     </div>
                                 </button>
-                                {/* <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
-                                <div className="px-1 py-3 text-white-dark">Tags</div>
-                                <button
-                                    type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
-                                        selectedTab === 'personal' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
-                                    }`}
-                                    onClick={() => tabChanged('personal')}
-                                >
-                                    <IconSquareRotated className="fill-primary shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Personal</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
-                                        selectedTab === 'work' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
-                                    }`}
-                                    onClick={() => tabChanged('work')}
-                                >
-                                    <IconSquareRotated className="fill-warning shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Work</div>
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
-                                        selectedTab === 'social' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
-                                    }`}
-                                    onClick={() => tabChanged('social')}
+                                 <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
+                                <div className="px-1 py-3 text-white-dark">Filters</div>
+                                <button type="button"
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextweek' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('nextweek')}
                                 >
                                     <IconSquareRotated className="fill-info shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Social</div>
+                                    <div className="ltr:ml-3 rtl:mr-3">Next Week</div>
+                                </button>
+
+                                <button type="button"
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextmonth' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('nextmonth')}
+                                >
+                                    <IconSquareRotated className="fill-danger shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Next Month</div>
+                                </button>
+                                  <div className='pt-3 border-t'></div>
+                                <button 
+                                    type="button" 
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'today' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`} 
+                                    onClick={() => handleTabChange('today')}
+                                >
+                                    <IconSquareRotated className="fill-primary shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Today Request</div>
+                                </button>
+                                <button 
+                                    type="button"
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-warning ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'yesterday' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('yesterday')}
+                                >
+                                    <IconSquareRotated className="fill-warning shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Yesterday Request</div>
                                 </button>
                                 <button
                                     type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${
-                                        selectedTab === 'important' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'
-                                    }`}
-                                    onClick={() => tabChanged('important')}
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'week' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('week')}
+                                >
+                                    <IconSquareRotated className="fill-info shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Last 1 Week Requests</div>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'month' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('month')}
                                 >
                                     <IconSquareRotated className="fill-danger shrink-0" />
-                                    <div className="ltr:ml-3 rtl:mr-3">Important</div>
-                                </button> */}
+                                    <div className="ltr:ml-3 rtl:mr-3">Last Month Requests</div>
+                                </button> 
+
+                                <button 
+                                    type="button" 
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-primary ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === '3months' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('3months')}
+                                >
+                                    <IconSquareRotated className="fill-primary shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Last 3 Month Requests</div>
+                                </button>
+                                <button type="button"
+                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === '6months' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('6months')}
+                                >
+                                    <IconSquareRotated className="fill-danger shrink-0" />
+                                    <div className="ltr:ml-3 rtl:mr-3">Last 6 Month Requests</div>
+                                </button>
                             </div>
                         </PerfectScrollbar>
                     </div>
                     <div className="ltr:left-0 rtl:right-0 absolute bottom-0 p-4 w-full">
-                        <button className="btn btn-primary w-full" type="button" onClick={() => editNote()}>
-                            <IconPlus className="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0" /> Add New Note
+                        <button className="btn btn-primary w-full" type="button" onClick={handleAddActivites}>
+                            <IconPlus className="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0" /> Add New Request
                         </button>
                     </div>
                 </div>
@@ -283,91 +708,97 @@ const ActivitiesRequest = () => {
                             <IconMenu />
                         </button>
                     </div>
-                    {filterdNotesList.length ? (
+                    {isLoading ? (
+                        <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px]">
+                            <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10"></span>
+                        </div>
+                    ) : activitiesList.length ? (
                         <div className="sm:min-h-[300px] min-h-[400px]">
                             <div className="grid 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5">
-                                {filterdNotesList.map((note: any) => {
+                                {activitiesList.map((activities: any) => {
                                     return (
-                                        <div
-                                            className={`panel pb-12 ${
-                                                note.tag === 'personal'
-                                                    ? 'bg-primary-light shadow-primary'
-                                                    : note.tag === 'work'
+                                        <div className={`panel pb-5 ${activities.tag === 'personal' ? 'bg-primary-light shadow-primary' : activities.tag === 'work'
                                                     ? 'bg-warning-light shadow-warning'
-                                                    : note.tag === 'social'
+                                                    : activities.tag === 'social'
                                                     ? 'bg-info-light shadow-info'
-                                                    : note.tag === 'important'
+                                                    : activities.tag === 'important'
                                                     ? 'bg-danger-light shadow-danger'
                                                     : 'dark:shadow-dark'
-                                            }`}
-                                            key={note.id}
-                                        >
-                                            <div className="min-h-[142px]">
-                                                <div className="flex justify-between">
-                                                    <div className="flex items-center w-max">
-                                                        <div className="flex-none">
-                                                            {note.thumb && (
-                                                                <div className="p-0.5 bg-gray-300 dark:bg-gray-700 rounded-full">
-                                                                    <img className="h-8 w-8 rounded-full object-cover" alt="img" src={`/assets/images/${note.thumb}`} />
-                                                                </div>
-                                                            )}
+                                            }`} key={activities.id}>
+                                            <div className="flex flex-col h-full">
+                                                <div className="flex justify-between items-start mb-4">
+                                                <div className="flex items-center space-x-3">
+                                                  {activities.thumb ? (
+                                                    <div className="p-1 bg-white rounded-full shadow-sm">
+                                                        <img className="h-10 w-10 rounded-full object-cover border-2 border-white" alt="User thumbnail" src={`/assets/images/${activities.thumb}`} />
+                                                    </div>
+                                                    ) : activities.user ? (
+                                                    <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white font-semibold shadow-sm">
+                                                        {activities.user.charAt(0) + activities.user.split(' ')[1]?.charAt(0) || ''}
+                                                    </div>
+                                                    ) : (
+                                                    <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300">
+                                                        <IconUser className="w-5 h-5" />
+                                                    </div>
+                                                    )}
+                                                    <div>
+                                                    <h3 className="font-semibold text-gray-800 dark:text-gray-100">{activities.title}</h3>
+                                                    <div className="flex flex-wrap gap-2 mt-1">
+                                                        {activities.agents.length === 1 ? (
+                                                        <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                                            {activities.agents[0].client_user_name}
+                                                        </span>
+                                                        ) : (
+                                                        activities.agents.map((agent: any) => (
+                                                        <span key={agent.client_user_id} className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                                                            > {agent.client_user_name} </span> ))
+                                                        )}
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div className="dropdown">
+                                                    <button onClick={() => Approve(activities)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                      <IconHorizontalDots className="w-5 h-5 opacity-70 hover:opacity-100" />
+                                                    </button>
+                                                </div>
+                                                </div>
+                                                <div className="flex-grow mb-6">
+                                                <h4 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{activities.title}</h4>
+                                                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                                                    {activities.description}
+                                                </p>
+                                                </div>
+                                               <div className="flex items-center justify-end mt-auto mb-2">
+                                                    <span
+                                                        className={`text-xs font-medium px-2.5 py-0.5 rounded ${
+                                                        activities.status === 1
+                                                            ? 'bg-secondary text-white'
+                                                            : activities.status === 2
+                                                            ? 'bg-success text-white'
+                                                            : activities.status === 3
+                                                            ? 'bg-danger text-white'
+                                                            : ''
+                                                        }`}
+                                                    >
+                                                        {activities.status === 1
+                                                        ? 'Pending to Approve'
+                                                        : activities.status === 2
+                                                        ? 'Approved'
+                                                        : activities.status === 3
+                                                        ? 'Rejected'
+                                                        : ''}
+                                                    </span>
+                                                    </div>
 
-                                                            {!note.thumb && note.user && (
-                                                                <div className="grid place-content-center h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-700 text-sm font-semibold">
-                                                                    {note.user.charAt(0) + '' + note.user.charAt(note.user.indexOf('') + 1)}
-                                                                </div>
-                                                            )}
-                                                            {!note.thumb && !note.user && (
-                                                                <div className="bg-gray-300 dark:bg-gray-700 rounded-full p-2">
-                                                                    <IconUser className="w-4.5 h-4.5" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="ltr:ml-2 rtl:mr-2">
-                                                            <div className="font-semibold">{note.user}</div>
-                                                            <div className="text-sx text-white-dark">{note.date}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="dropdown">
-                                                        <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="text-primary"
-                                                            button={<IconHorizontalDots className="rotate-90 opacity-70 hover:opacity-100" />}
-                                                        >
-                                                            <ul className="text-sm font-medium">
-                                                                <li>
-                                                                    <button type="button" onClick={() => editNote(note)}> <IconPencil className="w-4 h-4 ltr:mr-3 rtl:ml-3 shrink-0" /> Edit </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" onClick={() => deleteNoteConfirm(note)}>
-                                                                        <IconTrashLines className="w-4.5 h-4.5 ltr:mr-3 rtl:ml-3 shrink-0" />
-                                                                        Delete
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <button type="button" onClick={() => viewNote(note)}>
-                                                                        <IconEye className="w-4.5 h-4.5 ltr:mr-3 rtl:ml-3 shrink-0" />
-                                                                        View
-                                                                    </button>
-                                                                </li>
-                                                            </ul>
-                                                        </Dropdown>
-                                                    </div>
+
+                                                <div className="flex items-center justify-between mt-auto pt-3 border-t">
+                                                <div className="flex items-center text-sm">
+                                                    <IconCalendar className="w-4 h-4 mr-1 text-primary" />
+                                                    <span className='text-primary ml-2'>{activities.start_date}</span>
                                                 </div>
-                                                <div>
-                                                    <h4 className="font-semibold mt-4">{note.title}</h4>
-                                                    <p className="text-white-dark mt-2">{note.description}</p>
-                                                </div>
-                                            </div>
-                                            <div className="absolute bottom-5 left-0 w-full px-5">
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <div className="dropdown fdfdf">
-                                                        <Dropdown offset={[0, 5]} placement={`${isRtl ? 'bottom-end' : 'bottom-start'}`} button={ <span><IconSquareRotated/></span> }>
-                                                        </Dropdown>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <button type="button" className="text-danger" onClick={() => deleteNoteConfirm(note)}>
-                                                            <IconTrashLines />
-                                                        </button>
-                                                    </div>
+                                                <button type="button" onClick={() => deleteNoteConfirm(activities)} className="p-1 text-red-500 hover:text-red dark:hover:text-red-400 transition-colors">
+                                                    <IconTrashLines className="w-5 h-5" />
+                                                </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -376,111 +807,12 @@ const ActivitiesRequest = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px] font-semibold text-lg h-full">No data available</div>
+                        <div className="flex flex-col justify-center items-center sm:min-h-[300px] min-h-[400px] font-semibold text-lg h-full">
+                            <IconNotesEdit className="w-16 h-16 text-gray-400 mb-4" />
+                            <div>No Request found</div>
+                            <div className="text-sm text-gray-500 mt-2">Try changing your filters</div>
+                        </div>
                     )}
-
-                    <Transition appear show={addContactModal} as={Fragment}>
-                        <Dialog as="div" open={addContactModal} onClose={() => setAddContactModal(false)} className="relative z-[51]">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <div className="fixed inset-0 bg-[black]/60" />
-                            </Transition.Child>
-
-                            <div className="fixed inset-0 overflow-y-auto">
-                                <div className="flex min-h-full items-center justify-center px-4 py-8">
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="ease-out duration-300"
-                                        enterFrom="opacity-0 scale-95"
-                                        enterTo="opacity-100 scale-100"
-                                        leave="ease-in duration-200"
-                                        leaveFrom="opacity-100 scale-100"
-                                        leaveTo="opacity-0 scale-95"
-                                    >
-                                        <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
-                                            <button
-                                                type="button"
-                                                onClick={() => setAddContactModal(false)}
-                                                className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none"
-                                            >
-                                                <IconX />
-                                            </button>
-                                            <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                                {params.id ? 'Edit Note' : 'Add Note'}
-                                            </div>
-                                            <div className="p-5">
-                                                <form>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="title">Title</label>
-                                                        <input id="title" type="text" placeholder="Enter Title" className="form-input" value={params.title} onChange={(e) => changeValue(e)} />
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="name">User Name</label>
-                                                        <select id="user" className="form-select" value={params.user} onChange={(e) => changeValue(e)}>
-                                                            <option value="">Select User</option>
-                                                            <option value="Max Smith">Max Smith</option>
-                                                            <option value="John Doe">John Doe</option>
-                                                            <option value="Kia Jain">Kia Jain</option>
-                                                            <option value="Karena Courtliff">Karena Courtliff</option>
-                                                            <option value="Vladamir Koschek">Vladamir Koschek</option>
-                                                            <option value="Robert Garcia">Robert Garcia</option>
-                                                            <option value="Marie Hamilton">Marie Hamilton</option>
-                                                            <option value="Megan Meyers">Megan Meyers</option>
-                                                            <option value="Angela Hull">Angela Hull</option>
-                                                            <option value="Karen Wolf">Karen Wolf</option>
-                                                            <option value="Jasmine Barnes">Jasmine Barnes</option>
-                                                            <option value="Thomas Cox">Thomas Cox</option>
-                                                            <option value="Marcus Jones">Marcus Jones</option>
-                                                            <option value="Matthew Gray">Matthew Gray</option>
-                                                            <option value="Chad Davis">Chad Davis</option>
-                                                            <option value="Linda Drake">Linda Drake</option>
-                                                            <option value="Kathleen Flores">Kathleen Flores</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="tag">Tag</label>
-                                                        <select id="tag" className="form-select" value={params.tag} onChange={(e) => changeValue(e)}>
-                                                            <option value="">None</option>
-                                                            <option value="personal">Personal</option>
-                                                            <option value="work">Work</option>
-                                                            <option value="social">Social</option>
-                                                            <option value="important">Important</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-5">
-                                                        <label htmlFor="desc">Description</label>
-                                                        <textarea
-                                                            id="description"
-                                                            rows={3}
-                                                            className="form-textarea resize-none min-h-[130px]"
-                                                            placeholder="Enter Description"
-                                                            value={params.description}
-                                                            onChange={(e) => changeValue(e)}
-                                                        ></textarea>
-                                                    </div>
-                                                    <div className="flex justify-end items-center mt-8">
-                                                        <button type="button" className="btn btn-outline-danger gap-2" onClick={() => setAddContactModal(false)}>
-                                                            Cancel
-                                                        </button>
-                                                        {/* <button type="button" className="btn btn-primary ltr:ml-4 rtl:mr-4" onClick={saveNote}>
-                                                            {params.id ? 'Update Note' : 'Add Note'}
-                                                        </button> */}
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </Dialog.Panel>
-                                    </Transition.Child>
-                                </div>
-                            </div>
-                        </Dialog>
-                    </Transition>
 
                     <Transition appear show={isDeleteNoteModal} as={Fragment}>
                         <Dialog as="div" open={isDeleteNoteModal} onClose={() => setIsDeleteNoteModal(false)} className="relative z-[51]">
@@ -515,12 +847,12 @@ const ActivitiesRequest = () => {
                                             >
                                                 <IconX />
                                             </button>
-                                            <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">Delete Notes</div>
+                                            <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">Delete Activity</div>
                                             <div className="p-5 text-center">
                                                 <div className="text-white bg-danger ring-4 ring-danger/30 p-4 rounded-full w-fit mx-auto">
                                                     <IconTrashLines className="w-7 h-7 mx-auto" />
                                                 </div>
-                                                <div className="sm:w-3/4 mx-auto mt-5">Are you sure you want to delete Notes?</div>
+                                                <div className="sm:w-3/4 mx-auto mt-5">Are you sure you want to delete this activity?</div>
 
                                                 <div className="flex justify-center items-center mt-8">
                                                     <button type="button" className="btn btn-outline-danger" onClick={() => setIsDeleteNoteModal(false)}>
@@ -537,78 +869,20 @@ const ActivitiesRequest = () => {
                             </div>
                         </Dialog>
                     </Transition>
-
-                    <Transition appear show={isViewNoteModal} as={Fragment}>
-                        <Dialog as="div" open={isViewNoteModal} onClose={() => setIsViewNoteModal(false)} className="relative z-[51]">
-                            <Transition.Child
-                                as={Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <div className="fixed inset-0 bg-[black]/60" />
-                            </Transition.Child>
-
-                            <div className="fixed inset-0 overflow-y-auto">
-                                <div className="flex min-h-full items-center justify-center px-4 py-8">
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="ease-out duration-300"
-                                        enterFrom="opacity-0 scale-95"
-                                        enterTo="opacity-100 scale-100"
-                                        leave="ease-in duration-200"
-                                        leaveFrom="opacity-100 scale-100"
-                                        leaveTo="opacity-0 scale-95"
-                                    >
-                                        <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsViewNoteModal(false)}
-                                                className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none"
-                                            >
-                                                <IconX />
-                                            </button>
-                                            <div className="flex items-center flex-wrap gap-2 text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                                <div className="ltr:mr-3 rtl:ml-3">{params.title}</div>
-                                                {params.tag && (
-                                                    <button
-                                                        type="button"
-                                                        className={`badge badge-outline-primary rounded-3xl capitalize ltr:mr-3 rtl:ml-3 ${
-                                                            (params.tag === 'personal' && 'shadow-primary',
-                                                            params.tag === 'work' && 'shadow-warning',
-                                                            params.tag === 'social' && 'shadow-info',
-                                                            params.tag === 'important' && 'shadow-danger')
-                                                        }`}
-                                                    >
-                                                        {params.tag}
-                                                    </button>
-                                                )}
-                                                {params.isFav && (
-                                                    <button type="button" className="text-warning">
-                                                        <IconStar className="fill-warning" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <div className="p-5">
-                                                <div className="text-base">{params.description}</div>
-
-                                                <div className="ltr:text-right rtl:text-left mt-8">
-                                                    <button type="button" className="btn btn-outline-danger" onClick={() => setIsViewNoteModal(false)}>
-                                                        Close
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </Dialog.Panel>
-                                    </Transition.Child>
-                                </div>
-                            </div>
-                        </Dialog>
-                    </Transition>
                 </div>
             </div>
+            {selectedActivites && (
+                <ApprovalModal 
+                    request={selectedActivites}
+                    isOpen={isApprovalModalOpen}
+                    onClose={() => setIsApprovalModalOpen(false)}
+                    onSubmit={handleApprovalSubmit}
+                    modalType="activities"
+                    title="Process Activity Request"
+                    descriptionField="description"
+                    requireDateRange={true}
+                />
+            )}
         </div>
     );
 };

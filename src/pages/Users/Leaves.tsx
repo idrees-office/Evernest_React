@@ -17,7 +17,7 @@ import ReactQuill from 'react-quill';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 import IconEye from '../../components/Icon/IconEye';
-import ApprovalLeaveModal from '../../components/ApprovalLeaveModal';
+import ApprovalModal from '../../components/ApprovalModal';
 import Toast from '../../services/toast';
 
 const endpoints = {
@@ -181,34 +181,42 @@ const Leaves = () => {
         setIsApprovalModalOpen(true);
     };
     
-    const handleApprovalSubmit = async (formValues: { action: string; approved_start_date: string; approved_end_date: string; response:any }) => {
-        try {
-            const formData = new FormData();
-            formData.append('id', selectedLeave.id);
-            formData.append('approved_by', loginuser.client_user_id);
-            formData.append('action', formValues.action);
-            if (formValues.action === 'approve') {
-                formData.append('approved_start_date', formValues.approved_start_date);
-                formData.append('approved_end_date', formValues.approved_end_date);
-                
-            }
-            formData.append('response', formValues.response);
-            const response = await apiClient.post(endpoints.aprovalLeaveApi, formData);
-            if (response.status === 200 || response.status === 201) {
-                fetchLeaveList();
-                setErrors({});
-                Swal.fire('Success!', response.data.message, 'success');
-            }
-        } catch (error: any) {
-            if (error.response?.status === 422) {
-                Swal.fire('Error', error.response.data.message || 'Validation failed.', 'error');
+    const handleApprovalSubmit = async (formValues: { 
+            action: string; 
+            approved_start_date?: string; 
+            approved_end_date?: string; 
+            response: string 
+        }) => {
+            try {
+                const formData = new FormData();
+                formData.append('id', selectedLeave.id);
+                formData.append('approved_by', loginuser.client_user_id);
+                formData.append('action', formValues.action);
+                if (formValues.action === 'approve') {
+                    if (formValues.approved_start_date) {
+                        formData.append('approved_start_date', formValues.approved_start_date);
+                    }
+                    if (formValues.approved_end_date) {
+                        formData.append('approved_end_date', formValues.approved_end_date);
+                    }
+                }
+                formData.append('response', formValues.response);
+                const response = await apiClient.post(endpoints.aprovalLeaveApi, formData);
+                if (response.status === 200 || response.status === 201) {
+                    fetchLeaveList();
+                    setErrors({});
+                    Swal.fire('Success!', response.data.message, 'success');
+                    setIsApprovalModalOpen(false); 
+                }
+            } catch (error: any) {
+                if (error.response?.status === 422) {
+                    Swal.fire('Error', error.response.data.message || 'Validation failed.', 'error');
+                } else {
+                    Swal.fire('Error', 'Something went wrong.', 'error');
+                }
                 setIsApprovalModalOpen(false);
-                
-            } else {
-                Swal.fire('Error', 'Something went wrong.', 'error');
             }
-        }
-    };
+        };
 
     const columns = [
     {
@@ -291,12 +299,7 @@ const Leaves = () => {
         render: (item: any) => (
         <div className="flex space-x-2">
             <>
-            <button
-                type="button"
-                onClick={() => AprovalLeave(item)}
-                className="btn px-1 py-0.5 rounded text-white bg-green-600"
-                key={`view-${item.id}`}
-            >
+            <button type="button" disabled={item.status==2} onClick={() => AprovalLeave(item)} className="btn px-1 py-0.5 rounded text-white bg-green-600" key={`view-${item.id}`}>
                 <IconEye />
             </button>
             <button
@@ -383,8 +386,20 @@ const Leaves = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <ApprovalLeaveModal leave={selectedLeave} isOpen={isApprovalModalOpen} onClose={() => setIsApprovalModalOpen(false)} onSubmit={handleApprovalSubmit}/>
+            </div>    
+            {selectedLeave && (
+                <ApprovalModal 
+                    request={selectedLeave} 
+                    isOpen={isApprovalModalOpen} 
+                    onClose={() => setIsApprovalModalOpen(false)} 
+                    onSubmit={handleApprovalSubmit} 
+                    modalType="leave" 
+                    title="Process Leave Request" 
+                    descriptionField="reason" 
+                    requireDateRange={true}
+                />
+            )}
+        {/* <ApprovalLeaveModal leave={selectedLeave} isOpen={isApprovalModalOpen} onClose={() => setIsApprovalModalOpen(false)} onSubmit={handleApprovalSubmit}/> */}
         </form>
     );
 };
