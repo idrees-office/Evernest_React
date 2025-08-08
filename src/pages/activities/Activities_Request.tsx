@@ -197,15 +197,11 @@ const ActivitiesRequest = () => {
                             </div>
                             <h3 className="text-lg font-semibold ltr:ml-3 rtl:mr-3">Request</h3>
                         </div>
-
                         <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b] my-4"></div>
                         <PerfectScrollbar className="relative ltr:pr-3.5 rtl:pl-3.5 ltr:-mr-3.5 rtl:-ml-3.5 h-full grow">
                             <div className="space-y-1">
-                                <button
-                                    type="button"
-                                    className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${selectedTab === 'all' && 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]'}`}
-                                    onClick={() => handleTabChange('all')}
-                                >
+                                <button type="button" className={`w-full flex justify-between items-center p-2 hover:bg-white-dark/10 rounded-md dark:hover:text-primary hover:text-primary dark:hover:bg-[#181F32] font-medium h-10 ${selectedTab === 'all' && 'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('all')}>
                                     <div className="flex items-center">
                                         <IconNotesEdit className="shrink-0" />
                                         <div className="ltr:ml-3 rtl:mr-3">All Requests</div>
@@ -213,16 +209,13 @@ const ActivitiesRequest = () => {
                                 </button>
                                  <div className="h-px w-full border-b border-white-light dark:border-[#1b2e4b]"></div>
                                 <div className="px-1 py-3 text-white-dark">Filters</div>
-                                <button type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextweek' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
-                                    onClick={() => handleTabChange('nextweek')}
-                                >
+                                <button type="button" className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-info ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextweek' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                    onClick={() => handleTabChange('nextweek')}>
                                     <IconSquareRotated className="fill-info shrink-0" />
                                     <div className="ltr:ml-3 rtl:mr-3">Next Week</div>
                                 </button>
 
-                                <button type="button"
-                                    className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextmonth' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
+                                <button type="button" className={`w-full flex items-center h-10 p-1 hover:bg-white-dark/10 rounded-md dark:hover:bg-[#181F32] font-medium text-danger ltr:hover:pl-3 rtl:hover:pr-3 duration-300 ${selectedTab === 'nextmonth' && 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]'}`}
                                     onClick={() => handleTabChange('nextmonth')}
                                 >
                                     <IconSquareRotated className="fill-danger shrink-0" />
@@ -295,7 +288,7 @@ const ActivitiesRequest = () => {
                     </div>
                     {isLoading ? (
                         <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px]">
-                            <span className="animate-spin border-4 border-primary border-l-transparent rounded-full w-10 h-10"></span>
+                             <span className="animate-[spin_2s_linear_infinite] border-4 border-[#f1f2f3] border-l-primary border-r-primary rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
                         </div>
                     ) : activitiesList.length ? (
                         <div className="sm:min-h-[300px] min-h-[400px]">

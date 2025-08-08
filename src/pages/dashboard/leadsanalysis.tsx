@@ -203,7 +203,12 @@ const LeadsAnalysis = () => {
     };
 
     if (loading) {
-        return <div className="text-center py-10">Loading...</div>;
+        return (
+            <div className="flex justify-center items-center sm:min-h-[300px] min-h-[400px]">
+                <span className="animate-[spin_1s_linear_infinite] border-4 border-[#f1f2f3] border-l-primary border-r-primary rounded-full w-10 h-10 inline-block align-middle m-auto mb-10"></span>
+            </div>
+        )   
+        
     }
 
     if (error) {
@@ -213,100 +218,6 @@ const LeadsAnalysis = () => {
     if (!leadsData) {
         return <div className="text-center py-10">No data available</div>;
     }
-
-    // const uniqueVisitorSeries: any = {
-    //     series: [
-    //         {
-    //             name: 'Organic',
-    //             data: [91, 76, 85, 101, 98, 87, 105, 91, 114, 94, 66, 70],
-    //         },
-    //     ],
-    //     options: {
-    //         chart: {
-    //             height: 360,
-    //             type: 'bar',
-    //             fontFamily: 'Nunito, sans-serif',
-    //             toolbar: {
-    //                 show: false,
-    //             },
-    //         },
-    //         dataLabels: {
-    //             enabled: false,
-    //         },
-    //         stroke: {
-    //             width: 2,
-    //             colors: ['transparent'],
-    //         },
-    //         colors: ['#5c1ac3', '#ffbb44'],
-    //         dropShadow: {
-    //             enabled: true,
-    //             blur: 3,
-    //             color: '#515365',
-    //             opacity: 0.4,
-    //         },
-    //         plotOptions: {
-    //             bar: {
-    //                 horizontal: false,
-    //                 columnWidth: '55%',
-    //                 borderRadius: 8,
-    //                 borderRadiusApplication: 'end',
-    //             },
-    //         },
-    //         legend: {
-    //             position: 'bottom',
-    //             horizontalAlign: 'center',
-    //             fontSize: '14px',
-    //             itemMargin: {
-    //                 horizontal: 4,
-    //                 vertical: 4,
-    //             },
-    //         },
-    //         grid: {
-    //             borderColor: isDark ? '#191e3a' : '#e0e6ed',
-    //             padding: {
-    //                 left: 10,
-    //                 right: 10,
-    //             },
-    //             xaxis: {
-    //                 lines: {
-    //                     show: false,
-    //                 },
-    //             },
-    //         },
-    //         xaxis: {
-    //             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    //             axisBorder: {
-    //                 show: true,
-    //                 color: isDark ? '#3b3f5c' : '#e0e6ed',
-    //             },
-    //         },
-    //         yaxis: {
-    //             tickAmount: 6,
-    //             opposite: isRtl ? true : false,
-    //             labels: {
-    //                 offsetX: isRtl ? -10 : 0,
-    //             },
-    //         },
-    //         fill: {
-    //             type: 'gradient',
-    //             gradient: {
-    //                 shade: isDark ? 'dark' : 'light',
-    //                 type: 'vertical',
-    //                 shadeIntensity: 0.3,
-    //                 inverseColors: false,
-    //                 opacityFrom: 1,
-    //                 opacityTo: 0.8,
-    //                 stops: [0, 50],
-    //             },
-    //         },
-    //         tooltip: {
-    //             marker: {
-    //                 show: true,
-    //             },
-    //         },
-    //     },
-    // };
-
     return (
         <div>
             <div className="flex items-center justify-between mb-6">
