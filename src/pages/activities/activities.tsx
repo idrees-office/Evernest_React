@@ -18,6 +18,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Select from 'react-select';
 import IconGoogle from '../../components/Icon/IconGoogle';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -45,31 +46,12 @@ const Activities = () => {
     const [selectedAgents, setSelectedAgents] = useState<any[]>([]);
     const [googleAuthUrl, setGoogleAuthUrl] = useState('');
     const [isGoogleConnected, setIsGoogleConnected] = useState(false);
-
+    const location = useLocation();
 
     useEffect(() => {
-        const checkGoogleConnection = async () => {
-            try {
-                const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
-                setIsGoogleConnected(response.data.connected);
-                if (!response.data.connected && !googleAuthUrl) {
-                    // Fetch auth URL if not connected
-                    const authResponse = await apiClient.get(`${getBaseUrl()}/google/auth-url`);
-                    setGoogleAuthUrl(authResponse.data.url);
-                }
-            } catch (error) {
-                console.error('Error checking Google connection:', error);
-            }
-        };
-
-        const getGoogleAuthUrl = async () => {
-            try {
-                const response = await apiClient.get(`${getBaseUrl()}/google/auth-url`);
-                setGoogleAuthUrl(response.data.url);
-            } catch (error) {
-                console.error('Error getting Google auth URL:', error);
-            }
-        };
+        
+        const currentUrl = window.location.origin + location.pathname + location.search;
+        console.log(currentUrl);
         
         checkGoogleConnection();
         getGoogleAuthUrl();
@@ -87,29 +69,9 @@ const Activities = () => {
     }, [dispatch]);
 
 
-     useEffect(() => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const authStatus = urlParams.get('google_auth');
-            
-            if (authStatus === 'success') {
-                toast.success('Google Calendar connected successfully!');
-                // Remove the query parameter without reloading
-                window.history.replaceState({}, document.title, window.location.pathname);
-                checkGoogleConnection(); 
-            } else if (authStatus === 'error') {
-                toast.error('Failed to connect Google Calendar');
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        }, []);
 
-        const checkGoogleConnection = async () => {
-            try {
-                const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
-                setIsGoogleConnected(response.data.connected);
-            } catch (error) {
-                console.error('Error checking Google connection:', error);
-            }
-        };
+
+       
     
     const syncWithGoogleCalendar = async (eventData: any) => {
         try {
@@ -130,6 +92,29 @@ const Activities = () => {
         }
         return null;
     };
+
+
+    const checkGoogleConnection = async () => {
+        try {
+            const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
+            setIsGoogleConnected(response.data.connected);
+            if (!response.data.connected && !googleAuthUrl) {
+                getGoogleAuthUrl();
+            }
+        } catch (error) {
+            console.error('Error checking Google connection:', error);
+        }
+    };
+
+    const getGoogleAuthUrl = async () => {
+        try {
+            const response = await apiClient.get(`${getBaseUrl()}/google/auth-url`);
+            setGoogleAuthUrl(response.data.url);
+        } catch (error) {
+            console.error('Error getting Google auth URL:', error);
+        }
+    };
+
 
     
     const getMonth = (dt: Date, add: number = 0) => {
