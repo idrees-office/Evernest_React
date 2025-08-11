@@ -88,19 +88,28 @@ const Activities = () => {
 
 
      useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const authStatus = urlParams.get('google_auth');
-    
-    if (authStatus === 'success') {
-        toast.success('Google Calendar connected successfully!');
+            const urlParams = new URLSearchParams(window.location.search);
+            const authStatus = urlParams.get('google_auth');
+            
+            if (authStatus === 'success') {
+                toast.success('Google Calendar connected successfully!');
+                // Remove the query parameter without reloading
+                window.history.replaceState({}, document.title, window.location.pathname);
+                checkGoogleConnection(); 
+            } else if (authStatus === 'error') {
+                toast.error('Failed to connect Google Calendar');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, []);
 
-        window.history.replaceState({}, document.title, window.location.pathname);
-        // checkGoogleConnection(); 
-    } else if (authStatus === 'error') {
-        toast.error('Failed to connect Google Calendar');
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-}, []);
+        const checkGoogleConnection = async () => {
+            try {
+                const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
+                setIsGoogleConnected(response.data.connected);
+            } catch (error) {
+                console.error('Error checking Google connection:', error);
+            }
+        };
     
     const syncWithGoogleCalendar = async (eventData: any) => {
         try {
