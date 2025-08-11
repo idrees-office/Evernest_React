@@ -18,7 +18,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Select from 'react-select';
 import IconGoogle from '../../components/Icon/IconGoogle';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 
@@ -46,15 +46,60 @@ const Activities = () => {
     const [selectedAgents, setSelectedAgents] = useState<any[]>([]);
     const [googleAuthUrl, setGoogleAuthUrl] = useState('');
     const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+    const navigate = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {  
-        const currentUrl = window.location.origin + location.pathname + location.search;
 
-        checkGoogleConnection();
-        getGoogleAuthUrl();
-    }, []);
+    const checkGoogleConnection = async () => {
+        try {
+            const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
+            setIsGoogleConnected(response.data.connected);
+            return response.data.connected;
+        } catch (error) {
+            console.error('Error checking Google connection:', error);
+            return false;
+        }
+    };
+    //  const currentUrl = window.location.origin + location.pathname + location.search;
 
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const googleAuthStatus = queryParams.get('google_auth');
+        
+        if (googleAuthStatus === 'success') {
+            toast.success('Successfully connected with Google Calendar');
+            checkGoogleConnection();
+            // Clean up URL
+            navigate(location.pathname, { replace: true });
+        } else if (googleAuthStatus === 'error') {
+            toast.error('Failed to connect with Google Calendar');
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, navigate]);
+
+
+    useEffect(() => {
+    const initializeGoogleAuth = async () => {
+        await getGoogleAuthUrl();
+        await checkGoogleConnection();
+    };
+    initializeGoogleAuth();
+}, []);
+
+
+
+
+
+      const initiateGoogleAuth = () => {
+    if (!googleAuthUrl) {
+        toast.error('Google authentication is not ready yet. Please try again.');
+        return;
+    }
+    
+    // Store current path to return after auth
+    localStorage.setItem('preAuthPath', window.location.pathname);
+    window.location.href = googleAuthUrl;
+};
 
    
 
@@ -92,17 +137,7 @@ const Activities = () => {
     };
 
 
-    const checkGoogleConnection = async () => {
-        try {
-            const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
-            setIsGoogleConnected(response.data.connected);
-            if (!response.data.connected && !googleAuthUrl) {
-                getGoogleAuthUrl();
-            }
-        } catch (error) {
-            console.error('Error checking Google connection:', error);
-        }
-    };
+    
 
     const getGoogleAuthUrl = async () => {
         try {
@@ -414,7 +449,7 @@ const Activities = () => {
                     </div>
                     <div className="flex gap-2">
 
-                        {isGoogleConnected ? (
+                        {/* {isGoogleConnected ? (
                             <button type="button" className="btn btn-success btn-sm flex items-center gap-1">
                                 <IconGoogle /> Connected
                             </button>
@@ -426,6 +461,22 @@ const Activities = () => {
                             <IconGoogle /> Connect Google
                         </a>
                            
+                        )} */}
+
+                        {isGoogleConnected ? (
+                            <button type="button" className="btn btn-success btn-sm flex items-center gap-1">
+                                <IconGoogle /> Connected
+                            </button>
+                        ) : (
+                            <button 
+                                type="button" 
+                                className="btn btn-outline-danger btn-sm flex items-center gap-1"
+                                onClick={initiateGoogleAuth}
+                                disabled={!googleAuthUrl}
+                            >
+                                <IconGoogle /> 
+                                {googleAuthUrl ? 'Connect Google' : 'Loading...'}
+                            </button>
                         )}
 
                         <Select 
