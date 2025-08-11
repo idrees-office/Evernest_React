@@ -48,17 +48,34 @@ const Activities = () => {
     const [isGoogleConnected, setIsGoogleConnected] = useState(false);
     const location = useLocation();
 
-    useEffect(() => {
-        
-        const currentUrl = window.location.origin + location.pathname + location.search;
-        console.log(currentUrl);
-        
-        checkGoogleConnection();
-        getGoogleAuthUrl();
-    }, []);
+    // useEffect(() => {  
+    //     const currentUrl = window.location.origin + location.pathname + location.search;
+
+    //     checkGoogleConnection();
+    //     getGoogleAuthUrl();
+    // }, []);
 
 
-   
+    useEffect(() => {  
+        const checkConnection = async () => {
+            await checkGoogleConnection();
+            const urlParams = new URLSearchParams(window.location.search);
+            const authStatus = urlParams.get('google_auth');
+            
+            if (authStatus === 'success') {
+                toast.success('Successfully connected with Google Calendar');
+                // Clean the URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setIsGoogleConnected(true);
+            } else if (authStatus === 'error') {
+                toast.error('Failed to connect with Google Calendar');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        };
+        
+        checkConnection();
+    }, [location.search]);
+    
 
     useEffect(() => {
         if (!combinedRef.current.fetched) {
@@ -94,26 +111,9 @@ const Activities = () => {
     };
 
 
-    const checkGoogleConnection = async () => {
-        try {
-            const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
-            setIsGoogleConnected(response.data.connected);
-            if (!response.data.connected && !googleAuthUrl) {
-                getGoogleAuthUrl();
-            }
-        } catch (error) {
-            console.error('Error checking Google connection:', error);
-        }
-    };
+    
 
-    const getGoogleAuthUrl = async () => {
-        try {
-            const response = await apiClient.get(`${getBaseUrl()}/google/auth-url`);
-            setGoogleAuthUrl(response.data.url);
-        } catch (error) {
-            console.error('Error getting Google auth URL:', error);
-        }
-    };
+    
 
 
     
@@ -407,6 +407,33 @@ const Activities = () => {
         }
     };
 
+
+
+    const checkGoogleConnection = async () => {
+        try {
+            const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
+            setIsGoogleConnected(response.data.connected);
+        } catch (error) {
+            console.error('Error checking Google connection:', error);
+        }
+    };
+
+    const getGoogleAuthUrl = async () => {
+        try {
+            const response = await apiClient.get(`${getBaseUrl()}/google/auth-url`);
+            setGoogleAuthUrl(response.data.url);
+        } catch (error) {
+            console.error('Error getting Google auth URL:', error);
+        }
+    };
+
+    const handleGoogleConnect = () => {
+        // Store the current URL to redirect back after auth
+        localStorage.setItem('preAuthUrl', window.location.href);
+        window.location.href = googleAuthUrl;
+    };
+
+
     return (
         <div>
             <div className="panel mb-5">
@@ -416,25 +443,36 @@ const Activities = () => {
                     </div>
                     <div className="flex gap-2">
 
-                        {isGoogleConnected ? (
+                        {/* {isGoogleConnected ? (
                             <button type="button" className="btn btn-success btn-sm flex items-center gap-1">
                                 <IconGoogle /> Connected
                             </button>
                         ) : (
 
-                            <a href={googleAuthUrl} 
-                                className="btn btn-outline-danger btn-sm flex items-center gap-1"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    // Open in same tab to maintain session
-                                    window.location.href = googleAuthUrl;
-                                }}
+                            <a href={googleAuthUrl} className="btn btn-outline-danger btn-sm flex items-center gap-1"
+                                onClick={(e) => { e.preventDefault(); window.location.href = googleAuthUrl; }}
                             >
                             <IconGoogle /> Connect Google
                         </a>
-                            // <a href={googleAuthUrl} className="btn btn-outline-danger btn-sm flex items-center gap-1">
-                            //     <IconGoogle /> Connect Google
-                            // </a>
+                           
+                        )} */}
+
+                        {isGoogleConnected ? (
+                            <button 
+                                type="button" 
+                                className="btn btn-success btn-sm flex items-center gap-1"
+                                onClick={() => setIsGoogleConnected(false)}
+                            >
+                                <IconGoogle /> Connected
+                            </button>
+                        ) : (
+                            <button 
+                                type="button" 
+                                className="btn btn-outline-danger btn-sm flex items-center gap-1"
+                                onClick={handleGoogleConnect}
+                            >
+                                <IconGoogle /> Connect Google
+                            </button>
                         )}
 
                         <Select 
