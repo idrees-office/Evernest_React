@@ -48,7 +48,6 @@ const Activities = () => {
 
 
     useEffect(() => {
-
         const checkGoogleConnection = async () => {
             try {
                 const response = await apiClient.get(`${getBaseUrl()}/google/check-connection`);
@@ -76,6 +75,9 @@ const Activities = () => {
         getGoogleAuthUrl();
     }, []);
 
+
+   
+
     useEffect(() => {
         if (!combinedRef.current.fetched) {
             dispatch(setPageTitle('Agents Activites'));
@@ -83,6 +85,22 @@ const Activities = () => {
             combinedRef.current.fetched = true;
         }
     }, [dispatch]);
+
+
+     useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get('google_auth');
+    
+    if (authStatus === 'success') {
+        toast.success('Google Calendar connected successfully!');
+
+        window.history.replaceState({}, document.title, window.location.pathname);
+        // checkGoogleConnection(); 
+    } else if (authStatus === 'error') {
+        toast.error('Failed to connect Google Calendar');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}, []);
     
     const syncWithGoogleCalendar = async (eventData: any) => {
         try {
@@ -409,9 +427,20 @@ const Activities = () => {
                                 <IconGoogle /> Connected
                             </button>
                         ) : (
-                            <a href={googleAuthUrl} className="btn btn-outline-danger btn-sm flex items-center gap-1">
-                                <IconGoogle /> Connect Google
-                            </a>
+
+                            <a href={googleAuthUrl} 
+                                className="btn btn-outline-danger btn-sm flex items-center gap-1"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    // Open in same tab to maintain session
+                                    window.location.href = googleAuthUrl;
+                                }}
+                            >
+                            <IconGoogle /> Connect Google
+                        </a>
+                            // <a href={googleAuthUrl} className="btn btn-outline-danger btn-sm flex items-center gap-1">
+                            //     <IconGoogle /> Connect Google
+                            // </a>
                         )}
 
                         <Select 
