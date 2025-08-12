@@ -230,8 +230,8 @@ import { getBaseUrl } from '../../components/BaseUrl';
 import apiClient from '../../utils/apiClient';
 
 const endpoints = {
-    googleAuthUrl: `${getBaseUrl()}/auth/google/auth-url`,
-    googleCheckConnection: `${getBaseUrl()}/auth/google/check-connection`,
+    googleAuthUrl: `${getBaseUrl()}/google/auth-url`,
+    googleCheckConnection: `${getBaseUrl()}/google/check-connection`,
 };
 
 const LoginCover = ({ children }: PropsWithChildren) => {
@@ -304,63 +304,42 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         toast.error('Social login is currently under development.');
     };
 
-    useEffect(() => {
-    const initializeGoogleAuth = async () => {
+
+     useEffect(() => { 
+        const queryParams = new URLSearchParams(location.search);
+
+        console.log(queryParams);
+        console.log('dd');
+
+
+     }, []);
+
+
+    useEffect(() => { fetchGoogleAuthUrl(); }, []); 
+
+    const fetchGoogleAuthUrl = async () => {
         try {
-            // Get Google auth URL from your Laravel backend
             const response = await apiClient.get(endpoints.googleAuthUrl);
-            
+
+            console.log(response.data.url);
+
             if (response.data && response.data.url) {
                 setGoogleAuthUrl(response.data.url);
             } else {
                 toast.error('Failed to get Google auth URL');
             }
-            
-            // Check connection status if needed
-            const connectionResponse = await apiClient.get(endpoints.googleCheckConnection);
-            setIsGoogleConnected(connectionResponse.data.connected);
-            
-            // Handle Google callback if token exists in URL
-            const params = new URLSearchParams(location.search);
-            const token = params.get('token');
-            const error = params.get('error');
-            
-            if (token) {
-                handleGoogleCallback(token);
-            } else if (error) {
-                toast.error('Google login failed');
-                // Clean the URL
-                navigate(location.pathname, { replace: true });
-            }
-            
         } catch (error) {
-            console.error('Google auth initialization error:', error);
-            toast.error('Failed to initialize Google login');
+            console.error('Failed to fetch Google auth URL:', error);
+            toast.error('Failed to get Google auth URL');
         }
     };
 
-    initializeGoogleAuth();
-}, [location, navigate]);
-
-    const handleGoogleCallback = async (token: string) => {
-        try {
-            localStorage.setItem('googletoken', token);
-            dispatch({ type: 'auth/googleLoginSuccess', payload: { token } });
-            
-            const from = location.state?.from?.pathname || '/';
-            navigate(from, { replace: true });
-        } catch (error) {
-            console.error('Google callback error:', error);
-            toast.error('Failed to complete Google login');
-        }
-    };
-
-    const initiateGoogleLogin = () => {
+     const initiateGoogleLogin = () => {
+        
         if (!googleAuthUrl) {
             toast.error('Google login is not ready yet. Please try again.');
             return;
         }
-        localStorage.setItem('preAuthPath', window.location.pathname);
         window.location.href = googleAuthUrl;
     };
 
@@ -491,9 +470,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                         </button>
                                     </li>
                                     <li>
-                                        <button onClick={initiateGoogleLogin}
+                                        <button  onClick={initiateGoogleLogin}
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)' }}
+                                            style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)', cursor : 'pointer' }}
                                             disabled={!googleAuthUrl}
                                         >
                                             <IconGoogle />
