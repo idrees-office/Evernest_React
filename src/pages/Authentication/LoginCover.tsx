@@ -305,14 +305,45 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     };
 
 
-     useEffect(() => { 
+   useEffect(() => { 
         const queryParams = new URLSearchParams(location.search);
+        const error = queryParams.get('error');
+        const token = queryParams.get('token');
+        if (error) {
+            toast.error(error);
+            // Clear the query params to prevent loop
+            navigate(location.pathname, { replace: true });
+            return;
+        }
+        
+        if (token) {
+            // Handle the token and user data without Redux
+            const userData = queryParams.get('user');
+            if (userData) {
+                try {
+                    const user = JSON.parse(atob(userData));
+                    
+                    // Store token and user in localStorage or sessionStorage
+                    localStorage.setItem('googleauthToken', token);
+                    localStorage.setItem('googleuser', JSON.stringify(user));
+                    
+                    // Clear the query params to prevent loop
+                    navigate('/', { replace: true });
+                } catch (e) {
+                    toast.error('Failed to parse user data');
+                    navigate('/login', { replace: true });
+                }
+            }
+        }
+    }, [location.search, navigate]);
 
-        console.log(queryParams);
-        console.log('dd');
-
-
-     }, []);
+    useEffect(() => {
+        // Check if user is already logged in
+        const token = localStorage.getItem('googleauthToken');
+        if (token) {
+            navigate('/');
+        }
+    }, [navigate]);
 
 
     useEffect(() => { fetchGoogleAuthUrl(); }, []); 
@@ -335,6 +366,9 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     };
 
      const initiateGoogleLogin = () => {
+
+        localStorage.removeItem('googleauthToken');
+        localStorage.removeItem('googleuser');
         
         if (!googleAuthUrl) {
             toast.error('Google login is not ready yet. Please try again.');
