@@ -212,7 +212,7 @@
 
 
 
-import { PropsWithChildren, useEffect, useState, useRef } from 'react';
+import { PropsWithChildren, useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
@@ -244,24 +244,46 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const [showPassword, setShowPassword] = useState(false);
     const [googleAuthUrl, setGoogleAuthUrl] = useState('');
-    const [isGoogleConnected, setIsGoogleConnected] = useState(false);
     const location = useLocation();
     const toast = Toast();
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    useEffect(() => {
-        dispatch(setPageTitle('Login Cover'));
-        if (isAuthenticated) {
-            navigate('/');
-        }
-    }, [isAuthenticated, dispatch, navigate]);
-
-    const setLocale = (flag: string) => {
+    // Memoized functions
+    const setLocale = useCallback((flag: string) => {
         setFlag(flag);
         dispatch(toggleRTL(flag.toLowerCase() === 'ae' ? 'rtl' : 'ltr'));
-    };
+    }, [dispatch]);
 
-    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    const fetchGoogleAuthUrl = useCallback(async () => {
+        try {
+            const response = await apiClient.get(endpoints.googleAuthUrl);
+            if (response.data?.url) {
+                setGoogleAuthUrl(response.data.url);
+            } else {
+                toast.error('Failed to get Google auth URL');
+            }
+        } catch (error) {
+            console.error('Failed to fetch Google auth URL:', error);
+            toast.error('Failed to get Google auth URL');
+        }
+    }, [toast]);
+
+    const initiateGoogleLogin = useCallback(() => {
+        localStorage.removeItem('googleauthToken');
+        localStorage.removeItem('googleuser');
+        
+        if (!googleAuthUrl) {
+            toast.error('Google login is not ready yet. Please try again.');
+            return;
+        }
+        window.location.href = googleAuthUrl;
+    }, [googleAuthUrl, toast]);
+
+    const handleSocialLogin = useCallback(() => {
+        toast.error('Social login is currently under development.');
+    }, [toast]);
+
+    const submitForm = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!formRef.current) return;
         
@@ -298,36 +320,29 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         } catch (error: any) {
             Swal.fire('Error:', error.message || error);
         }
-    };
+    }, [dispatch, navigate, toast]);
 
-    const handleSocialLogin = () => {
-        toast.error('Social login is currently under development.');
-    };
-
-
-   useEffect(() => { 
+    // Combined and optimized effects
+    useEffect(() => {
+        dispatch(setPageTitle('Login Cover'));
+        
+        // Check for Google auth token in URL params
         const queryParams = new URLSearchParams(location.search);
         const error = queryParams.get('error');
-        const token = queryParams.get('token');
+        const googletoken = queryParams.get('token');
         if (error) {
             toast.error(error);
-            // Clear the query params to prevent loop
             navigate(location.pathname, { replace: true });
             return;
         }
         
-        if (token) {
-            // Handle the token and user data without Redux
-            const userData = queryParams.get('user');
-            if (userData) {
+        if (googletoken) {
+            const googleuserData = queryParams.get('user');
+            if (googleuserData) {
                 try {
-                    const user = JSON.parse(atob(userData));
-                    
-                    // Store token and user in localStorage or sessionStorage
-                    localStorage.setItem('googleauthToken', token);
+                    const user = JSON.parse(atob(googleuserData));
+                    localStorage.setItem('googleauthToken', googletoken);
                     localStorage.setItem('googleuser', JSON.stringify(user));
-                    
-                    // Clear the query params to prevent loop
                     navigate('/', { replace: true });
                 } catch (e) {
                     toast.error('Failed to parse user data');
@@ -335,47 +350,18 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                 }
             }
         }
-    }, [location.search, navigate]);
 
-    useEffect(() => {
-        // Check if user is already logged in
-        const token = localStorage.getItem('googleauthToken');
-        if (token) {
+        // Check existing auth
+        const existingToken = localStorage.getItem('googleauthToken');
+        if (existingToken || isAuthenticated) {
             navigate('/');
         }
-    }, [navigate]);
 
-
-    useEffect(() => { fetchGoogleAuthUrl(); }, []); 
-
-    const fetchGoogleAuthUrl = async () => {
-        try {
-            const response = await apiClient.get(endpoints.googleAuthUrl);
-
-            console.log(response.data.url);
-
-            if (response.data && response.data.url) {
-                setGoogleAuthUrl(response.data.url);
-            } else {
-                toast.error('Failed to get Google auth URL');
-            }
-        } catch (error) {
-            console.error('Failed to fetch Google auth URL:', error);
-            toast.error('Failed to get Google auth URL');
-        }
-    };
-
-     const initiateGoogleLogin = () => {
-
-        localStorage.removeItem('googleauthToken');
-        localStorage.removeItem('googleuser');
-        
+        // Fetch Google auth URL only if not already fetched
         if (!googleAuthUrl) {
-            toast.error('Google login is not ready yet. Please try again.');
-            return;
+            fetchGoogleAuthUrl();
         }
-        window.location.href = googleAuthUrl;
-    };
+    }, [dispatch, isAuthenticated, navigate, location, toast, googleAuthUrl, fetchGoogleAuthUrl]);
 
     return (
         <div>
