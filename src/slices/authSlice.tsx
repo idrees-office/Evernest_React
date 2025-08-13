@@ -5,6 +5,10 @@ const endpoints = {
     loginApi: '/auth/login',
     register: '/auth/register',
     logoutApi: 'auth/logout',
+    googleAuthUrl: '/google/auth-url',
+    googleLogin: '/google/callback',
+
+   
 };
 
 export const loginUser = createAsyncThunk('auth/cover-login', async ({ formData }: { formData: FormData; }, { rejectWithValue }) => {
@@ -21,7 +25,6 @@ export const signupUser = createAsyncThunk('auth/signupUser', async (userData) =
     return response.data;
 });
 
-
 export const logoutUser = createAsyncThunk('auth/logoutUser', async ({ login_user_id }: { login_user_id: number }, { dispatch, rejectWithValue }) => {
         try {
             const response = await apiClient.post(endpoints.logoutApi, {
@@ -36,6 +39,35 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async ({ login_use
         }
     }
 );
+
+
+export const handleGoogleCallback = createAsyncThunk('auth/handleGoogleCallback', async ({ token, user }: { token: string; user: any }, { rejectWithValue }) => {
+        try {
+            const userData = typeof user === 'string' ? JSON.parse(atob(user)) : user;
+            return {
+                token,
+                user: userData,
+                permissions: userData.permissions || [],
+                role: userData.roles || 'agent'
+            };
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
+export const fetchGoogleAuthUrl = createAsyncThunk('auth/fetchGoogleAuthUrl', async (_, { rejectWithValue }) => {
+        try {
+            const response = await apiClient.get(endpoints.googleAuthUrl);
+            return response.data.url;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 
 
 
@@ -55,12 +87,13 @@ const initialState = {
     user: parsedUser, 
     error: null,
     success: false,
-    message : '',
-    status : 0,
+    message: '',
+    status: 0,
     token: localStorage.getItem('authToken') || null,
-    
-
+    googleAuthUrl: null,
+    loading: false
 };
+
 
 const authSlice = createSlice({
     name: 'auth',
@@ -71,6 +104,9 @@ const authSlice = createSlice({
             state.user = null;
             localStorage.removeItem('authToken');
             localStorage.removeItem('authUser');
+            localStorage.removeItem('permissions');
+            localStorage.removeItem('role');
+
         },
 
         updateUser: (state, action) => {
@@ -87,7 +123,6 @@ const authSlice = createSlice({
                 state.error = null;
                 state.status =  action.payload.status
                 state.message = action.payload?.message;
-
                 localStorage.setItem('authToken', action.payload.data.token);
                 localStorage.setItem('authUser', JSON.stringify(action.payload.data.user));
                 localStorage.setItem('permissions', JSON.stringify(action.payload.permissions));
@@ -108,12 +143,39 @@ const authSlice = createSlice({
                 state.isAuthenticated = true;
             })
             .addCase(logoutUser.rejected, (state, action) => {
-                console.error('Logout failed:', action.error);
-                // Still clear the local state even if backend logout failed
                 state.isAuthenticated = false;
                 state.user = null;
                 state.token = null;
+            })
+            .addCase(fetchGoogleAuthUrl.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchGoogleAuthUrl.fulfilled, (state, action) => {
+                state.loading = false;
+                state.googleAuthUrl = action.payload;
+            })
+            .addCase(fetchGoogleAuthUrl.rejected, (state, action) => {
+                state.loading = false;
+            })
+
+            .addCase(handleGoogleCallback.fulfilled, (state, action) => {
+                state.isAuthenticated = true;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.error = null;
+                state.message = 'Google login successful';
+                
+                localStorage.setItem('authToken', action.payload.token);
+                localStorage.setItem('authUser', JSON.stringify(action.payload.user));
+                localStorage.setItem('permissions', JSON.stringify(action.payload.permissions));
+                localStorage.setItem('role', action.payload.role);
+            })
+            .addCase(handleGoogleCallback.rejected, (state, action) => {
+                state.isAuthenticated = false;
+                state.message = 'Google login failed';
             });
+
     },
 });
 

@@ -207,14 +207,9 @@
 // export default LoginCover;
 
 
-
-
-
-
-
 import { PropsWithChildren, useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, redirect, useLocation, useNavigate } from 'react-router-dom';
 import { setPageTitle, toggleRTL } from '../../slices/themeConfigSlice';
 import { AppDispatch, IRootState } from '../../store';
 import IconMail from '../../components/Icon/IconMail';
@@ -222,19 +217,12 @@ import IconLockDots from '../../components/Icon/IconLockDots';
 import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconGoogle from '../../components/Icon/IconGoogle';
-import { loginUser } from '../../slices/authSlice';
+import { loginUser, fetchGoogleAuthUrl,handleGoogleCallback } from '../../slices/authSlice';
 import Toast from '../../services/toast';
 import Swal from 'sweetalert2';
 import IconEye from '../../components/Icon/IconEye';
-import { getBaseUrl } from '../../components/BaseUrl';
-import apiClient from '../../utils/apiClient';
 
-const endpoints = {
-    googleAuthUrl: `${getBaseUrl()}/google/auth-url`,
-    googleCheckConnection: `${getBaseUrl()}/google/check-connection`,
-};
-
-const LoginCover = ({ children }: PropsWithChildren) => {
+const LoginCover = () => {
     const isAuthenticated = useSelector((state: IRootState) => state.auth.isAuthenticated);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -247,46 +235,65 @@ const LoginCover = ({ children }: PropsWithChildren) => {
     const location = useLocation();
     const toast = Toast();
     const [flag, setFlag] = useState(themeConfig.locale);
+    const ranOnce = useRef(false);
+
+    useEffect(() => {
+        if (ranOnce.current) return;
+        dispatch(setPageTitle('Login Cover'));
+        const queryParams = new URLSearchParams(location.search);
+        const googleToken = queryParams.get('token');
+        const googleUserData = queryParams.get('user');
+        if (googleToken && googleUserData) {
+            dispatch(handleGoogleCallback({ token: googleToken, user: googleUserData })).unwrap() 
+                .then(() => {
+                    navigate('/', {  replace: true, state: { from: location }  });
+                })
+                .catch((error) => {
+                    console.error('Google login error:', error);
+                    toast.error(error.message || 'Google login failed');
+                    navigate('/auth/cover-login', { replace: true });
+                });
+        }
+
+        if (!googleAuthUrl) {
+            dispatch(fetchGoogleAuthUrl()).unwrap().then((url) => {
+                    setGoogleAuthUrl(url);
+                }).catch((error) => {
+                    toast.error('Failed to initialize Google login');
+                });
+        }
+        ranOnce.current = true;
+    }, [dispatch, location, navigate, googleAuthUrl]);
+
+
 
     // Memoized functions
-    const setLocale = useCallback((flag: string) => {
-        setFlag(flag);
-        dispatch(toggleRTL(flag.toLowerCase() === 'ae' ? 'rtl' : 'ltr'));
-    }, [dispatch]);
-
-    const fetchGoogleAuthUrl = useCallback(async () => {
-        try {
-            const response = await apiClient.get(endpoints.googleAuthUrl);
-            if (response.data?.url) {
-                setGoogleAuthUrl(response.data.url);
-            } else {
-                toast.error('Failed to get Google auth URL');
-            }
-        } catch (error) {
-            console.error('Failed to fetch Google auth URL:', error);
-            toast.error('Failed to get Google auth URL');
+    const setLocale = (flag: string) => { setFlag(flag);
+        if (flag.toLowerCase() === 'ae') {
+            dispatch(toggleRTL('rtl'));
+        } else {
+            dispatch(toggleRTL('ltr'));
         }
-    }, [toast]);
+    };
 
-    const initiateGoogleLogin = useCallback(() => {
-        localStorage.removeItem('googleauthToken');
-        localStorage.removeItem('googleuser');
-        
-        if (!googleAuthUrl) {
-            toast.error('Google login is not ready yet. Please try again.');
-            return;
+    const initiateGoogleLogin = () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('permissions');
+        localStorage.removeItem('role');
+        if (!googleAuthUrl) { 
+            toast.error('Google login is not ready yet. Please try again.'); return; 
         }
         window.location.href = googleAuthUrl;
-    }, [googleAuthUrl, toast]);
+    };
 
-    const handleSocialLogin = useCallback(() => {
+    const handleSocialLogin = () => {
         toast.error('Social login is currently under development.');
-    }, [toast]);
+    };
 
-    const submitForm = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!formRef.current) return;
-        
         const formData = new FormData(formRef.current);
         try {
             const response = await dispatch(loginUser({ formData }) as any);
@@ -301,10 +308,8 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                 toast.error(response.payload.message);
                 const form = formRef.current;
                 if (!form) return;
-
                 const emailInput = form.querySelector<HTMLInputElement>('input[name="client_user_email"]');
                 const passwordInput = form.querySelector<HTMLInputElement>('input[name="password"]');
-
                 if (response.payload.message.status === "Incorrect-Password" && passwordInput) {
                     passwordInput.value = "";
                 }
@@ -320,48 +325,7 @@ const LoginCover = ({ children }: PropsWithChildren) => {
         } catch (error: any) {
             Swal.fire('Error:', error.message || error);
         }
-    }, [dispatch, navigate, toast]);
-
-    // Combined and optimized effects
-    useEffect(() => {
-        dispatch(setPageTitle('Login Cover'));
-        
-        // Check for Google auth token in URL params
-        const queryParams = new URLSearchParams(location.search);
-        const error = queryParams.get('error');
-        const googletoken = queryParams.get('token');
-        if (error) {
-            toast.error(error);
-            navigate(location.pathname, { replace: true });
-            return;
-        }
-        
-        if (googletoken) {
-            const googleuserData = queryParams.get('user');
-            if (googleuserData) {
-                try {
-                    const user = JSON.parse(atob(googleuserData));
-                    localStorage.setItem('googleauthToken', googletoken);
-                    localStorage.setItem('googleuser', JSON.stringify(user));
-                    navigate('/', { replace: true });
-                } catch (e) {
-                    toast.error('Failed to parse user data');
-                    navigate('/login', { replace: true });
-                }
-            }
-        }
-
-        // Check existing auth
-        const existingToken = localStorage.getItem('googleauthToken');
-        if (existingToken || isAuthenticated) {
-            navigate('/');
-        }
-
-        // Fetch Google auth URL only if not already fetched
-        if (!googleAuthUrl) {
-            fetchGoogleAuthUrl();
-        }
-    }, [dispatch, isAuthenticated, navigate, location, toast, googleAuthUrl, fetchGoogleAuthUrl]);
+    };
 
     return (
         <div>
@@ -492,7 +456,11 @@ const LoginCover = ({ children }: PropsWithChildren) => {
                                     <li>
                                         <button  onClick={initiateGoogleLogin}
                                             className="inline-flex h-8 w-8 items-center justify-center rounded-full p-0 transition hover:scale-110"
-                                            style={{ background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)', cursor : 'pointer' }}
+                                           style={{ 
+                                                    background: 'linear-gradient(135deg, rgb(106 50 25) 0%, rgb(152 97 73) 100%)', 
+                                                    cursor: googleAuthUrl ? 'pointer' : 'not-allowed',
+                                                    opacity: googleAuthUrl ? 1 : 0.7
+                                                }}
                                             disabled={!googleAuthUrl}
                                         >
                                             <IconGoogle />

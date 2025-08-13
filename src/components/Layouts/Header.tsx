@@ -317,9 +317,7 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
-
                         
-
                         <div className="dropdown shrink-0 flex">
                             <Dropdown offset={[0, 8]} placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`} btnClassName="relative group block"
                                 button={<img className="w-9 h-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="https://www.w3schools.com/howto/img_avatar.png" alt="userProfile" />} >
@@ -333,7 +331,7 @@ const Header = () => {
                                                 </h4>
                                                 <h4 className="text-base">    
                                                     <span className="text-xs bg-success-light rounded text-success">
-                                                        {user.roles.length > 0 ? user.roles[0].name : 'Guest'}
+                                                        {user?.roles?.length > 0 ? user.roles[0].name : 'Guest'}
                                                     </span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">

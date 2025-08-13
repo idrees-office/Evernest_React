@@ -40,6 +40,39 @@ import { IconOption } from '../../components/Icon';
         isCustomizerOpen, setIsCustomizerOpen
     } = useDashboardStates();
 
+    //   useEffect(() => {
+    //     const queryParams = new URLSearchParams(location.search);
+    //     const error = queryParams.get('error');
+    //     const googletoken = queryParams.get('token');
+    //     if(googletoken){
+    //         const googleuserData = queryParams.get('user');
+    //         if (googleuserData) {
+    //         try {
+    //             const decodedString = atob(googleuserData);
+    //             const userObj = JSON.parse(decodedString);
+    //             localStorage.setItem('authToken', googletoken);
+    //             localStorage.setItem('authUser', JSON.stringify(userObj));
+    //             localStorage.setItem('permissions', JSON.stringify(userObj.permissions));
+    //             localStorage.setItem('role', userObj.roles);
+    //             dispatch({
+    //                 type: 'auth/loginSuccess',
+    //                 payload: {
+    //                     token: googletoken,
+    //                     user: userObj, 
+    //                     permissions :  JSON.stringify(userObj.permissions),
+    //                     roles : userObj.roles
+    //                 }
+    //             });
+    //             //  navigate('/', { replace: true });
+    //             return;
+    //         } catch (e) {
+    //             console.error('Failed to decode user data:', e);
+    //         }
+    //      }
+    //     }
+    // }, []);
+
+
     useEffect(() => {        
         dispatch(setPageTitle('Dashboard'));
         if (loginuser?.client_user_id && !combinedRef.current.fetched) {
